@@ -1,15 +1,15 @@
 
-function pseudo_angle(x :: T, y :: T) where {T <: Real}
+function pseudo_angle(p :: Point{T}) where {T <: Integer}
+    x,y = p[1],p[2]
     a = x // (abs(x) + abs(y))
     y < 0 && return a - 1
     return 1 - a
 end
-pseudo_angle(p :: Tuple{T,T}) where {T <: Real} = pseudo_angle(p[1], p[2])
 
-ccw(a::Tuple{T,T}, b::Tuple{T,T}, c::Tuple{T,T}) where {T <: Real} =
+ccw(a::Point{T}, b::Point{T}, c::Point{T}) where {T <: Integer} =
 (b[1] - a[1]) * (c[2] - a[2]) - (b[2] - a[2]) * (c[1] - a[1])
 
-function graham_scan!(points :: Vector{Tuple{T,T}}) where {T <: Real}
+function graham_scan!(points :: Vector{<:Point{T}}) where {T <: Integer}
     n = length(points)
 
     i = argmin(points)
@@ -37,7 +37,7 @@ function graham_scan!(points :: Vector{Tuple{T,T}}) where {T <: Real}
     return points[1:k]
 end
 
-graham_scan(points :: Vector{Tuple{T,T}}) where {T <: Real} = graham_scan!(deepcopy(points))
+graham_scan(points :: Vector{<:Point{T}}) where {T <: Integer} = graham_scan!(deepcopy(points))
 
-convex_hull(points :: Vector{Tuple{T,T}}) where {T <: Real} =
+convex_hull(points :: Vector{<:Point{T}}) where {T <: Integer} =
 RationalPolygon(graham_scan(points))

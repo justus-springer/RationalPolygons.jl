@@ -1,15 +1,15 @@
 
 struct RationalPolygon{T<:Integer}
     rationality :: T
-    vs :: Vector{Tuple{T,T}}
+    vs :: Vector{LatticePoint{T}}
 
-    RationalPolygon(rationality :: T, vs :: Vector{Tuple{T,T}}) where {T <: Integer} =
+    RationalPolygon(rationality :: T, vs :: Vector{LatticePoint{T}}) where {T <: Integer} =
     new{T}(rationality, vs)
 
-    function RationalPolygon(vs :: Vector{Tuple{T,T}}) where {T <: Union{Integer,Rational}}
-        r = lcm([lcm(denominator(v[1]), denominator(v[2])) for v ∈ vs])
-        ws = [(r * numerator(v[1]) ÷ denominator(v[1]), r * numerator(v[2]) ÷ denominator(v[2])) for v ∈ vs]
-        return new{typeof(r)}(r,ws)
+    function RationalPolygon(points :: Vector{<:Point{T}}) where {T <: Integer}
+        r = lcm(rationality.(points))
+        integral_points = numerator.(r .* points)
+        return new{T}(r,integral_points)
     end
 
 end
@@ -22,6 +22,6 @@ P.rationality == Q.rationality && P.vs == Q.vs
 
 rationality(P :: RationalPolygon) = P.rationality
 
-scaled_vertices(P :: RationalPolygon) = P.vs
+lattice_vertices(P :: RationalPolygon) = P.vs
 
-vertices(P :: RationalPolygon) = [v .// rationality(P) for v ∈ scaled_vertices(P)]
+vertices(P :: RationalPolygon) = lattice_vertices(P) .// rationality(P)

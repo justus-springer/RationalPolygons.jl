@@ -1,3 +1,7 @@
 import Base:
     (==),
-    show
+    show,
+    (*),
+    (+),
+    numerator,
+    denominator
