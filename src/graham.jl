@@ -12,11 +12,11 @@ ccw(a::Point{T}, b::Point{T}, c::Point{T}) where {T <: Integer} =
 function graham_scan!(points :: Vector{<:Point{T}}) where {T <: Integer}
     n = length(points)
 
-    i = argmin(points)
-    points[i], points[1] = points[1], points[i]
+    i0 = argmin(points)
+    points[i0], points[1] = points[1], points[i0]
     p0 = points[1]
 
-    points[2:end] = sort(points[2:end], by = p -> pseudo_angle(p0 .- p))
+    points[2:end] = sort(points[2:end], by = p -> pseudo_angle(p - p0))
 
     k = 2
     for i = 1:n
@@ -29,7 +29,7 @@ function graham_scan!(points :: Vector{<:Point{T}}) where {T <: Integer}
                 i += 1
             end
         end
-
+        
         k += 1
         points[i], points[k] = points[k], points[i]
     end
