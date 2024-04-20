@@ -4,4 +4,10 @@ import Base:
     (*),
     (+),
     numerator,
-    denominator
+    denominator,
+    zero
+
+import AbstractAlgebra:
+    det,
+    QQ,
+    can_solve_with_solution
