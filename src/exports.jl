@@ -35,3 +35,5 @@ export previous_k_rational_point
 export previous_integral_point
 export HorizontalLine
 export VerticalLine
+export norm
+export distance

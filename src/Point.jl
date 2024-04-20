@@ -20,6 +20,9 @@ Base.zero(::Type{LatticePoint{T}}) where {T <: Integer} = (zero(T), zero(T))
 Base.zero(::RationalPoint{T}) where {T <: Integer} = (zero(T) // one(T), zero(T) // one(T))
 Base.zero(::Type{RationalPoint{T}}) where {T <: Integer} = (zero(T) // one(T), zero(T) // one(T))
 
+norm(p :: Point{T}) where {T <: Integer} = p[1]^2 + p[2]^2
+distance(p :: Point{T}, q :: Point{T}) where {T <: Integer} = norm(p - q)
+
 det(p :: Point{T}, q :: Point{T}) where {T <: Integer} = p[1] * q[2] - p[2] * q[1]
 
 is_k_rational(k :: T, p :: Point{T}) where {T <: Integer} = k % rationality(p) == 0
