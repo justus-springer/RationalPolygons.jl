@@ -11,5 +11,8 @@ multiplicity(p :: LatticePoint) = gcd(p[1], p[2])
 numerator(p :: Point{T}) where {T <: Integer} = numerator.(p)
 denominator(p :: Point{T}) where {T <: Integer} = denominator.(p)
 Base.:(+)(p :: Point{T}, q :: Point{T}) where {T <: Integer} = p .+ q
+Base.:(-)(p :: Point{T}, q :: Point{T}) where {T <: Integer} = p .- q
 Base.:(*)(c :: Union{T,Rational{T}}, p :: Point{T}) where {T <: Integer} = c .* p
 Base.:(//)(p :: Point{T}, c :: Union{T,Rational{T}}) where {T <: Integer} = p .// c
+
+det(p :: Point{T}, q :: Point{T}) where {T <: Integer} = p[1] * q[2] - p[2] * q[1]

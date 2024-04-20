@@ -1,6 +1,7 @@
 export RationalPolygon
 export rationality
 export vertices
+export det
 export lattice_vertices
 export pseudo_angle
 export graham_scan!
@@ -9,4 +10,4 @@ export convex_hull
 export LatticePoint
 export RationalPoint
 export Point
-
+export Line
