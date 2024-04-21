@@ -148,7 +148,7 @@ they are `k`-rational. Otherwise, `p` and `q` are always excluded.
 function k_rational_points_on_line_segment(k :: T, p :: Point{T}, q :: Point{T}; inclusive = false) where {T <: Integer}
 
     if q[1] < p[1] || (p[1] == q[1] && q[2] < p[2])
-        return integral_primitive_points_on_line_segment(k,q,p)
+        return k_rational_points_on_line_segment(k,q,p; inclusive)
     end
 
     L = LineThroughPoints(p,q)
