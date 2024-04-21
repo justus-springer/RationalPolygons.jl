@@ -25,3 +25,10 @@ rationality(P :: RationalPolygon) = P.rationality
 lattice_vertices(P :: RationalPolygon) = P.vs
 
 vertices(P :: RationalPolygon) = lattice_vertices(P) .// rationality(P)
+
+number_of_vertices(P :: RationalPolygon) = length(lattice_vertices(P))
+
+function edges(P :: RationalPolygon)
+    vs, r = vertices(P), number_of_vertices(P)
+    return [(vs[i], vs[mod(i+1,1:r)]) for i = 1 : r]
+end

@@ -37,3 +37,17 @@ export HorizontalLine
 export VerticalLine
 export norm
 export distance
+export edges
+export number_of_vertices
+export boundary_k_rational_points
+export boundary_lattice_points
+export number_of_boundary_k_rational_points
+export number_of_boundary_lattice_points
+export interior_k_rational_points
+export interior_lattice_points
+export number_of_interior_k_rational_points
+export number_of_interior_lattice_points
+export k_rational_points
+export lattice_points
+export number_of_k_rational_points
+export number_of_lattice_points
