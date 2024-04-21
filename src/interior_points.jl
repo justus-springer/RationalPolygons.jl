@@ -5,7 +5,7 @@ Return all `k`-rational points on the boundary of `P`.
 
 """
 boundary_k_rational_points(k :: T, P :: RationalPolygon{T}) where {T <: Integer} =
-unique(vcat([k_rational_points_on_line_segment(k, e[1], e[2]; inclusive = true) for e ∈ edges(P)]...))
+unique(vcat([k_rational_points_on_line_segment(k, e[1], e[2]; interior = false) for e ∈ edges(P)]...))
 
 
 @doc raw"""
