@@ -138,13 +138,14 @@ end
 
 
 @doc raw"""
-    k_rational_points_on_line_segment(k :: T, p :: Point{T}, q :: Point{T}) where {T <: Integer}
+    k_rational_points_on_line_segment(k :: T, p :: Point{T}, q :: Point{T}; inclusive = false) where {T <: Integer}
     
-Return all `k`-rational points lying on the line segment from p to q,
-*excluding* p and q themselves.
+Return all `k`-rational points lying on the line segment from p to q.
+If `inclusive` is set to true, this includes `p` and `q` themselves, if
+they are `k`-rational. Otherwise, `p` and `q` are always excluded.
 
 """
-function k_rational_points_on_line_segment(k :: T, p :: Point{T}, q :: Point{T}) where {T <: Integer}
+function k_rational_points_on_line_segment(k :: T, p :: Point{T}, q :: Point{T}; inclusive = false) where {T <: Integer}
 
     if q[1] < p[1] || (p[1] == q[1] && q[2] < p[2])
         return integral_primitive_points_on_line_segment(k,q,p)
@@ -153,13 +154,17 @@ function k_rational_points_on_line_segment(k :: T, p :: Point{T}, q :: Point{T})
     L = LineThroughPoints(p,q)
     res = RationalPoint{T}[]
     if p[1] < q[1]
-        for t = floor_k_rational(k, p[1] + 1 // k) : 1 // k : ceil_k_rational(k, q[1] - 1 // k)
+        lower_bound = inclusive ? ceil_k_rational(k, p[1]) : floor_k_rational(k, p[1]+1//k)
+        upper_bound = inclusive ? floor_k_rational(k, q[1]) : ceil_k_rational(k, q[1]-1//k)
+        for t = lower_bound : 1 // k : upper_bound
             x = intersection_point(L, VerticalLine(t))
             is_k_rational(k,x) || continue
             push!(res,x)
         end
     elseif p[2] < q[2]
-        for t = floor_k_rational(k, p[2] + 1 // k) : 1 // k : ceil_k_rational(k, q[2] - 1 // k)
+        lower_bound = inclusive ? ceil_k_rational(k, p[2]) : floor_k_rational(k, p[2]+1//k)
+        upper_bound = inclusive ? floor_k_rational(k, q[2]) : ceil_k_rational(k, q[2]-1//k)
+        for t = lower_bound : 1 // k : upper_bound
             x = intersection_point(L, HorizontalLine(t))
             is_k_rational(k,x) || continue
             push!(res,x)
@@ -170,8 +175,8 @@ function k_rational_points_on_line_segment(k :: T, p :: Point{T}, q :: Point{T})
 
 end
 
-integral_points_on_line_segment(p :: Point{T}, q :: Point{T}) where {T <: Integer} =
-k_rational_points_on_line_segment(1,p,q)
+integral_points_on_line_segment(p :: Point{T}, q :: Point{T}; inclusive = false) where {T <: Integer} =
+k_rational_points_on_line_segment(1,p,q;inclusive)
 
 @doc raw"""
     next_k_rational_point(p :: Point{T}, L :: Line{T}) where {T <: Integer}
