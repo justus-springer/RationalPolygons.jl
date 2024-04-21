@@ -131,7 +131,7 @@ Return all lattice points in `P`.
 
 """
 lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
-k_rational_points(1, P)
+numerator.(k_rational_points(1, P))
 
 
 @doc raw"""
