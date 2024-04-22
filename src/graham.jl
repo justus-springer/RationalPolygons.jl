@@ -1,10 +1,11 @@
 
-function pseudo_angle(p :: Point{T}) where {T <: Integer}
+function pseudo_angle_with_distance(p :: Point{T}) where {T <: Integer}
     x,y = p[1],p[2]
-    (x == 0 && y == 0) && return 0
-    a = x // (abs(x) + abs(y))
-    y < 0 && return a - 1
-    return 1 - a
+    (x == 0 && y == 0) && return (0,0)
+    d = abs(x) + abs(y)
+    a = x // d 
+    y < 0 && return (a - 1, d)
+    return (1 - a, d)
 end
 
 ccw(a::Point{T}, b::Point{T}, c::Point{T}) where {T <: Integer} =
@@ -20,19 +21,26 @@ function graham_scan!(points :: Vector{<:Point{T}}) where {T <: Integer}
     points[1], points[i0] = points[i0], points[1]
     p0 = points[1]
 
-    # find elements sharing the same angle with p0 and only keep
-    # the furthest one, since the others are clearly not vertices.
-    redundant_points = []
-    for p ∈ points[2:end]
-        p ∈ redundant_points && continue
-        collinear_points = filter(q -> pseudo_angle(p - p0) == pseudo_angle(q - p0), points[2:end])
-        sort!(collinear_points, by = q -> distance(p0,q))
-        append!(redundant_points, collinear_points[1:end-1])
-    end
-    filter!(p -> p ∉ redundant_points, points)
+    # compute angle and distance with p0 for all remaining points
+    #
+    other_points_with_data = [(pseudo_angle_with_distance(p - p0), p) for p ∈ points[2:end]]
+    # sort the remaining points lexicographically by their pair (angle, distance)
+    sort!(other_points_with_data)
 
-    # sort the remaining points by their angle with p0
-    points[2:end] = sort(points[2:end], by = p -> pseudo_angle(p - p0))
+    # for collinear points, only keep the one furthest away from p0, since
+    # the others are clearly not vertices. This is done by traversing
+    # the sorted list from above and always adding the last point of all
+    # sets of points sharing the same angle.
+    empty!(points)
+    push!(points, p0)
+    for i = 1 : length(other_points_with_data)-1
+        (a1, _), p1 = other_points_with_data[i]
+        (a2, _), p2 = other_points_with_data[i+1]
+        if a1 != a2
+            push!(points, p1)
+        end
+    end
+    push!(points, last(other_points_with_data)[2])
 
     # the main part of the algorithm
     n = length(points)
