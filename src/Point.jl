@@ -5,8 +5,25 @@ const RationalPoint{T<:Integer} = Tuple{Rational{T},Rational{T}}
 
 const Point{T<:Integer} = Tuple{S,S} where S<:Union{T,Rational{T}}
 
+@doc raw"""
+    rationality(p :: Point)
+
+The smallest integer `r` such that `r*p` is integral.
+
+"""
 rationality(p :: Point) = lcm(denominator(p[1]), denominator(p[2]))
-multiplicity(p :: LatticePoint) = gcd(p[1], p[2])
+
+
+@doc raw"""
+    multiplicity(p :: Point)
+
+The unique rational number `x` such that `x*p` is primitive and integral.
+
+"""
+multiplicity(p :: Point) = (denominator(p[1]) * denominator(p[2])) // gcd(numerator(p[1]) * denominator(p[2]), numerator(p[2]) * denominator(p[1]))
+
+
+primitivize(p :: Point) = numerator.(multiplicity(p) * p)
 
 numerator(p :: Point{T}) where {T <: Integer} = numerator.(p)
 denominator(p :: Point{T}) where {T <: Integer} = denominator.(p)

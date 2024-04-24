@@ -3,6 +3,7 @@ export rationality
 export vertices
 export det
 export lattice_vertices
+export pseudo_angle_with_distance
 export pseudo_angle
 export graham_scan!
 export graham_scan
@@ -51,3 +52,19 @@ export k_rational_points
 export lattice_points
 export number_of_k_rational_points
 export number_of_lattice_points
+export AffineHalfplane
+export normal_vector
+export translation
+export AffineHalfplaneByNormalVector
+export AffineHalfplaneByLine
+export affine_halfplanes
+export multiplicity
+export primitivize
+export ConvexHull
+export IntersectionOfHalfplanes
+export line
+export contains_in_interior
+export affine_halfplane_through_points
+export EmptyPolygon
+export affine_halfspaces
+export intersect_halfplanes

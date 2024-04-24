@@ -20,6 +20,11 @@ base_point(L) + t * direction_vector(L)
 reverse_direction(L :: Line{T}) where {T <: Integer} =
 LineByDirection(base_point(L), -direction_vector(L))
 
+function normal_vector(L :: Line{T}) where {T <: Integer}
+    v = primitivize(direction_vector(L))
+    return (-v[2], v[1])
+end
+
 @doc raw"""
     struct LineByDirection{T<:Integer} <: Line{T}
 

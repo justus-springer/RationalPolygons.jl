@@ -5,9 +5,14 @@ import Base:
     (+),
     numerator,
     denominator,
-    zero
+    zero,
+    issubset
 
 import AbstractAlgebra:
     det,
     QQ,
-    can_solve_with_solution
+    can_solve_with_solution,
+    @attr,
+    @attributes,
+    get_attribute!,
+    set_attribute!
