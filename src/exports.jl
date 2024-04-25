@@ -70,3 +70,4 @@ export affine_halfspaces
 export intersect_halfplanes
 export is_bounded
 export affine_halfplane
+export is_primitive

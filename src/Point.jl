@@ -22,7 +22,7 @@ The unique rational number `x` such that `x*p` is primitive and integral.
 """
 multiplicity(p :: Point) = (denominator(p[1]) * denominator(p[2])) // gcd(numerator(p[1]) * denominator(p[2]), numerator(p[2]) * denominator(p[1]))
 
-
+is_primitive(p :: Point) = multiplicity(p) == 1
 primitivize(p :: Point) = numerator.(multiplicity(p) * p)
 
 numerator(p :: Point{T}) where {T <: Integer} = numerator.(p)
