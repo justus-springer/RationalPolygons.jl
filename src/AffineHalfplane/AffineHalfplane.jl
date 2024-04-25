@@ -90,6 +90,8 @@ end
 normal_vector(H :: AffineHalfplaneByNormalVector) = H.normal_vector
 translation(H :: AffineHalfplaneByNormalVector) = H.translation
 
+affine_halfplane(normal_vector :: Point{T}, translation :: Union{T, Rational{T}}) where {T <: Integer} =
+AffineHalfplaneByNormalVector(normal_vector, translation)
 
 @attributes mutable struct AffineHalfplaneByLine{T <: Integer} <: AffineHalfplane{T}
     line :: Line{T}
@@ -110,6 +112,9 @@ function translation(H :: AffineHalfplaneByLine)
     return nv[1] * p[1] + nv[2] * p[2]
 end
 
-affine_halfplane_through_points(p :: Point{T}, q :: Point{T}) where {T <: Integer} =
+affine_halfplane(L :: Line{T}) where {T <: Integer} =
+AffineHalfplaneByLine(L)
+
+affine_halfplane(p :: Point{T}, q :: Point{T}) where {T <: Integer} =
 AffineHalfplaneByLine(LineThroughPoints(p,q))
 
