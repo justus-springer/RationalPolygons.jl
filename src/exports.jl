@@ -71,3 +71,5 @@ export intersect_halfplanes
 export is_bounded
 export affine_halfplane
 export is_primitive
+export integer_hull
+export k_rational_hull
