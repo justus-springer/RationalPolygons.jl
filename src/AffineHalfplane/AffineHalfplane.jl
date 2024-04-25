@@ -62,6 +62,18 @@ function Base.isless(H1 :: AffineHalfplane, H2 :: AffineHalfplane)
     return isless(translation(H1), translation(H2))
 end
 
+function rand(::Type{AffineHalfplane}, nv_range, translation_range)
+    nv = (rand(nv_range),rand(nv_range))
+    while iszero(nv)
+        nv = (rand(nv_range),rand(nv_range))
+    end
+    nv = primitivize(nv)
+    t = rand(translation_range)
+    return AffineHalfplaneByNormalVector(nv, t)
+end
+
+
+
 
 
 @attributes mutable struct AffineHalfplaneByNormalVector{T<:Integer} <: AffineHalfplane{T}

@@ -6,7 +6,8 @@ import Base:
     numerator,
     denominator,
     zero,
-    issubset
+    issubset,
+    rand
 
 import AbstractAlgebra:
     det,
