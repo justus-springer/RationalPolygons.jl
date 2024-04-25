@@ -5,6 +5,9 @@ function graham_scan!(points :: Vector{<:Point{T}}) where {T <: Integer}
     # remove duplicate points
     unique!(points)
 
+    # handle edge cases
+    length(points) < 3 && return points
+
     # find an extremal point, i.e. a point that is definetely a vertex
     # of the convex hull. We take the lexicographical minimum here.
     i0 = argmin(points)
