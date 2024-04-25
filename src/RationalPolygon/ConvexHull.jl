@@ -3,7 +3,7 @@
     vertices :: Vector{RationalPoint{T}}
 
     ConvexHull(rationality :: T, vs :: Vector{LatticePoint{T}}) where {T <: Integer} =
-    new{T}(rationality, vs)
+    new{T}(vs .// rationality)
 
     function ConvexHull(vertices :: Vector{<:Point{T}}) where {T <: Integer}
         return new{T}(vertices .// 1)
