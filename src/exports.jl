@@ -68,3 +68,4 @@ export affine_halfplane_through_points
 export EmptyPolygon
 export affine_halfspaces
 export intersect_halfplanes
+export is_bounded

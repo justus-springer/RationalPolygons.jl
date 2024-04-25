@@ -14,22 +14,34 @@ function _intersect_sorted_halfplanes(halfplanes :: Vector{<:AffineHalfplane{T}}
 
 end
 
+@doc raw"""
+    is_bounded(halfplanes :: Vector{<:AffineHalfplane{T}}) where {T <: Integer}   
+
+Check whether the intersection of the given halfplanes is bounded, i.e.
+describes a polygon.
+
+"""
+function is_bounded(halfplanes :: Vector{<:AffineHalfplane{T}}) where {T <: Integer}
+    angles = sort!(pseudo_angle.(halfplanes))
+    for i = 1 : length(angles)-1
+        a1, a2 = angles[i], angles[i+1]
+        a2 - a1 >= 2 && return false
+    end
+    a1, a2 = last(angles), first(angles)
+    (a2+4) - a1 >= 2 && return false
+    return true
+end
+
 function intersect_halfplanes(halfplanes :: Vector{<:AffineHalfplane{T}}) where {T <: Integer}
 
     n = length(halfplanes)
+
+    is_bounded(halfplanes) || error("the intersection of these halfplanes is unbounded")
 
     # sort the halfplanes, see the `isless` implementation of
     # `AffineHalfplanes`: Halfplanes are sorted first by their angle and
     # second by their distance from the origin
     sort!(halfplanes)
-
-    # boundedness check
-    # There are other ways in which the given halfplanes do not give
-    # a pounded polytope, for example if there are two parallel horizontal
-    # halfplanes. This is checked for later, when intersecting the upper
-    # with the lower halfplanes
-    !isempty(filter(H -> -2 < pseudo_angle(H) < 0, halfplanes)) || error("this polyhedra is unbounded")
-    !isempty(filter(H -> 0 < pseudo_angle(H) < 2, halfplanes)) || error("this polyhedra is unbounded")
 
     # split up into lower and upper halfplanes. At the same time,
     # discard any halfplanes that superset of other halfplanes and thus,
@@ -40,7 +52,7 @@ function intersect_halfplanes(halfplanes :: Vector{<:AffineHalfplane{T}}) where 
     for i = 1 : n
         H1, H2 = halfplanes[i], halfplanes[mod(i+1, 1:n)]
         a1, a2 = pseudo_angle(H1), pseudo_angle(H2)
-        if a1 != a2
+        if a1 ≠ a2
             push!(a1 ≥ 0 ? lower_halfplanes : upper_halfplanes, H1)
         end
     end
@@ -49,7 +61,6 @@ function intersect_halfplanes(halfplanes :: Vector{<:AffineHalfplane{T}}) where 
     # This is basically the dual the graham scan algorithm.
     upper_halfplanes = _intersect_sorted_halfplanes(upper_halfplanes)
     lower_halfplanes = _intersect_sorted_halfplanes(lower_halfplanes)
-
 
     # Now we need to intersect the upper halfplanes with the lower
     # halfplanes. For this, we determine intesection points of the
