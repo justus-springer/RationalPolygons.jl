@@ -73,3 +73,6 @@ export affine_halfplane
 export is_primitive
 export integer_hull
 export k_rational_hull
+export normal_form
+export is_normal_form
+export are_equivalent
