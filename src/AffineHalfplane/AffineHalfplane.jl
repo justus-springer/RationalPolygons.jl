@@ -72,6 +72,14 @@ function rand(::Type{AffineHalfplane}, nv_range, translation_range)
     return AffineHalfplaneByNormalVector(nv, t)
 end
 
+Base.:(+)(H :: AffineHalfplane, x :: Real) =
+AffineHalfplaneByNormalVector(normal_vector(H), translation(H) + x)
+
+Base.:(-)(H :: AffineHalfplane, x :: Real) =
+AffineHalfplaneByNormalVector(normal_vector(H), translation(H) - x)
+
+Base.:(-)(H :: AffineHalfplane) =
+AffineHalfplaneByNormalVector(-normal_vector(H), -translation(H))
 
 
 
