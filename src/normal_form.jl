@@ -13,7 +13,7 @@ _cycles(n :: Int) = [map(x -> mod(x+i, 1:n), 1:n) for i = 1:n]
     _lt(A, B) = vcat(A...) < vcat(B...)
     A = sort(As; lt = _lt)[1]
 
-    Q = ConvexHull(rationality(P), [(T(A[1,i]),T(A[2,i])) for i = 1 : n])
+    Q = ConvexHull([(T(A[1,i]),T(A[2,i])) for i = 1 : n]; rationality = rationality(P))
 
     set_attribute!(Q, :is_normal_form, true)
     set_attribute!(Q, :normal_form, Q)

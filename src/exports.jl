@@ -77,3 +77,4 @@ export normal_form
 export is_normal_form
 export are_equivalent
 export is_maximal
+export minimal_rationality

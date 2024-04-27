@@ -3,7 +3,7 @@
     abstract type RationalPolygon{T <: Integer} end
 
 A rational polygon in two-dimensional rational space. Subtypes must at least
-implement `vertices` and `affine_halfplanes`.
+implement `rationality`, `vertices` and `affine_halfplanes`.
 
 """
 abstract type RationalPolygon{T <: Integer} end
@@ -11,9 +11,9 @@ abstract type RationalPolygon{T <: Integer} end
 Base.in(x :: Point{T}, P :: RationalPolygon) where {T <: Integer} =
 all(H -> x ∈ H, affine_halfplanes(P))
 
-@attr number_of_vertices(P :: RationalPolygon) = length(vertices(P))
+@attr minimal_rationality(P :: RationalPolygon) = lcm(rationality.(vertices(P)))
 
-@attr rationality(P :: RationalPolygon) = lcm(rationality.(vertices(P)))
+@attr number_of_vertices(P :: RationalPolygon) = length(vertices(P))
 
 @attr lattice_vertices(P :: RationalPolygon) = numerator.(rationality(P) .* vertices(P))
 
@@ -37,7 +37,7 @@ the same rationality and number of interior lattice points.
     ps = k_rational_points(k,P)
     Q = intersect_halfplanes(affine_halfplanes(P) .- 1 // k)
     for p ∈ boundary_k_rational_points(k, Q)
-        new_P = convex_hull([ps ; p])
+        new_P = convex_hull([ps ; p]; rationality = k)
         number_of_interior_lattice_points(new_P) <= number_of_interior_lattice_points(P) && return false
     end
     return true

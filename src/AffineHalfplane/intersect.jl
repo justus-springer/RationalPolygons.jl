@@ -32,7 +32,7 @@ function is_bounded(halfplanes :: Vector{<:AffineHalfplane{T}}) where {T <: Inte
     return true
 end
 
-function intersect_halfplanes(halfplanes :: Vector{<:AffineHalfplane{T}}) where {T <: Integer}
+function intersect_halfplanes(halfplanes :: Vector{<:AffineHalfplane{T}}; rationality :: Union{Missing,T} = missing) where {T <: Integer}
 
     n = length(halfplanes)
 
@@ -93,7 +93,9 @@ function intersect_halfplanes(halfplanes :: Vector{<:AffineHalfplane{T}}) where 
     end
     found_left || return EmptyPolygon{T}()
 
-    return IntersectionOfHalfplanes([upper_halfplanes ; lower_halfplanes])
+    new_halfplanes = [upper_halfplanes ; lower_halfplanes]
+
+    return IntersectionOfHalfplanes(new_halfplanes; rationality)
 
 end
 

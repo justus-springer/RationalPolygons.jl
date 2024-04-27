@@ -178,7 +178,7 @@ length(lattice_points(P))
 
 
 k_rational_hull(k :: T, P :: RationalPolygon{T}) where {T <: Integer} =
-convex_hull(_generic_k_rational_points(k, P; mode = :integer_hull))
+convex_hull(_generic_k_rational_points(k, P; mode = :integer_hull); rationality = k)
 
 @attr integer_hull(P :: RationalPolygon{T}) where {T <: Integer} =
 k_rational_hull(1, P)
