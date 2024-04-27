@@ -3,6 +3,7 @@ import Base:
     show,
     (*),
     (+),
+    (-),
     numerator,
     denominator,
     zero,
@@ -16,4 +17,7 @@ import AbstractAlgebra:
     @attr,
     @attributes,
     get_attribute!,
-    set_attribute!
+    set_attribute!,
+    hnf,
+    ZZ,
+    matrix
