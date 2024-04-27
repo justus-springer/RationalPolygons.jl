@@ -22,3 +22,6 @@ function pseudo_angle_with_distance(p :: Point{T}) where {T <: Integer}
     y < 0 && return (a - 1, d)
     return (1 - a, d)
 end
+
+# make Julia use det_bareiss by default for integral matrices
+det(M :: AbstractMatrix{T}) where {T <: Integer} = det_bareiss(M)

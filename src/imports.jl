@@ -10,6 +10,10 @@ import Base:
     issubset,
     rand
 
+import LinearAlgebra:
+    det,
+    det_bareiss
+
 import AbstractAlgebra:
     det,
     QQ,
