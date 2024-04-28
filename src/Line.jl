@@ -116,15 +116,14 @@ function intersection_behaviour(L1 :: Line{T}, L2 :: Line{T}) where {T <: Intege
     v1, v2 = direction_vector(L1), direction_vector(L2)
     x1, x2 = base_point(L1), base_point(L2)
 
-    if det(v1,v2) == 0
+    d = det(v1,-v2)
+    if d == 0
         return x1 ∈ L2 ? LinesAreEqual() : NoIntersection()
     end
 
-    A = QQ[v1[1] -v2[1] ; v1[2] -v2[2]]
-    b = QQ[x2[1]-x1[1] ; x2[2]-x1[2]]
-
-    t = Rational{T}(can_solve_with_solution(A,b; side = :right)[2][1])
+    t = (v2[1]*(x2[2]-x1[2]) - v2[2]*(x2[1]-x1[1])) // d
     p = x1 + t * v1
+
     return IntersectInPoint{T}(p)
 end
 
