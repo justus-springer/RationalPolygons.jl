@@ -17,6 +17,8 @@ all(H -> x ∈ H, affine_halfplanes(P))
 
 @attr lattice_vertices(P :: RationalPolygon) = numerator.(rationality(P) .* vertices(P))
 
+@attr is_primitive(P :: RationalPolygon) = all(is_primitive, lattice_vertices(P))
+
 @attr function edges(P :: RationalPolygon)
     vs, r = vertices(P), number_of_vertices(P)
     return [(vs[i], vs[mod(i+1,1:r)]) for i = 1 : r]
