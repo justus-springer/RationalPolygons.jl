@@ -83,3 +83,4 @@ export hirzebruch_jung
 export hilbert_basis
 export hnf!
 export hnf
+export reset_attributes!
