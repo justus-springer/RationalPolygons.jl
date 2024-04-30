@@ -81,3 +81,5 @@ export minimal_rationality
 export cls_cone_normal_form
 export hirzebruch_jung
 export hilbert_basis
+export hnf!
+export hnf
