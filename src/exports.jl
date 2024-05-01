@@ -1,3 +1,5 @@
+export vertex_matrix
+
 export RationalPolygon
 export rationality
 export vertices
@@ -77,7 +79,6 @@ export normal_form
 export is_normal_form
 export are_equivalent
 export is_maximal
-export minimal_rationality
 export cls_cone_normal_form
 export hirzebruch_jung
 export hilbert_basis

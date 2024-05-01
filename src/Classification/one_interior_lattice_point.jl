@@ -10,8 +10,8 @@ present.
 
 """
 function classify_maximal_polygons_genus_one_m1p1!(k :: T; Ps :: Vector{RationalPolygon{T}} = RationalPolygon{T}[]) where {T <: Integer}
-    A = convex_hull([(T(-1),T(0)),(T(0),T(1)),(T(-1),T(1))])
-    B = convex_hull([(-T(1),T(0)),(T(1),T(0)),(T(2),T(1)),(-T(1),T(1))])
+    A = convex_hull([(-k,zero(T)),(zero(T),k),(-k,k)], k)
+    B = convex_hull([(-k,zero(T)),(k,zero(T)),(2k,k),(-k,k)], k)
 
     vs = [v for v ∈ k_rational_points(k,A) if v[2] > 0]
     ws = [w for w ∈ k_rational_points(k,B) if w[2] > 0]

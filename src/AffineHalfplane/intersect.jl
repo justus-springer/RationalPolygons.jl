@@ -94,9 +94,23 @@ function intersect_halfplanes(halfplanes :: Vector{<:AffineHalfplane{T}}; ration
     found_left || return EmptyPolygon{T}()
 
     new_halfplanes = [upper_halfplanes ; lower_halfplanes]
+    r = length(new_halfplanes)
 
-    return IntersectionOfHalfplanes(new_halfplanes; rationality)
+    # construct the vertices of the resulting polygon
+    vs = RationalPoint{T}[]
+    for i = 1 : r
+        H1, H2 = new_halfplanes[i], new_halfplanes[mod(i+1,1:r)]
+        push!(vs, intersection_point(line(H1),line(H2)))
+    end
+    if ismissing(rationality)
+        P = convex_hull(vs)
+    else
+        P = convex_hull(vs, rationality)
+    end
+    set_attribute!(P, :affine_halfplanes, new_halfplanes)
 
+    return P
+    
 end
 
 

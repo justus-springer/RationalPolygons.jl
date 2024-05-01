@@ -9,7 +9,8 @@ import Base:
     zero,
     issubset,
     rand,
-    hash
+    hash,
+    getindex
 
 import LinearAlgebra:
     det,
