@@ -42,12 +42,12 @@ end
     return (nv[2], -nv[1])
 end
 
-@attr function base_point(H :: AffineHalfplane)
+@attr function base_point(H :: AffineHalfplane{T}) where {T <: Integer}
     nv, b = normal_vector(H), translation(H)
     if nv[1] ≠ 0
-        return (b // nv[1], 0 // 1)
+        return (b // nv[1], T(0) // T(1))
     else
-        return (0 // 1, b // nv[2])
+        return (T(0) // T(1), b // nv[2])
     end
 end
 

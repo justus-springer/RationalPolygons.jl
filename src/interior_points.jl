@@ -84,7 +84,7 @@ Return all lattice points on the boundary of `P`.
 
 """
 @attr boundary_lattice_points(P :: RationalPolygon) =
-numerator.(boundary_k_rational_points(1, P))
+numerator.(boundary_k_rational_points(T(1), P))
 
 
 @doc raw"""
@@ -124,7 +124,7 @@ Return all `k`-rational points in the interior of `P`.
 
 """
 @attr interior_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
-numerator.(interior_k_rational_points(1, P))
+numerator.(interior_k_rational_points(T(1), P))
 
 
 @doc raw"""
@@ -164,7 +164,7 @@ Return all lattice points in `P`.
 
 """
 @attr lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
-numerator.(k_rational_points(1, P))
+numerator.(k_rational_points(T(1), P))
 
 
 @doc raw"""
@@ -181,5 +181,5 @@ k_rational_hull(k :: T, P :: RationalPolygon{T}) where {T <: Integer} =
 convex_hull(_generic_k_rational_points(k, P; mode = :integer_hull); rationality = k)
 
 @attr integer_hull(P :: RationalPolygon{T}) where {T <: Integer} =
-k_rational_hull(1, P)
+k_rational_hull(T(1), P)
 
