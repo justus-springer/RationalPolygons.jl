@@ -8,6 +8,14 @@ A line in 2-dimensional rational space. Subtypes must at least implement:
 """
 abstract type Line{T <: Integer} end
 
+function Base.hash(L :: Line, h :: UInt64) 
+    h = hash(base_point(L), h)
+    h = hash(normal_vector(L), h)
+    return h
+end
+
+Base.:(==)(L1 :: Line, L2 :: Line) = base_point(L1) == base_point(L2) && normal_vector(L1) == normal_vector(L2)
+
 function Base.in(x :: Point{T}, L :: Line{T}) where {T <: Integer}
     x0 = x - base_point(L)
     v = direction_vector(L)

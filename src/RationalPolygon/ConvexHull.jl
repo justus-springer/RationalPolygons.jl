@@ -14,9 +14,6 @@
 
 end
 
-Base.:(==)(P :: ConvexHull, Q :: ConvexHull) =
-P.rationality == Q.rationality && P.vertices == Q.vertices
-
 rationality(P :: ConvexHull) = P.rationality
 
 vertices(P :: ConvexHull) = P.vertices

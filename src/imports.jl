@@ -8,7 +8,8 @@ import Base:
     denominator,
     zero,
     issubset,
-    rand
+    rand,
+    hash
 
 import LinearAlgebra:
     det,

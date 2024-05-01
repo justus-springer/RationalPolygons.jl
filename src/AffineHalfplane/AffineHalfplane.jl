@@ -8,6 +8,12 @@ implement `normal_vector` and `translation`.
 """
 abstract type AffineHalfplane{T <: Integer} end
 
+function Base.hash(H :: AffineHalfplane, h :: UInt64)
+    h = hash(normal_vector(H), h)
+    h = hash(translation(H), h)
+    return h
+end
+
 function Base.show(io :: IO, H :: AffineHalfplane)
     nv, b = normal_vector(H), translation(H)
     print(io, "Affine halfplane given by $(nv[1]) x + $(nv[2]) y ≥ $b")
@@ -80,7 +86,6 @@ AffineHalfplaneByNormalVector(normal_vector(H), translation(H) - x)
 
 Base.:(-)(H :: AffineHalfplane) =
 AffineHalfplaneByNormalVector(-normal_vector(H), -translation(H))
-
 
 
 

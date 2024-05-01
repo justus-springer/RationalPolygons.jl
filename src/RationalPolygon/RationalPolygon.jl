@@ -8,6 +8,15 @@ implement `rationality`, `vertices` and `affine_halfplanes`.
 """
 abstract type RationalPolygon{T <: Integer} end
 
+function Base.hash(P :: RationalPolygon, h :: UInt64)
+    h = hash(rationality(P), h)
+    h = hash(vertices(P), h)
+    return h
+end
+
+Base.:(==)(P1 :: RationalPolygon, P2 :: RationalPolygon) =
+rationality(P1) == rationality(P2) && vertices(P1) == vertices(P2)
+
 Base.in(x :: Point{T}, P :: RationalPolygon) where {T <: Integer} =
 all(H -> x ∈ H, affine_halfplanes(P))
 
@@ -23,6 +32,7 @@ all(H -> x ∈ H, affine_halfplanes(P))
     vs, r = vertices(P), number_of_vertices(P)
     return [(vs[i], vs[mod(i+1,1:r)]) for i = 1 : r]
 end
+
 
 Base.show(io :: IO, P :: RationalPolygon) =
 Base.print(io, "Rational polygon of rationality $(rationality(P)) with $(number_of_vertices(P)) vertices.")
