@@ -16,5 +16,6 @@ include("RationalPolygon/IntersectionOfHalfplanes.jl")
 include("AffineHalfplane/intersect.jl")
 include("interior_points.jl")
 include("normal_form.jl")
+include("subpolygons.jl")
 
 end # module RationalPolygons

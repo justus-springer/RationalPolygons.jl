@@ -20,3 +20,4 @@ import AbstractAlgebra:
     @attributes,
     get_attribute!,
     set_attribute!,
+    has_attribute

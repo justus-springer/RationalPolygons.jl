@@ -84,3 +84,6 @@ export hilbert_basis
 export hnf!
 export hnf
 export reset_attributes!
+export subpolygons
+export subpolygons!
+export remove_vertex
