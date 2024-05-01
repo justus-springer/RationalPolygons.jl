@@ -99,7 +99,13 @@ function classify_maximal_polygons_genus_one(k :: T) where {T <: Integer}
     Ps = RationalPolygon{T}[]
     Ps = classify_maximal_polygons_genus_one_m1p1!(k; Ps)
     Ps = classify_maximal_polygons_genus_one_m1p2!(k; Ps)
-
     return Ps
-
 end
+
+export classify_polygons_genus_one
+function classify_polygons_genus_one(k :: T) where {T <: Integer}
+    Ps = classify_maximal_polygons_genus_one(k)
+    subpolygons!(Ps)
+    return Ps
+end
+
