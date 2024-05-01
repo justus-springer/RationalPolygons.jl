@@ -92,3 +92,7 @@ export classify_maximal_polygons_genus_one_m1p1!
 export classify_maximal_polygons_genus_one_m1p2
 export classify_maximal_polygons_genus_one_m1p2!
 export classify_maximal_polygons_genus_one
+export lattice_edges
+export lattice_edge_vectors
+export lattice_edge_areas
+export special_vertices
