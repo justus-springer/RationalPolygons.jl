@@ -51,11 +51,13 @@ function hilbert_basis(A :: Matrix{T}) where {T <: Integer}
     x, y = 0, 1
     a, b = -1, 0
     res = []
+    push!(res, M * [0 ; 1])
     for z in hj
         push!(res, M * [y ; -b])
         x, y = y, z * y - x
         a, b = b, z * b - a
     end
+    push!(res, M * [y ; -b])
 
     res = map(v -> (v[1],v[2]), res)
     return res
