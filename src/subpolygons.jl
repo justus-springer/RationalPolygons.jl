@@ -7,29 +7,30 @@ Remove the `i`-th vertex from `P`, i.e. return the convex hull of all
 """
 function remove_vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
     k = rationality(P)
-    vs, r = lattice_vertices(P), number_of_vertices(P)
-    p1 = vs[mod(i-1,1:r)] - vs[i]
+    V = vertex_matrix(P)
+    r = number_of_vertices(P)
+    p1 = (V[1,mod(i-1,1:r)] - V[1,i], V[2,mod(i-1,1:r)] - V[2,i])
     q1 = primitivize(p1)
-    p2 = vs[mod(i+1,1:r)] - vs[i]
+    p2 = (V[1,mod(i+1,1:r)] - V[1,i], V[2,mod(i+1,1:r)] - V[2,i])
     q2 = primitivize(p2)
-    hb = [v + vs[i] for v ∈ hilbert_basis(q1,q2)]
+    hb = [v + (V[1,i],V[2,i]) for v ∈ hilbert_basis(q1,q2)]
 
 
-    new_vs = empty(vs)
-    !is_primitive(p1) && push!(new_vs, vs[mod(i-1,1:r)])
-    push!(new_vs,first(hb))
+    vs = LatticePoint{T}[]
+    !is_primitive(p1) && push!(vs, (V[1,mod(i-1,1:r)],V[2,mod(i-1,1:r)]))
+    push!(vs,first(hb))
     for j = 2 : length(hb)-1
         if hb[j]-hb[j-1] != hb[j+1]-hb[j]
-            push!(new_vs, hb[j])
+            push!(vs, hb[j])
         end
     end
-    push!(new_vs,last(hb))
-    !is_primitive(p2) && push!(new_vs, vs[mod(i+1,1:r)])
+    push!(vs,last(hb))
+    !is_primitive(p2) && push!(vs, (V[1,mod(i+1,1:r)],V[2,mod(i+1,1:r)]))
     for j = i+2 : i+r-2
-        push!(new_vs, vs[mod(j,1:r)])
+        push!(vs, (V[1,mod(j,1:r)], V[2,mod(j,1:r)]))
     end
 
-    Q = ConvexHull(new_vs .// k; rationality = k)
+    Q = convex_hull(vs, k)
 
     ### attribute carrying ###
     
