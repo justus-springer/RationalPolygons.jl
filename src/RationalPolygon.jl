@@ -29,6 +29,12 @@
 
 end
 
+empty_polygon(rationality :: T) where {T <: Integer} =
+RationalPolygon(LatticePoint{T}[], rationality)
+
+empty_polygon(::Type{T}) where {T <: Integer} =
+RationalPolygon(LatticePoint{T}[], 1)
+
 convex_hull(points :: Vector{LatticePoint{T}}, k :: T) where {T <: Integer} =
 RationalPolygon(graham_scan(points), k)
 

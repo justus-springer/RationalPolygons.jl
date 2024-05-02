@@ -1,3 +1,4 @@
+export empty_polygon
 export vertex_matrix
 export RationalPolygon
 export rationality
@@ -61,12 +62,9 @@ export AffineHalfplaneByLine
 export affine_halfplanes
 export multiplicity
 export primitivize
-export ConvexHull
-export IntersectionOfHalfplanes
 export line
 export contains_in_interior
 export affine_halfplane_through_points
-export EmptyPolygon
 export affine_halfspaces
 export intersect_halfplanes
 export is_bounded

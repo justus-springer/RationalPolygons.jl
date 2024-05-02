@@ -77,7 +77,7 @@ function intersect_halfplanes(halfplanes :: Vector{<:AffineHalfplane{T}}; ration
             break
         end
     end
-    found_right || return EmptyPolygon{T}()
+    found_right || return empty_polygon(T)
 
     found_left = false
     for i = length(upper_halfplanes) : -1 : 1, j = 1 : length(lower_halfplanes)
@@ -91,7 +91,7 @@ function intersect_halfplanes(halfplanes :: Vector{<:AffineHalfplane{T}}; ration
             break
         end
     end
-    found_left || return EmptyPolygon{T}()
+    found_left || return empty_polygon(T)
 
     new_halfplanes = [upper_halfplanes ; lower_halfplanes]
     r = length(new_halfplanes)
