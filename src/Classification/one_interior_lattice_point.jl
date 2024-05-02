@@ -51,11 +51,11 @@ present.
 
 """
 function classify_maximal_polygons_genus_one_m1p2!(k :: T; Ps :: Vector{RationalPolygon{T}} = RationalPolygon{T}[]) where {T <: Integer}
-    a1,a2,a3,a4 = (-T(1),T(1)), (T(0),T(1)), (T(0),T(2)), (-T(2),T(2))
-    A = convex_hull([a1,a2,a3,a4])
+    A = convex_hull([(-k,k), (zero(T),k), (zero(T),2k), (-2k, 2k)], k)
+    B = convex_hull([(-k,zero(T)), (k,zero(T)), (3k,-k), (-2k,-k)], k)
 
-    b1,b2,b3,b4 = (-T(1),T(0)), (T(1),T(0)), (T(3),-T(1)), (-T(2),-T(1))
-    B = convex_hull([b1,b2,b3,b4])
+    a1,a2 = (-T(1),T(1)), (T(0),T(1))
+    b1,b2 = (-T(1),T(0)), (T(1),T(0))
     
     vs = filter(v -> v[2] > 1, k_rational_points(k, A))
     ws = filter(w -> w[2] < 0, k_rational_points(k, B))
@@ -87,6 +87,8 @@ function classify_maximal_polygons_genus_one_m1p2!(k :: T; Ps :: Vector{Rational
 
 end
 
+classify_maximal_polygons_genus_one_m1p2(k :: T) where {T <: Integer} =
+classify_maximal_polygons_genus_one_m1p2!(k; Ps = RationalPolygon{T}[])
 
 @doc raw"""
     classify_maximal_polygons_genus_one(k :: T) where {T <: Integer}
