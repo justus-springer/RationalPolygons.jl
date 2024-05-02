@@ -1,16 +1,7 @@
 
-@attr function lattice_edges(P :: RationalPolygon)
-    vs, r = lattice_vertices(P), number_of_vertices(P)
-    return [(vs[i], vs[mod(i+1,1:r)]) for i = 1 : r]
-end
-
-@attr lattice_edge_vectors(P :: RationalPolygon) =
-[e[2] - e[1] for e ∈ lattice_edges(P)]
-
 @attr function lattice_edge_areas(P :: RationalPolygon)
-    ev = lattice_edge_vectors(P)
-    r = number_of_vertices(P)
-    return [abs(det(ev[mod(i-1,1:r)], ev[i])) for i = 1 : r]
+    n = number_of_vertices(P)
+    return [abs(det(P[i+1] - P[i], P[i] - P[i-1])) for i = 1 : n]
 end
 
 @attr function special_vertices(P :: RationalPolygon)
@@ -21,22 +12,21 @@ end
 end
 
 @attr function normal_form(P :: RationalPolygon{T}) where {T <: Integer}
-    n = length(vertices(P))
-    vs = lattice_vertices(P)
-    k = rationality(P)
 
-    cycls = [map(x -> mod(i+x, 1:n), 0:n-1) for i ∈ special_vertices(P)]
-    append!(cycls, [map(x -> mod(i-x, 1:n), 0:n-1) for i ∈ special_vertices(P)])
+    V = vertex_matrix(P)
 
-    # take the hermite normal form of all possible permutations of the
-    # rays keeping the counterclockwise ordering
-    As = map(is -> hcat(map(v -> [v[1],v[2]], vs[is])...), cycls)
+    As = Matrix{T}[]
+    for i ∈ special_vertices(P)
+        push!(As, [V[:,i:end] V[:,begin:i-1]])
+        push!(As, [V[:,i:-1:begin] V[:,end:-1:i+1]])
+    end
     As = map(hnf, As)
+
     # take the lexicographical minumum of all the hermite normal forms
-    _lt(A, B) = vcat(A...) < vcat(B...)
+    _lt(A, B) = vec(A) < vec(B)
     A = sort(As; lt = _lt)[1]
 
-    Q = ConvexHull([(T(A[1,i])//k,T(A[2,i])//k) for i = 1 : n]; rationality = rationality(P))
+    Q = RationalPolygon(A, rationality(P)) 
 
     ### attribute carrying ###
     set_attribute!(Q, :is_normal_form, true)
