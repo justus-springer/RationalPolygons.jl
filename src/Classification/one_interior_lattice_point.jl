@@ -24,7 +24,7 @@ function classify_maximal_polygons_genus_one_m1p1!(k :: T; Ps :: Vector{Rational
         H_upper = affine_halfplane((T(0),-T(1)),-T(1))
         H_lower = affine_halfplane((T(0),T(1)),-T(1))
 
-        P = k_rational_hull(k, intersect_halfplanes([H1,H2,H_upper,H_lower]; rationality = k))
+        P = k_rational_hull(k, intersect_halfplanes([H1,H2,H_upper,H_lower]))
         interior_lattice_points(P) == [(0,0)] || continue
         all(Q -> !are_equivalent(P,Q), Ps) || continue
         is_maximal(P) || continue
