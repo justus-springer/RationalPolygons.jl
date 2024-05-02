@@ -34,10 +34,10 @@ function remove_vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
 
     ### attribute carrying ###
     
-    if has_attribute(P, :interior_lattice_points)
-        new_int_points = filter(p -> p ∉ hb, interior_lattice_points(P))
-        set_attribute!(Q, :interior_lattice_points, new_int_points)
-        set_attribute!(Q, :number_of_interior_lattice_points, length(new_int_points))
+    removed_interior_points = filter(p -> p[1] % k == 0 && p[2] % k == 0, hb[2:end-1])
+    if has_attribute(P, :number_of_interior_lattice_points)
+        n = number_of_interior_lattice_points(P)
+        set_attribute!(Q, :number_of_interior_lattice_points, n - length(removed_interior_points))
     end
 
     return Q
