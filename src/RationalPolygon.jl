@@ -62,11 +62,13 @@ Base.print(io, "Rational polygon of rationality $(rationality(P)) with $(number_
 
 @attr number_of_vertices(P :: RationalPolygon) = size(vertex_matrix(P), 2)
 
-function vertex(P :: RationalPolygon, i :: Int)
-    V, n, k = vertex_matrix(P), number_of_vertices(P), rationality(P)
+function lattice_vertex(P :: RationalPolygon, i :: Int)
+    V, n = vertex_matrix(P), number_of_vertices(P)
     i = mod(i, 1:n)
-    return (V[1,i] // k, V[2,i] // k)
+    return (V[1,i], V[2,i])
 end
+
+vertex(P :: RationalPolygon, i :: Int) = lattice_vertex(P, i) .// rationality(P)
 
 Base.getindex(P :: RationalPolygon, i :: Int) = vertex(P, i)
 
@@ -99,6 +101,11 @@ all(H -> x ∈ H, affine_halfplanes(P))
 @attr function is_primitive(P :: RationalPolygon)
     V = vertex_matrix(P)
     return all(i -> gcd(V[1,i], V[2,i]) == 1, 1 : number_of_vertices(P))
+end
+
+@attr function area(P :: RationalPolygon)
+    V, n = vertex_matrix(P), number_of_vertices(P)
+    return sum([abs(det((V[1,i+1] - V[1,1], V[2,i+1] - V[2,1]), (V[1,i] - V[1,1], V[2,i] - V[2,1]))) for i = 2 : n -1])
 end
 
 @doc raw"""

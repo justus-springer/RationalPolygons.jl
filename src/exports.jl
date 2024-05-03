@@ -1,3 +1,6 @@
+export vertex
+export lattice_vertex
+export area
 export empty_polygon
 export vertex_matrix
 export RationalPolygon
