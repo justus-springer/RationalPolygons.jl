@@ -116,7 +116,9 @@ and number of interior lattice points `n`, compute all subpolygons sharing
 the same rationality and number of interior lattice points.
 
 """
-function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path :: Union{Missing, String} = missing) where {T <: Integer}
+function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path :: Union{Missing, String} = missing, logging = false) where {T <: Integer}
+
+    logging && @info "Starting to compute subpolygons..."
 
     k = rationality(first(starting_polygons))
     n = number_of_interior_lattice_points(first(starting_polygons))
@@ -125,10 +127,11 @@ function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path
 
     st = SubpolygonStorage{T}(starting_polygons, out_path)
     Ps, current_area = next_polygons!(st)
+    total_count = length(Ps)
 
     while current_area > 3
 
-        @info current_area, length(Ps)
+        logging && @info "Volume: $current_area. Number of polygons: $(length(Ps)). Total: $total_count"
 
         N = length(Ps)
         num_blocks = 2 * Threads.nthreads()
@@ -155,8 +158,11 @@ function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path
         save!(st, vcat(out_array...))
         
         Ps, current_area = next_polygons!(st)
+        total_count += length(Ps)
         
     end
+
+    logging && @info "Volume: $current_area. Number of polygons: $(length(Ps)). Total: $total_count"
 
     return st
                     

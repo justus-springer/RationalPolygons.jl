@@ -97,16 +97,32 @@ Return all maximal `k`-rational polygons with exactly one interior
 lattice point.
 
 """
-function classify_maximal_polygons_genus_one(k :: T) where {T <: Integer}
+function classify_maximal_polygons_genus_one(k :: T ; logging = false) where {T <: Integer}
     Ps = RationalPolygon{T}[]
+    
     Ps = classify_maximal_polygons_genus_one_m1p1!(k; Ps)
+    total_count = length(Ps)
+
+    logging && @info "Found $(length(Ps)) maximal polygons in QQ x [-1,1]."
+    total_count = length(Ps)
+
     Ps = classify_maximal_polygons_genus_one_m1p2!(k; Ps)
+
+    logging && @info "Found $(length(Ps) - total_count) new polygons in QQ x [-1,2]. Total : $(length(Ps))"
+    total_count = length(Ps)
+
+    logging && @info "(skipping [-2,2])"
+    logging && @info "Found $(length(Ps) - total_count) new polygons in QQ x [-2,2]. Total : $(length(Ps))"
+
     return Ps
 end
 
 export classify_polygons_genus_one
-function classify_polygons_genus_one(k :: T; out_path :: Union{Missing,String} = missing) where {T <: Integer}
-    Ps = classify_maximal_polygons_genus_one(k)
-    return subpolygons(Ps; out_path)
+function classify_polygons_genus_one(k :: T; out_path :: Union{Missing,String} = missing, logging = false) where {T <: Integer}
+
+    logging && @info "Beginning classification of all $k-rational polygons with one interior lattice point."
+
+    Ps = classify_maximal_polygons_genus_one(k; logging)
+    return subpolygons(Ps; out_path, logging)
 end
 
