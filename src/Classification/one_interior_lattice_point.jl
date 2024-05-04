@@ -105,9 +105,8 @@ function classify_maximal_polygons_genus_one(k :: T) where {T <: Integer}
 end
 
 export classify_polygons_genus_one
-function classify_polygons_genus_one(k :: T) where {T <: Integer}
+function classify_polygons_genus_one(k :: T; out_path :: Union{Missing,String} = missing) where {T <: Integer}
     Ps = classify_maximal_polygons_genus_one(k)
-    subpolygons!(Ps)
-    return Ps
+    return subpolygons(Ps; out_path)
 end
 

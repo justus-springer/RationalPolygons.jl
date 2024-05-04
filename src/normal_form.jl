@@ -34,6 +34,9 @@ end
     if has_attribute(P, :number_of_interior_lattice_points)
         set_attribute!(Q, :number_of_interior_lattice_points, number_of_interior_lattice_points(P))
     end
+    if has_attribute(P, :area)
+        set_attribute!(Q, :area, area(P))
+    end
 
     return Q
 

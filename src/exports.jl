@@ -1,3 +1,6 @@
+export SubpolygonStorage
+export save!
+export next_polygons!
 export vertex
 export lattice_vertex
 export area
@@ -86,7 +89,6 @@ export hnf!
 export hnf
 export reset_attributes!
 export subpolygons
-export subpolygons!
 export remove_vertex
 export classify_maximal_polygons_genus_one_m1p1
 export classify_maximal_polygons_genus_one_m1p1!

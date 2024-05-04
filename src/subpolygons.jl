@@ -1,3 +1,62 @@
+
+@doc raw"""
+    mutable struct SubpolygonStorage{T<:Integer}   
+
+A struct used by the function `subpolygons` to hold intermediate results.
+
+"""
+mutable struct SubpolygonStorage{T<:Integer}
+    dir :: Union{String, Missing}
+    dict :: Dict{T,Set{RationalPolygon{T}}}
+    last_volume :: T
+
+    function SubpolygonStorage{T}(starting_polygons :: Vector{RationalPolygon{T}}, dir :: Union{String, Missing} = missing) where {T <: Integer}
+        !isempty(starting_polygons) || error("must provide a non-empty list of starting polygons")
+        if !ismissing(dir)
+            isdir(dir) || error("$dir is not a directory")
+        end
+
+        a = maximum(area.(starting_polygons))
+        st = new{T}(dir, Dict{T,Vector{RationalPolygon{T}}}(), a + 1)
+        save!(st, starting_polygons)
+        return st
+    end
+
+end
+
+function save!(st :: SubpolygonStorage{T}, Ps :: Vector{RationalPolygon{T}}) where {T <: Integer}
+    for P ∈ Ps
+        a = area(P)
+        if !haskey(st.dict, a) 
+            st.dict[a] = Set{RationalPolygon{T}}()
+        end
+        P ∉ st.dict[a] || continue
+        push!(st.dict[a], P)
+    end
+end
+
+function next_polygons!(st :: SubpolygonStorage{T}) where {T <: Integer}
+    # Get the polygons with maximal area
+    a = maximum(filter(b -> b < st.last_volume, keys(st.dict)))
+    Ps = st.dict[a]
+
+    # save them to a file and delete from our dictionary
+    if !ismissing(st.dir)
+        open(joinpath(st.dir, "vol_$a.txt"), "w") do f
+            for P ∈ Ps
+                V = vertex_matrix(P)
+                println(f, [V[:,i] for i = 1 : number_of_vertices(P)])
+            end
+        end
+        delete!(st.dict, a)
+    end
+
+    st.last_volume = a
+
+    return (collect(Ps), a)
+
+end
+
 @doc raw"""
     remove_vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
 
@@ -30,7 +89,7 @@ function remove_vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
         push!(vs, (V[1,mod(j,1:r)], V[2,mod(j,1:r)]))
     end
 
-    Q = convex_hull(vs, k)
+    Q = RationalPolygon(vs, k)
 
     ### attribute carrying ###
     
@@ -39,56 +98,69 @@ function remove_vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
         n = number_of_interior_lattice_points(P)
         set_attribute!(Q, :number_of_interior_lattice_points, n - length(removed_interior_points))
     end
+    if has_attribute(P, :area)
+        set_attribute!(Q, :area, area(P) - length(hb) + 1)
+    end
 
     return Q
 
 end
 
-@doc raw"""
-    subpolygons!(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
 
-Given some rational polygons `Ps` with shared rationality `k` and
-number of interior lattice points `n`, add all subpolygons to `Ps`
-with the same rationality and number of interior lattice points.
+
+@doc raw"""
+    subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path :: Union{Missing, String} = missing) where {T <: Integer}
+
+Given some rational polygons `starting_polygons` with shared rationality `k`
+and number of interior lattice points `n`, compute all subpolygons sharing
+the same rationality and number of interior lattice points.
 
 """
-function subpolygons!(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
+function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path :: Union{Missing, String} = missing) where {T <: Integer}
 
-    k = rationality(first(Ps))
-    n = number_of_interior_lattice_points(first(Ps))
-    all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
-    all(P -> number_of_interior_lattice_points(P) == n, Ps) || error("all polygons must have the same number of interior lattice points")
+    k = rationality(first(starting_polygons))
+    n = number_of_interior_lattice_points(first(starting_polygons))
+    all(P -> rationality(P) == k, starting_polygons) || error("all polygons must have the same rationality")
+    all(P -> number_of_interior_lattice_points(P) == n, starting_polygons) || error("all polygons must have the same number of interior lattice points")
 
-    vertices_dict = Dict{Int,Set{RationalPolygon{T}}}()
-    i = 1
-    while i ≤ length(Ps)
-        P = Ps[i]
-        for j = 1 : number_of_vertices(P)
-            P2 = normal_form(remove_vertex(P, j))
-            number_of_vertices(P2) > 2 || continue
-            number_of_interior_lattice_points(P2) == n || continue
+    st = SubpolygonStorage{T}(starting_polygons, out_path)
+    Ps, current_area = next_polygons!(st)
 
-            nv = number_of_vertices(P2)
-            if !haskey(vertices_dict, nv)
-                vertices_dict[nv] = Set{RationalPolygon{T}}()
-            end
-            P2 ∉ vertices_dict[nv] || continue
-            push!(vertices_dict[nv], P2)
+    while current_area > 3
 
-            push!(Ps, P2)
+        @info current_area, length(Ps)
 
+        N = length(Ps)
+        num_blocks = 2 * Threads.nthreads()
+        b = N ÷ num_blocks
+
+        out_array = Vector{RationalPolygon{T}}[]
+        for i = 1 : Threads.nthreads()
+            push!(out_array, RationalPolygon{T}[])
         end
 
-        i += 1
-
+        Threads.@threads for k = 1 : num_blocks
+            lower_bound = (k-1) * b + 1
+            upper_bound = k == num_blocks ? N : k * b
+            for i = lower_bound : upper_bound
+                P = Ps[i]
+                for j = 1 : number_of_vertices(P)
+                    Q = normal_form(remove_vertex(P,j))
+                    number_of_vertices(Q) > 2 || continue
+                    number_of_interior_lattice_points(Q) == n || continue
+                    push!(out_array[Threads.threadid()], Q)
+                end
+            end
+        end
+        save!(st, vcat(out_array...))
+        
+        Ps, current_area = next_polygons!(st)
+        
     end
 
-    return Ps
+    return st
                     
 end
-
-subpolygons(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer} =
-subpolygons!(deepcopy(Ps))
 
 subpolygons(P :: RationalPolygon{T}) where {T <: Integer} =
 subpolygons!([P])
