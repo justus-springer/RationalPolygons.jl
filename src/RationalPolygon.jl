@@ -44,36 +44,36 @@ RationalPolygon(graham_scan(points))
 convex_hull(points :: Vector{RationalPoint{T}}, k :: T) where {T <: Integer} =
 RationalPolygon(graham_scan(points), k)
 
-rationality(P :: RationalPolygon) = P.rationality
+rationality(P :: RationalPolygon{T}) where {T <: Integer} = P.rationality
 
-vertex_matrix(P :: RationalPolygon) = P.vertex_matrix
+vertex_matrix(P :: RationalPolygon{T}) where {T <: Integer} = P.vertex_matrix
 
-function Base.hash(P :: RationalPolygon, h :: UInt64)
+function Base.hash(P :: RationalPolygon{T}, h :: UInt64) where {T <: Integer}
     h = hash(rationality(P), h)
     h = hash(vertex_matrix(P), h)
     return hash(RationalPolygon, h)
 end
 
-Base.:(==)(P1 :: RationalPolygon, P2 :: RationalPolygon) =
+Base.:(==)(P1 :: RationalPolygon{T}, P2 :: RationalPolygon{T}) where {T <: Integer} =
 rationality(P1) == rationality(P2) && vertex_matrix(P1) == vertex_matrix(P2)
 
-Base.show(io :: IO, P :: RationalPolygon) =
+Base.show(io :: IO, P :: RationalPolygon{T}) where {T <: Integer} =
 Base.print(io, "Rational polygon of rationality $(rationality(P)) with $(number_of_vertices(P)) vertices.")
 
-@attr number_of_vertices(P :: RationalPolygon) = size(vertex_matrix(P), 2)
+number_of_vertices(P :: RationalPolygon{T}) where {T <: Integer} = size(vertex_matrix(P), 2)
 
-function lattice_vertex(P :: RationalPolygon, i :: Int)
+function lattice_vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
     V, n = vertex_matrix(P), number_of_vertices(P)
     i = mod(i, 1:n)
-    return (V[1,i], V[2,i])
+    return Tuple{T,T}((V[1,i], V[2,i]))
 end
 
-vertex(P :: RationalPolygon, i :: Int) = lattice_vertex(P, i) .// rationality(P)
+vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer} = lattice_vertex(P, i) .// rationality(P)
 
-Base.getindex(P :: RationalPolygon, i :: Int) = vertex(P, i)
+Base.getindex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer} = vertex(P, i)
 
-Base.iterate(P :: RationalPolygon) = (P[1], 2)
-function Base.iterate(P :: RationalPolygon, i :: Int) 
+Base.iterate(P :: RationalPolygon{T}) where {T <: Integer} = (P[1], 2)
+function Base.iterate(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
     if i > number_of_vertices(P) 
         return nothing
     else
@@ -81,29 +81,29 @@ function Base.iterate(P :: RationalPolygon, i :: Int)
     end
 end
 
-Base.IteratorSize(:: Type{<:RationalPolygon}) = Base.HasLength()
-Base.length(P :: RationalPolygon) = number_of_vertices(P)
+Base.IteratorSize(:: Type{<:RationalPolygon{T}}) where {T <: Integer} = Base.HasLength()
+Base.length(P :: RationalPolygon{T}) where {T <: Integer} = number_of_vertices(P)
 
-Base.IteratorEltype(:: Type{<:RationalPolygon}) = Base.HasEltype()
+Base.IteratorEltype(:: Type{<:RationalPolygon{T}}) where {T <: Integer} = Base.HasEltype()
 Base.eltype(:: Type{<:RationalPolygon{T}}) where {T <: Integer} =
 RationalPoint{T}
 
-vertices(P :: RationalPolygon) = collect(P)
+vertices(P :: RationalPolygon{T}) where {T <: Integer} = collect(P)
 
-@attr function affine_halfplanes(P :: RationalPolygon)
+@attr function affine_halfplanes(P :: RationalPolygon{T}) where {T <: Integer}
     n = number_of_vertices(P)
     return [AffineHalfplaneByLine(LineThroughPoints(P[i], P[mod(i+1,1:n)])) for i = 1 : n]
 end
 
-Base.in(x :: Point{T}, P :: RationalPolygon) where {T <: Integer} =
+Base.in(x :: Point{T}, P :: RationalPolygon{T}) where {T <: Integer} =
 all(H -> x ∈ H, affine_halfplanes(P))
 
-@attr function is_primitive(P :: RationalPolygon)
+@attr function is_primitive(P :: RationalPolygon{T}) where {T <: Integer}
     V = vertex_matrix(P)
     return all(i -> gcd(V[1,i], V[2,i]) == 1, 1 : number_of_vertices(P))
 end
 
-@attr function area(P :: RationalPolygon)
+@attr function area(P :: RationalPolygon{T}) where {T <: Integer}
     V, n = vertex_matrix(P), number_of_vertices(P)
     return sum([abs(det((V[1,i+1] - V[1,1], V[2,i+1] - V[2,1]), (V[1,i] - V[1,1], V[2,i] - V[2,1]))) for i = 2 : n -1])
 end
@@ -115,7 +115,7 @@ Check whether a rational polygon is maximal among all polygons sharing
 the same rationality and number of interior lattice points.
 
 """
-@attr function is_maximal(P :: RationalPolygon)
+@attr function is_maximal(P :: RationalPolygon{T}) where {T <: Integer}
     k = rationality(P)
     ps = k_rational_points(k,P)
     Q = intersect_halfplanes(affine_halfplanes(P) .- 1 // k)

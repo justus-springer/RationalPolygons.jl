@@ -50,7 +50,7 @@ function hilbert_basis(A :: Matrix{T}) where {T <: Integer}
 
     x, y = 0, 1
     a, b = -1, 0
-    res = []
+    res = Vector{T}[]
     push!(res, M * [0 ; 1])
     for z in hj
         push!(res, M * [y ; -b])

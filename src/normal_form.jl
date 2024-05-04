@@ -1,10 +1,10 @@
 
-@attr function lattice_edge_areas(P :: RationalPolygon)
+function lattice_edge_areas(P :: RationalPolygon)
     n = number_of_vertices(P)
     return [abs(det(P[i+1] - P[i], P[i] - P[i-1])) for i = 1 : n]
 end
 
-@attr function special_vertices(P :: RationalPolygon)
+function special_vertices(P :: RationalPolygon)
     r = number_of_vertices(P)
     ea = lattice_edge_areas(P)
     m = maximum(ea)
