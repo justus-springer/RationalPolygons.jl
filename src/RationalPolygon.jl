@@ -115,11 +115,11 @@ Check whether a rational polygon is maximal among all polygons sharing
 the same rationality and number of interior lattice points.
 
 """
-@attr function is_maximal(P :: RationalPolygon{T}) where {T <: Integer}
+function is_maximal(P :: RationalPolygon{T}; primitive :: Bool = false) where {T <: Integer}
     k = rationality(P)
     ps = k_rational_points(k,P)
     Q = intersect_halfplanes(affine_halfplanes(P) .- 1 // k)
-    for p ∈ boundary_k_rational_points(k, Q)
+    for p ∈ boundary_k_rational_points(k, Q; primitive)
         new_P = convex_hull([ps ; p], k)
         number_of_interior_lattice_points(new_P) <= number_of_interior_lattice_points(P) && return false
     end

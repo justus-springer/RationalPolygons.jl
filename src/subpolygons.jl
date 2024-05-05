@@ -64,7 +64,7 @@ Remove the `i`-th vertex from `P`, i.e. return the convex hull of all
 `k`-rational points of `P` except the `i`-th vertex.
 
 """
-function remove_vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
+function remove_vertex(P :: RationalPolygon{T}, i :: Int; primitive :: Bool = false) where {T <: Integer}
     k = rationality(P)
     V = vertex_matrix(P)
     r = number_of_vertices(P)
@@ -74,6 +74,7 @@ function remove_vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
     q2 = primitivize(p2)
     hb = [v + (V[1,i],V[2,i]) for v ∈ hilbert_basis(q1,q2)]
 
+    primitive && filter!(is_primitive, hb)
 
     vs = LatticePoint{T}[]
     !is_primitive(p1) && push!(vs, (V[1,mod(i-1,1:r)],V[2,mod(i-1,1:r)]))
@@ -98,10 +99,7 @@ function remove_vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
         n = number_of_interior_lattice_points(P)
         set_attribute!(Q, :number_of_interior_lattice_points, n - length(removed_interior_points))
     end
-    if has_attribute(P, :area)
-        set_attribute!(Q, :area, area(P) - length(hb) + 1)
-    end
-
+    
     return Q
 
 end
@@ -116,7 +114,10 @@ and number of interior lattice points `n`, compute all subpolygons sharing
 the same rationality and number of interior lattice points.
 
 """
-function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path :: Union{Missing, String} = missing, logging = false) where {T <: Integer}
+function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; 
+        primitive :: Bool = false, 
+        out_path :: Union{Missing, String} = missing, 
+        logging = false) where {T <: Integer}
 
     logging && @info "Starting to compute subpolygons..."
 
@@ -148,7 +149,7 @@ function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path
             for i = lower_bound : upper_bound
                 P = Ps[i]
                 for j = 1 : number_of_vertices(P)
-                    Q = normal_form(remove_vertex(P,j))
+                    Q = normal_form(remove_vertex(P,j; primitive))
                     number_of_vertices(Q) > 2 || continue
                     number_of_interior_lattice_points(Q) == n || continue
                     push!(out_array[Threads.threadid()], Q)

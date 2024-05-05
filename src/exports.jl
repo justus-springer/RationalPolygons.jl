@@ -1,3 +1,10 @@
+export number_of_primitive_boundary_k_rational_points
+export number_of_primitive_boundary_lattice_points
+export number_of_primitive_interior_k_rational_points
+export number_of_primitive_interior_lattice_points
+export number_of_primitive_k_rational_points
+export number_of_primitive_lattice_points
+export classify_polygons_genus_one
 export SubpolygonStorage
 export save!
 export next_polygons!

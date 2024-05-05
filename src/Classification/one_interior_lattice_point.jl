@@ -9,12 +9,12 @@ the resulting polygons will be added to `Ps`, if they are not already
 present.
 
 """
-function classify_maximal_polygons_genus_one_m1p1!(k :: T; Ps :: Vector{RationalPolygon{T}} = RationalPolygon{T}[]) where {T <: Integer}
+function classify_maximal_polygons_genus_one_m1p1!(k :: T; Ps :: Vector{RationalPolygon{T}} = RationalPolygon{T}[], primitive :: Bool = false) where {T <: Integer}
     A = convex_hull([(-k,zero(T)),(zero(T),k),(-k,k)], k)
     B = convex_hull([(-k,zero(T)),(k,zero(T)),(2k,k),(-k,k)], k)
 
-    vs = [v for v ∈ k_rational_points(k,A) if v[2] > 0]
-    ws = [w for w ∈ k_rational_points(k,B) if w[2] > 0]
+    vs = [v for v ∈ k_rational_points(k,A; primitive) if v[2] > 0]
+    ws = [w for w ∈ k_rational_points(k,B; primitive) if w[2] > 0]
 
     for v ∈ vs, w ∈ ws
         H1 = affine_halfplane(v,(-T(1),T(0)))
@@ -24,10 +24,10 @@ function classify_maximal_polygons_genus_one_m1p1!(k :: T; Ps :: Vector{Rational
         H_upper = affine_halfplane((T(0),-T(1)),-T(1))
         H_lower = affine_halfplane((T(0),T(1)),-T(1))
 
-        P = k_rational_hull(k, intersect_halfplanes([H1,H2,H_upper,H_lower]))
+        P = k_rational_hull(k, intersect_halfplanes([H1,H2,H_upper,H_lower]); primitive)
         interior_lattice_points(P) == [(0,0)] || continue
         all(Q -> !are_equivalent(P,Q), Ps) || continue
-        is_maximal(P) || continue
+        is_maximal(P; primitive) || continue
 
         push!(Ps, normal_form(P))
 
@@ -36,8 +36,8 @@ function classify_maximal_polygons_genus_one_m1p1!(k :: T; Ps :: Vector{Rational
     return Ps
 end
 
-classify_maximal_polygons_genus_one_m1p1(k :: T) where {T <: Integer} =
-classify_maximal_polygons_genus_one_m1p1!(k; Ps = RationalPolygon{T}[])
+classify_maximal_polygons_genus_one_m1p1(k :: T; primitive :: Bool = false) where {T <: Integer} =
+classify_maximal_polygons_genus_one_m1p1!(k; Ps = RationalPolygon{T}[], primitive)
 
 
 @doc raw"""
@@ -50,15 +50,15 @@ the resulting polygons will be added to `Ps`, if they are not already
 present.
 
 """
-function classify_maximal_polygons_genus_one_m1p2!(k :: T; Ps :: Vector{RationalPolygon{T}} = RationalPolygon{T}[]) where {T <: Integer}
+function classify_maximal_polygons_genus_one_m1p2!(k :: T; Ps :: Vector{RationalPolygon{T}} = RationalPolygon{T}[], primitive :: Bool = false) where {T <: Integer}
     A = convex_hull([(-k,k), (zero(T),k), (zero(T),2k), (-2k, 2k)], k)
     B = convex_hull([(-k,zero(T)), (k,zero(T)), (3k,-k), (-2k,-k)], k)
 
     a1,a2 = (-T(1),T(1)), (T(0),T(1))
     b1,b2 = (-T(1),T(0)), (T(1),T(0))
     
-    vs = filter(v -> v[2] > 1, k_rational_points(k, A))
-    ws = filter(w -> w[2] < 0, k_rational_points(k, B))
+    vs = filter(v -> v[2] > 1, k_rational_points(k, A; primitive))
+    ws = filter(w -> w[2] < 0, k_rational_points(k, B; primitive))
 
     for v1 ∈ vs, v2 ∈ vs
         Ha1, Ha2 = affine_halfplane(v1,a1), affine_halfplane(a2,v2)
@@ -74,10 +74,10 @@ function classify_maximal_polygons_genus_one_m1p2!(k :: T; Ps :: Vector{Rational
             H_upper = affine_halfplane((T(1),T(2)),(T(0),T(2)))
             H_lower = affine_halfplane((T(0),-T(1)),(T(1),-T(1)))
 
-            P = k_rational_hull(k, intersect_halfplanes([Ha1,Ha2,Hb1,Hb2,H_upper,H_lower]))
+            P = k_rational_hull(k, intersect_halfplanes([Ha1,Ha2,Hb1,Hb2,H_upper,H_lower]); primitive)
             interior_lattice_points(P) == [(0,0)] || continue
             all(Q -> !are_equivalent(P,Q), Ps) || continue
-            is_maximal(P) || continue
+            is_maximal(P; primitive) || continue
 
             push!(Ps, normal_form(P))
         end
@@ -87,8 +87,8 @@ function classify_maximal_polygons_genus_one_m1p2!(k :: T; Ps :: Vector{Rational
 
 end
 
-classify_maximal_polygons_genus_one_m1p2(k :: T) where {T <: Integer} =
-classify_maximal_polygons_genus_one_m1p2!(k; Ps = RationalPolygon{T}[])
+classify_maximal_polygons_genus_one_m1p2(k :: T; primitive :: Bool = false) where {T <: Integer} =
+classify_maximal_polygons_genus_one_m1p2!(k; Ps = RationalPolygon{T}[], primitive)
 
 @doc raw"""
     classify_maximal_polygons_genus_one(k :: T) where {T <: Integer}
@@ -97,32 +97,35 @@ Return all maximal `k`-rational polygons with exactly one interior
 lattice point.
 
 """
-function classify_maximal_polygons_genus_one(k :: T ; logging = false) where {T <: Integer}
+function classify_maximal_polygons_genus_one(k :: T ; primitive :: Bool = false, logging :: Bool = false) where {T <: Integer}
+
+    primstring = primitive ? "primitive " : ""
+
     Ps = RationalPolygon{T}[]
     
-    Ps = classify_maximal_polygons_genus_one_m1p1!(k; Ps)
+    Ps = classify_maximal_polygons_genus_one_m1p1!(k; Ps, primitive)
     total_count = length(Ps)
 
-    logging && @info "Found $(length(Ps)) maximal polygons in QQ x [-1,1]."
+    logging && @info "Found $(length(Ps)) $(primstring)maximal polygons in QQ x [-1,1]."
     total_count = length(Ps)
 
-    Ps = classify_maximal_polygons_genus_one_m1p2!(k; Ps)
+    Ps = classify_maximal_polygons_genus_one_m1p2!(k; Ps, primitive)
 
-    logging && @info "Found $(length(Ps) - total_count) new polygons in QQ x [-1,2]. Total : $(length(Ps))"
+    logging && @info "Found $(length(Ps) - total_count) new $(primstring)maximal polygons in QQ x [-1,2]. Total : $(length(Ps))"
     total_count = length(Ps)
 
     logging && @info "(skipping [-2,2])"
-    logging && @info "Found $(length(Ps) - total_count) new polygons in QQ x [-2,2]. Total : $(length(Ps))"
+    logging && @info "Found $(length(Ps) - total_count) new $(primstring)maximal polygons in QQ x [-2,2]. Total : $(length(Ps))"
 
     return Ps
 end
 
-export classify_polygons_genus_one
-function classify_polygons_genus_one(k :: T; out_path :: Union{Missing,String} = missing, logging = false) where {T <: Integer}
+function classify_polygons_genus_one(k :: T; primitive :: Bool = false, out_path :: Union{Missing,String} = missing, logging = false) where {T <: Integer}
 
-    logging && @info "Beginning classification of all $k-rational polygons with one interior lattice point."
+    primstring = primitive ? "primitive " : ""
+    logging && @info "Beginning classification of all $(primstring)$k-rational polygons with one interior lattice point."
 
-    Ps = classify_maximal_polygons_genus_one(k; logging)
-    return subpolygons(Ps; out_path, logging)
+    Ps = classify_maximal_polygons_genus_one(k; primitive, logging)
+    return subpolygons(Ps; primitive, out_path, logging)
 end
 
