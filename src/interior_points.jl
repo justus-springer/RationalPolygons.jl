@@ -85,7 +85,7 @@ length(boundary_k_rational_points(k,P))
 Return all lattice points on the boundary of `P`.
 
 """
-@attr boundary_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
+boundary_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
 numerator.(boundary_k_rational_points(T(1), P))
 
 
@@ -95,7 +95,7 @@ numerator.(boundary_k_rational_points(T(1), P))
 Return the number of lattice points on the boundary of `P`.
 
 """
-@attr number_of_boundary_lattice_points(P :: RationalPolygon) =
+number_of_boundary_lattice_points(P :: RationalPolygon) =
 length(boundary_lattice_points(P))
 
 
@@ -125,7 +125,7 @@ length(interior_k_rational_points(k,P))
 Return all `k`-rational points in the interior of `P`.
 
 """
-@attr interior_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
+interior_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
 numerator.(interior_k_rational_points(T(1), P))
 
 
@@ -135,7 +135,7 @@ numerator.(interior_k_rational_points(T(1), P))
 Return the number of `k`-rational points in the interior of `P`.
 
 """
-@attr number_of_interior_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
+number_of_interior_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
 length(interior_lattice_points(P))
 
 
@@ -165,7 +165,7 @@ length(k_rational_points(k,P))
 Return all lattice points in `P`.
 
 """
-@attr lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
+lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
 numerator.(k_rational_points(T(1), P))
 
 
@@ -175,13 +175,13 @@ numerator.(k_rational_points(T(1), P))
 Return the number of lattice points in `P`.
 
 """
-@attr number_of_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
+number_of_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
 length(lattice_points(P))
 
 
 k_rational_hull(k :: T, P :: RationalPolygon{T}) where {T <: Integer} =
 convex_hull(_generic_k_rational_points(k, P; mode = :integer_hull), k)
 
-@attr integer_hull(P :: RationalPolygon{T}) where {T <: Integer} =
+integer_hull(P :: RationalPolygon{T}) where {T <: Integer} =
 k_rational_hull(T(1), P)
 

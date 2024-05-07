@@ -107,7 +107,6 @@ function intersect_halfplanes(halfplanes :: Vector{<:AffineHalfplane{T}}; ration
     else
         P = convex_hull(vs, rationality)
     end
-    set_attribute!(P, :affine_halfplanes, new_halfplanes)
 
     return P
     

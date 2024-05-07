@@ -1,5 +1,5 @@
 
-@attributes mutable struct RationalPolygon{T<:Integer}
+struct RationalPolygon{T<:Integer}
     rationality :: T
     vertex_matrix :: Matrix{T}
     vertex_offset :: Int
@@ -100,7 +100,7 @@ RationalPoint{T}
 
 vertices(P :: RationalPolygon{T}) where {T <: Integer} = collect(P)
 
-@attr function affine_halfplanes(P :: RationalPolygon{T}) where {T <: Integer}
+function affine_halfplanes(P :: RationalPolygon{T}) where {T <: Integer}
     n = number_of_vertices(P)
     return [AffineHalfplaneByLine(LineThroughPoints(P[i], P[mod(i+1,1:n)])) for i = 1 : n]
 end
@@ -108,12 +108,12 @@ end
 Base.in(x :: Point{T}, P :: RationalPolygon{T}) where {T <: Integer} =
 all(H -> x ∈ H, affine_halfplanes(P))
 
-@attr function is_primitive(P :: RationalPolygon{T}) where {T <: Integer}
+function is_primitive(P :: RationalPolygon{T}) where {T <: Integer}
     V = vertex_matrix(P)
     return all(i -> gcd(V[1,i], V[2,i]) == 1, 1 : number_of_vertices(P))
 end
 
-@attr function area(P :: RationalPolygon{T}) where {T <: Integer}
+function area(P :: RationalPolygon{T}) where {T <: Integer}
     V, n = vertex_matrix(P), number_of_vertices(P)
     return sum([abs(det((V[1,i+1] - V[1,1], V[2,i+1] - V[2,1]), (V[1,i] - V[1,1], V[2,i] - V[2,1]))) for i = 2 : n -1])
 end
@@ -125,7 +125,7 @@ Check whether a rational polygon is maximal among all polygons sharing
 the same rationality and number of interior lattice points.
 
 """
-@attr function is_maximal(P :: RationalPolygon{T}) where {T <: Integer}
+function is_maximal(P :: RationalPolygon{T}) where {T <: Integer}
     k = rationality(P)
     ps = k_rational_points(k,P)
     Q = intersect_halfplanes(affine_halfplanes(P) .- 1 // k)

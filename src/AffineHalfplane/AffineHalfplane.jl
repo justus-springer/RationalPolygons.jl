@@ -37,12 +37,12 @@ function Base.issubset(H1 :: AffineHalfplane{T}, H2 :: AffineHalfplane{T}) where
     return translation(H1) ≥ translation(H2)
 end
 
-@attr function direction_vector(H :: AffineHalfplane)
+function direction_vector(H :: AffineHalfplane)
     nv = normal_vector(H)
     return (nv[2], -nv[1])
 end
 
-@attr function base_point(H :: AffineHalfplane{T}) where {T <: Integer}
+function base_point(H :: AffineHalfplane{T}) where {T <: Integer}
     nv, b = normal_vector(H), translation(H)
     if nv[1] ≠ 0
         return (b // nv[1], T(0) // T(1))
@@ -51,9 +51,9 @@ end
     end
 end
 
-@attr line(H :: AffineHalfplane) = LineByDirection(base_point(H), direction_vector(H))
+line(H :: AffineHalfplane) = LineByDirection(base_point(H), direction_vector(H))
 
-@attr pseudo_angle(H :: AffineHalfplane) = pseudo_angle(normal_vector(H))
+pseudo_angle(H :: AffineHalfplane) = pseudo_angle(normal_vector(H))
 
 @doc raw"""
     isless(H1 :: AffineHalfplane, H2 :: AffineHalfplane)
@@ -89,7 +89,7 @@ AffineHalfplaneByNormalVector(-normal_vector(H), -translation(H))
 
 
 
-@attributes mutable struct AffineHalfplaneByNormalVector{T<:Integer} <: AffineHalfplane{T}
+struct AffineHalfplaneByNormalVector{T<:Integer} <: AffineHalfplane{T}
     normal_vector :: RationalPoint{T}
     translation :: Rational{T}
 
@@ -106,11 +106,10 @@ translation(H :: AffineHalfplaneByNormalVector) = H.translation
 affine_halfplane(normal_vector :: Point{T}, translation :: Union{T, Rational{T}}) where {T <: Integer} =
 AffineHalfplaneByNormalVector(normal_vector, translation)
 
-@attributes mutable struct AffineHalfplaneByLine{T <: Integer} <: AffineHalfplane{T}
+struct AffineHalfplaneByLine{T <: Integer} <: AffineHalfplane{T}
     line :: Line{T}
     function AffineHalfplaneByLine(line :: Line{T}) where {T <: Integer}
         H = new{T}(line)
-        set_attribute!(H, :line, line)
         return H
     end
 end

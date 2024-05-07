@@ -91,17 +91,6 @@ function remove_vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
 
     Q = RationalPolygon(vs, k)
 
-    ### attribute carrying ###
-    
-    removed_interior_points = filter(p -> p[1] % k == 0 && p[2] % k == 0, hb[2:end-1])
-    if has_attribute(P, :number_of_interior_lattice_points)
-        n = number_of_interior_lattice_points(P)
-        set_attribute!(Q, :number_of_interior_lattice_points, n - length(removed_interior_points))
-    end
-    if has_attribute(P, :area)
-        set_attribute!(Q, :area, area(P) - length(hb) + 1)
-    end
-
     return Q
 
 end

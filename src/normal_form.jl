@@ -1,4 +1,35 @@
 
+# an elementary implementation of the hermite normal form for 2xn matrices
+function hnf!(A :: AbstractMatrix{<:Integer})
+    n = size(A,2)
+
+    A[1,1] == 0 && (A = [0 1 ; 1 0] * A)
+    d,a,b = gcdx(A[1,1],A[2,1])
+
+    if A[1,1] != d
+        _, x, y = gcdx(a,b)
+        A = [a b ; -y x] * A
+    end
+
+	if A[1,1] != 0 
+		f = div(A[2,1],A[1,1])
+        A = [1 0 ; -f 1] * A
+	end
+
+    sign(A[2,2]) == -1 && (A = [1 0 ; 0 -1] * A)
+
+	if A[2,2] != 0
+		c = fld(A[1,2],A[2,2])
+        c != 0 && (A = [1 -c ; 0 1] * A)
+	end
+
+    return A
+
+end
+
+hnf(A :: AbstractMatrix{<:Integer}) = hnf!(copy(A))
+
+
 function lattice_edge_areas(P :: RationalPolygon)
     n = number_of_vertices(P)
     return [abs(det(P[i+1] - P[i], P[i] - P[i-1])) for i = 1 : n]
@@ -11,7 +42,7 @@ function special_vertices(P :: RationalPolygon)
     return filter(i -> ea[i] == m, 1 : r)
 end
 
-@attr function normal_form(P :: RationalPolygon{T}) where {T <: Integer}
+function normal_form(P :: RationalPolygon{T}) where {T <: Integer}
 
     V = vertex_matrix(P)
 
@@ -28,21 +59,11 @@ end
 
     Q = RationalPolygon(A, rationality(P)) 
 
-    ### attribute carrying ###
-    set_attribute!(Q, :is_normal_form, true)
-    set_attribute!(Q, :normal_form, Q)
-    if has_attribute(P, :number_of_interior_lattice_points)
-        set_attribute!(Q, :number_of_interior_lattice_points, number_of_interior_lattice_points(P))
-    end
-    if has_attribute(P, :area)
-        set_attribute!(Q, :area, area(P))
-    end
-
     return Q
 
 end
 
-@attr is_normal_form(P :: RationalPolygon) =
+is_normal_form(P :: RationalPolygon) =
 P == normal_form(P)
 
 function are_equivalent(P :: RationalPolygon, Q :: RationalPolygon)
