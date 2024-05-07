@@ -2,9 +2,11 @@
 @attributes mutable struct RationalPolygon{T<:Integer}
     rationality :: T
     vertex_matrix :: Matrix{T}
+    vertex_offset :: Int
+    clockwise :: Bool
 
-    RationalPolygon(vertex_matrix :: Matrix{T}, rationality :: T) where {T <: Integer} =
-    new{T}(rationality, vertex_matrix)
+    RationalPolygon(vertex_matrix :: Matrix{T}, rationality :: T; vertex_offset :: Int = 1, clockwise :: Bool = false) where {T <: Integer} =
+    new{T}(rationality, vertex_matrix, vertex_offset, clockwise)
 
     function RationalPolygon(scaled_points :: Vector{LatticePoint{T}}, rationality :: T) where {T <: Integer}
         n = length(scaled_points)
@@ -48,11 +50,9 @@ rationality(P :: RationalPolygon{T}) where {T <: Integer} = P.rationality
 
 vertex_matrix(P :: RationalPolygon{T}) where {T <: Integer} = P.vertex_matrix
 
-function Base.hash(P :: RationalPolygon{T}, h :: UInt64) where {T <: Integer}
-    h = hash(rationality(P), h)
-    h = hash(vertex_matrix(P), h)
-    return hash(RationalPolygon, h)
-end
+vertex_offset(P :: RationalPolygon{T}) where {T <: Integer} = P.vertex_offset
+
+clockwise(P :: RationalPolygon{T}) where {T <: Integer} = P.clockwise
 
 Base.:(==)(P1 :: RationalPolygon{T}, P2 :: RationalPolygon{T}) where {T <: Integer} =
 rationality(P1) == rationality(P2) && vertex_matrix(P1) == vertex_matrix(P2)
@@ -64,11 +64,21 @@ number_of_vertices(P :: RationalPolygon{T}) where {T <: Integer} = size(vertex_m
 
 function lattice_vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
     V, n = vertex_matrix(P), number_of_vertices(P)
-    i = mod(i, 1:n)
+    o = vertex_offset(P)
+    s = clockwise(P) ? -1 : 1
+    i = mod(o + s * (i-1), 1:n)
     return Tuple{T,T}((V[1,i], V[2,i]))
 end
 
 vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer} = lattice_vertex(P, i) .// rationality(P)
+
+function Base.hash(P :: RationalPolygon{T}, h :: UInt64) where {T <: Integer}
+    h = hash(P.rationality, h)
+    for i = 1 : number_of_vertices(P)
+        h = hash(lattice_vertex(P,i), h)
+    end
+    return hash(RationalPolygon, h)
+end
 
 Base.getindex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer} = vertex(P, i)
 

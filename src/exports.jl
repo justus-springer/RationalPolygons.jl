@@ -1,3 +1,5 @@
+export vertex_offset
+export clockwise
 export SubpolygonStorage
 export save!
 export next_polygons!
