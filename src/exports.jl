@@ -1,5 +1,7 @@
 export vertex_offset
 export clockwise
+export classify_maximal_polygons_genus_one_m2p2
+export classify_polygons_genus_one
 export SubpolygonStorage
 export save!
 export next_polygons!
@@ -93,9 +95,7 @@ export reset_attributes!
 export subpolygons
 export remove_vertex
 export classify_maximal_polygons_genus_one_m1p1
-export classify_maximal_polygons_genus_one_m1p1!
 export classify_maximal_polygons_genus_one_m1p2
-export classify_maximal_polygons_genus_one_m1p2!
 export classify_maximal_polygons_genus_one
 export lattice_edge_areas
 export special_vertices
