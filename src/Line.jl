@@ -1,109 +1,63 @@
 
 @doc raw"""
-    abstract type Line{T <: Integer} end
+    Line{T <: Integer}
 
-A line in 2-dimensional rational space. Subtypes must at least implement:
-`base_point` and `direction_vector`.
+A line in 2-dimensional rational space.
 
 """
-abstract type Line{T <: Integer} end
+struct Line{T <: Integer}
+    base_point :: RationalPoint{T}
+    direction_vector :: RationalPoint{T}
+    function Line(base_point :: Point{T}, direction_vector :: Point{T}) where {T <: Integer}
+        !iszero(direction_vector) || error("direction vector can't be zero")
+        new{T}(base_point, direction_vector)
+    end
+end
+
+base_point(L :: Line{T}) where {T <: Integer} = L.base_point
+direction_vector(L :: Line{T}) where {T <: Integer} = L.direction_vector
+
+Base.show(io :: IO, L :: Line) =
+print(io, "Line with base point $(base_point(L)) and direction vector $(direction_vector(L))")
+
+Base.:(==)(L1 :: Line, L2 :: Line) =
+base_point(L1) == base_point(L2) && direction_vector(L1) == direction_vector(L2)
 
 function Base.hash(L :: Line, h :: UInt64) 
-    h = hash(base_point(L), h)
-    h = hash(normal_vector(L), h)
+    h = hash(L.base_point, h)
+    h = hash(L.direction_vector, h)
     return h
 end
 
-Base.:(==)(L1 :: Line, L2 :: Line) = base_point(L1) == base_point(L2) && normal_vector(L1) == normal_vector(L2)
-
-function Base.in(x :: Point{T}, L :: Line{T}) where {T <: Integer}
-    x0 = x - base_point(L)
-    v = direction_vector(L)
-    return iszero(det(v,x0))
-end
+Base.in(x :: Point{T}, L :: Line{T}) where {T <: Integer} =
+iszero(det(x - base_point(L), direction_vector(L)))
 
 point_by_parameter(L :: Line{T}, t :: T) where {T <: Integer} =
 base_point(L) + t * direction_vector(L)
 
 reverse_direction(L :: Line{T}) where {T <: Integer} =
-LineByDirection(base_point(L), -direction_vector(L))
+Line(base_point(L), -direction_vector(L))
 
 function normal_vector(L :: Line{T}) where {T <: Integer}
     v = primitivize(direction_vector(L))
-    return (-v[2], v[1])
+    return LatticePoint(-v[2], v[1])
 end
 
-@doc raw"""
-    struct LineByDirection{T<:Integer} <: Line{T}
+line_through_points(A :: Point{T}, B :: Point{T}) where {T <: Integer} =
+Line(A, B - A)
 
-A line described by a base point and direction vector.
+horizontal_line(y :: Union{T, Rational{T}}) where {T <: Integer} =
+Line(Point(zero(y), y), Point(one(y), zero(y)))
 
-"""
-struct LineByDirection{T<:Integer} <: Line{T}
-    A :: RationalPoint{T}
-    dir :: RationalPoint{T}
-    function LineByDirection(A :: Point{T}, dir :: Point{T}) where {T <: Integer}
-        !iszero(dir) || error("direction vector can't be zero")
-        new{T}(A,dir)
-    end
-end
+vertical_line(x :: Union{T, Rational{T}}) where {T <: Integer} =
+Line(Point(x, zero(x)), Point(zero(x), one(x)))
 
-direction_vector(L :: LineByDirection) = L.dir
-base_point(L :: LineByDirection) = L.A
-
-Base.show(io :: IO, L :: LineByDirection) =
-print(io, "Line with base point $(L.A) and direction vector $(L.dir)")
-
-@doc raw"""
-    struct LineThroughPoints{T<:Integer} <: Line{T}
-
-A line described by two points in rational 2D space.
-
-"""
-struct LineThroughPoints{T<:Integer} <: Line{T}
-    A :: RationalPoint{T}
-    B :: RationalPoint{T}
-    function LineThroughPoints(A :: Point{T}, B :: Point{T}) where {T <: Integer}
-        A ≠ B || error("points cannot be equal")
-        new{T}(A,B)
-    end
-end
-
-direction_vector(L :: LineThroughPoints) = L.B - L.A
-base_point(L :: LineThroughPoints) = L.A
-
-Base.show(io :: IO, L :: LineThroughPoints) =
-print(io, "Line through the points $(L.A) and $(L.B)")
-
-struct HorizontalLine{T <: Integer} <: Line{T}
-    y :: Rational{T}
-    HorizontalLine(y :: Rational{T}) where {T <: Integer} = new{T}(y)
-    HorizontalLine(y :: T) where {T <: Integer} = new{T}(y // 1)
-end
-
-base_point(L :: HorizontalLine) = (zero(L.y), L.y)
-direction_vector(L :: HorizontalLine) = (one(L.y), zero(L.y))
-
-Base.show(io :: IO, L :: HorizontalLine) =
-print(io, "Horizontal line at y = $(L.y)")
-
-struct VerticalLine{T <: Integer} <: Line{T}
-    x :: Rational{T}
-    VerticalLine(y :: Rational{T}) where {T <: Integer} = new{T}(y)
-    VerticalLine(y :: T) where {T <: Integer} = new{T}(y // 1)
-end
-
-base_point(L :: VerticalLine) = (L.x, zero(L.x))
-direction_vector(L :: VerticalLine) = (zero(L.x), one(L.x))
-
-Base.show(io :: IO, L :: VerticalLine) =
-print(io, "Vertical line at y = $(L.x)")
 
 
 abstract type IntersectionBehaviour end
 
 struct IntersectInPoint{T <: Integer} <: IntersectionBehaviour
-    p :: Point{T}
+    p :: RationalPoint{T}
 end
 
 struct NoIntersection <: IntersectionBehaviour end
@@ -163,13 +117,13 @@ function k_rational_points_on_line_segment(k :: T, p :: Point{T}, q :: Point{T};
         return k_rational_points_on_line_segment(k, q, p; interior)
     end
 
-    L = LineThroughPoints(p,q)
+    L = line_through_points(p,q)
     res = RationalPoint{T}[]
     if p[1] < q[1]
         lower_bound = interior ? floor_k_rational(k, p[1]+1//k) : ceil_k_rational(k, p[1]) 
         upper_bound = interior ? ceil_k_rational(k, q[1]-1//k) : floor_k_rational(k, q[1])
         for t = lower_bound : 1 // k : upper_bound
-            x = intersection_point(L, VerticalLine(t))
+            x = intersection_point(L, vertical_line(t))
             is_k_rational(k,x) || continue
             push!(res,x)
         end
@@ -177,7 +131,7 @@ function k_rational_points_on_line_segment(k :: T, p :: Point{T}, q :: Point{T};
         lower_bound = interior ? floor_k_rational(k, p[2]+1//k) : ceil_k_rational(k, p[2])
         upper_bound = interior ? ceil_k_rational(k, q[2]-1//k) : floor_k_rational(k, q[2])
         for t = lower_bound : 1 // k : upper_bound
-            x = intersection_point(L, HorizontalLine(t))
+            x = intersection_point(L, horizontal_line(t))
             is_k_rational(k,x) || continue
             push!(res,x)
         end
@@ -189,50 +143,3 @@ end
 
 integral_points_on_line_segment(p :: Point{T}, q :: Point{T}; interior = true) where {T <: Integer} =
 k_rational_points_on_line_segment(1, p, q; interior)
-
-@doc raw"""
-    next_k_rational_point(p :: Point{T}, L :: Line{T}) where {T <: Integer}
-
-Given a point `p` and a line `L` with `p ∈ L`, return the next `k`-rational
-point on `L` after `p`, following the direction vector of the line, excluding
-`p` itself.
-
-"""
-function next_k_rational_point(k :: T, p :: Point{T}, L :: Line{T}) where {T <: Integer}
-    p ∈ L || error("point must lie on the line")
-    v = direction_vector(L)
-    if v[1] ≠ 0
-        t = v[1] > 0 ? floor_k_rational(k, p[1]+1//k) : ceil_k_rational(k,p[1]-1//k)
-        x = intersection_point(L, VerticalLine(t))
-        while !is_k_rational(k,x)
-            t += sign(v[1]) // k
-            x = intersection_point(L, VerticalLine(t))
-        end
-        return x
-    elseif v[2] ≠ 0
-        t = v[2] > 0 ? floor_k_rational(k, p[2]+1//k) : ceil_k_rational(k, p[2]-1//k)
-        x = intersection_point(L, HorizontalLine(t))
-        while !is_k_rational(k,x)
-            t += sign(v[2]) // k
-            x = intersection_point(L, HorizontalLine(t))
-        end
-        return x
-    end
-end
-
-next_integral_point(p :: Point{T}, L :: Line{T}) where {T <: Integer} =
-next_k_rational_point(1, p, L)
-
-@doc raw"""
-    previous_k_rational_point(k :: T, p :: Point{T}, L :: Line{T}) where {T <: Integer}
-
-Given a point `p` and a line `L` with `p ∈ L`, return the previous integral
-primitive point on `L` after `p`, following the direction vector of the line,
-excluding `p` itself.
-
-"""
-previous_k_rational_point(k :: T, p :: Point{T}, L :: Line{T}) where {T <: Integer} =
-next_k_rational_point(k, p, reverse_direction(L))
-
-previous_integral_point(p :: Point{T}, L :: Line{T}) where {T <: Integer} =
-previous_k_rational_point(1, p, L)
