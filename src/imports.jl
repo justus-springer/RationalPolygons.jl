@@ -12,13 +12,13 @@ import Base:
     hash,
     getindex
 
-import LinearAlgebra:
-    det,
-    det_bareiss
+import StaticArrays:
+    SVector,
+    SMatrix,
+    StaticVector,
+    StaticMatrix,
+    Size,
+    MMatrix
 
-import AbstractAlgebra:
-    @attr,
-    @attributes,
-    get_attribute!,
-    set_attribute!,
-    has_attribute
+import LinearAlgebra:
+    mul!

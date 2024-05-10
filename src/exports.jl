@@ -4,6 +4,13 @@ export number_of_primitive_interior_k_rational_points
 export number_of_primitive_interior_lattice_points
 export number_of_primitive_k_rational_points
 export number_of_primitive_lattice_points
+export vertical_line
+export horizontal_line
+export line_through_points
+export Matrix2
+export vertex_offset
+export clockwise
+export classify_maximal_polygons_genus_one_m2p2
 export classify_polygons_genus_one
 export SubpolygonStorage
 export save!
@@ -27,8 +34,6 @@ export LatticePoint
 export RationalPoint
 export Point
 export Line
-export LineByDirection
-export LineThroughPoints
 export point_by_parameter
 export reverse_direction
 export direction_vector
@@ -49,8 +54,6 @@ export next_k_rational_point
 export next_integral_point
 export previous_k_rational_point
 export previous_integral_point
-export HorizontalLine
-export VerticalLine
 export norm
 export distance
 export edges
@@ -70,8 +73,6 @@ export number_of_lattice_points
 export AffineHalfplane
 export normal_vector
 export translation
-export AffineHalfplaneByNormalVector
-export AffineHalfplaneByLine
 export affine_halfplanes
 export multiplicity
 export primitivize
@@ -98,9 +99,7 @@ export reset_attributes!
 export subpolygons
 export remove_vertex
 export classify_maximal_polygons_genus_one_m1p1
-export classify_maximal_polygons_genus_one_m1p1!
 export classify_maximal_polygons_genus_one_m1p2
-export classify_maximal_polygons_genus_one_m1p2!
 export classify_maximal_polygons_genus_one
 export lattice_edge_areas
 export special_vertices
