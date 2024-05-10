@@ -32,6 +32,9 @@ multiplicity(p :: Point) = (denominator(p[1]) * denominator(p[2])) // gcd(numera
 is_primitive(p :: Point) = multiplicity(p) == 1
 primitivize(p :: Point) = numerator.(multiplicity(p) * p)
 
+numerator(p :: Point) = numerator.(p)
+denominator(p :: Point) = denominator.(p)
+
 norm(p :: Point{T}) where {T <: Integer} = p[1]^2 + p[2]^2
 distance(p :: Point{T}, q :: Point{T}) where {T <: Integer} = norm(p - q)
 

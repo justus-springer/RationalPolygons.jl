@@ -1,5 +1,5 @@
 
-function _intersect_sorted_halfplanes(halfplanes :: Vector{<:AffineHalfplane{T}}) where {T <: Integer}
+function _intersect_sorted_halfplanes(halfplanes :: Vector{AffineHalfplane{T}}) where {T <: Integer}
 
     result = empty(halfplanes)
 
@@ -15,13 +15,13 @@ function _intersect_sorted_halfplanes(halfplanes :: Vector{<:AffineHalfplane{T}}
 end
 
 @doc raw"""
-    is_bounded(halfplanes :: Vector{<:AffineHalfplane{T}}) where {T <: Integer}   
+    is_bounded(halfplanes :: Vector{AffineHalfplane{T}}) where {T <: Integer}   
 
 Check whether the intersection of the given halfplanes is bounded, i.e.
 describes a polygon.
 
 """
-function is_bounded(halfplanes :: Vector{<:AffineHalfplane{T}}) where {T <: Integer}
+function is_bounded(halfplanes :: Vector{AffineHalfplane{T}}) where {T <: Integer}
     angles = sort!(pseudo_angle.(halfplanes))
     for i = 1 : length(angles)-1
         a1, a2 = angles[i], angles[i+1]
@@ -32,7 +32,7 @@ function is_bounded(halfplanes :: Vector{<:AffineHalfplane{T}}) where {T <: Inte
     return true
 end
 
-function intersect_halfplanes(halfplanes :: Vector{<:AffineHalfplane{T}}; rationality :: Union{Missing,T} = missing) where {T <: Integer}
+function intersect_halfplanes(halfplanes :: Vector{AffineHalfplane{T}}; rationality :: Union{Missing,T} = missing) where {T <: Integer}
 
     n = length(halfplanes)
 

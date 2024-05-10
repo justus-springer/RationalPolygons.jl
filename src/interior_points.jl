@@ -1,6 +1,5 @@
 
-function _generic_k_rational_points(k :: T, P :: RationalPolygon{T}; mode :: Symbol = :interior) where {T <: Integer}
-    n = number_of_vertices(P)
+function _generic_k_rational_points(k :: T, P :: RationalPolygon{T,N}; mode :: Symbol = :interior) where {N,T <: Integer}
 
     mode ∈ [:interior, :integer_hull, :boundary, :all] || error("mode must be one of :interior, :integer_hull, :boundary and :all")
 
@@ -16,14 +15,14 @@ function _generic_k_rational_points(k :: T, P :: RationalPolygon{T}; mode :: Sym
 
     res = RationalPoint{T}[]
     for y = lower_bound_y : 1 // k : upper_bound_y
-        i0 = first(filter(i -> P[i][2] ≥ y ≥ P[i+1][2] && P[i][2] > P[i+1][2], 1 : n))
-        incoming_line = LineThroughPoints(P[i0], P[i0+1])
-        incoming_point = intersection_point(HorizontalLine(y), incoming_line)
+        i0 = first(filter(i -> P[i][2] ≥ y ≥ P[i+1][2] && P[i][2] > P[i+1][2], 1 : N))
+        incoming_line = line_through_points(P[i0], P[i0+1])
+        incoming_point = intersection_point(horizontal_line(y), incoming_line)
         xmin = incoming_point[1]
 
-        i1 = first(filter(i -> P[i][2] ≤ y ≤ P[i+1][2] && P[i][2] < P[i+1][2], 1 : n))
-        outgoing_line = LineThroughPoints(P[i1], P[i1+1])
-        outgoing_point = intersection_point(HorizontalLine(y), outgoing_line)
+        i1 = first(filter(i -> P[i][2] ≤ y ≤ P[i+1][2] && P[i][2] < P[i+1][2], 1 : N))
+        outgoing_line = line_through_points(P[i1], P[i1+1])
+        outgoing_point = intersection_point(horizontal_line(y), outgoing_line)
         xmax = outgoing_point[1]
 
         if mode == :interior
@@ -35,14 +34,14 @@ function _generic_k_rational_points(k :: T, P :: RationalPolygon{T}; mode :: Sym
         end
 
         if mode ∈ [:interior, :all]
-            new_points = [(x,y) for x = lower_bound_x : 1 // k : upper_bound_x]
+            new_points = [RationalPoint{T}(x,y) for x = lower_bound_x : 1 // k : upper_bound_x]
         elseif mode ∈ [:boundary, :integer_hull]
             if lower_bound_x < upper_bound_x && (lower_bound_x, y) ∈ collect(P)
-                new_points = [(x,y) for x = lower_bound_x : 1 // k : upper_bound_x]
+                new_points = [RationalPoint{T}(x,y) for x = lower_bound_x : 1 // k : upper_bound_x]
             elseif lower_bound_x < upper_bound_x
-                new_points = [(lower_bound_x, y), (upper_bound_x, y)]
+                new_points = [RationalPoint{T}(lower_bound_x, y), RationalPoint{T}(upper_bound_x, y)]
             elseif lower_bound_x == upper_bound_x
-                new_points = [(lower_bound_x, y)]
+                new_points = [RationalPoint{T}(lower_bound_x, y)]
             else
                 new_points = RationalPoint{T}[]
             end
@@ -58,15 +57,13 @@ end
 
 
 @doc raw"""
-    boundary_k_rational_points(k :: T, P :: RationalPolygon{T}) where {T <: Integer} 
+    boundary_k_rational_points(k :: T, P :: RationalPolygon{T,N}) where {T <: Integer} 
 
 Return all `k`-rational points on the boundary of `P`.
 
 """
-function boundary_k_rational_points(k :: T, P :: RationalPolygon{T}) where {T <: Integer}
-    n = number_of_vertices(P)
-    return unique(vcat([k_rational_points_on_line_segment(k, P[i], P[i+1]; interior = false) for i = 1 : n]...))
-end
+boundary_k_rational_points(k :: T, P :: RationalPolygon{T,N}) where {N,T <: Integer} =
+unique(vcat([k_rational_points_on_line_segment(k, P[i], P[i+1]; interior = false) for i = 1 : N]...))
 
 
 @doc raw"""

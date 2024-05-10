@@ -102,10 +102,10 @@ function rand(::Type{AffineHalfplane}, nv_range, translation_range)
 end
 
 Base.:(+)(H :: AffineHalfplane{T}, x :: Union{T, Rational{T}}) where {T <: Integer} =
-AffineHalfplaneByNormalVector(normal_vector(H), translation(H) + x)
+affine_halfplane(normal_vector(H), translation(H) + x)
 
 Base.:(-)(H :: AffineHalfplane{T}, x :: Union{T, Rational{T}}) where {T <: Integer} =
-AffineHalfplaneByNormalVector(normal_vector(H), translation(H) - x)
+affine_halfplane(normal_vector(H), translation(H) - x)
 
 Base.:(-)(H :: AffineHalfplane{T}) where {T <: Integer} =
-AffineHalfplaneByNormalVector(-normal_vector(H), -translation(H))
+affine_halfplane(-normal_vector(H), -translation(H))

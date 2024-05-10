@@ -45,7 +45,7 @@ function next_polygons!(st :: SubpolygonStorage{T}) where {T <: Integer}
         open(joinpath(st.dir, "vol_$a.txt"), "w") do f
             for P ∈ Ps
                 V = vertex_matrix(P)
-                println(f, [V[:,i] for i = 1 : number_of_vertices(P)])
+                println(f, [Vector(V[:,i]) for i = 1 : number_of_vertices(P)])
             end
         end
         delete!(st.dict, a)
@@ -64,19 +64,14 @@ Remove the `i`-th vertex from `P`, i.e. return the convex hull of all
 `k`-rational points of `P` except the `i`-th vertex.
 
 """
-function remove_vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
-    k = rationality(P)
-    V = vertex_matrix(P)
-    r = number_of_vertices(P)
-    p1 = (V[1,mod(i-1,1:r)] - V[1,i], V[2,mod(i-1,1:r)] - V[2,i])
-    q1 = primitivize(p1)
-    p2 = (V[1,mod(i+1,1:r)] - V[1,i], V[2,mod(i+1,1:r)] - V[2,i])
-    q2 = primitivize(p2)
-    hb = [v + (V[1,i],V[2,i]) for v ∈ hilbert_basis(q1,q2)]
-
+function remove_vertex(P :: RationalPolygon{T,N}, i :: Int) where {N,T <: Integer}
+    u, v, w = lattice_vertex(P, i-1), lattice_vertex(P,i), lattice_vertex(P,i+1)
+    p1, p2 = u - v, w - v
+    q1, q2 = primitivize(p1), primitivize(p2)
+    hb = [p + v for p ∈ hilbert_basis(q1,q2)]
 
     vs = LatticePoint{T}[]
-    !is_primitive(p1) && push!(vs, (V[1,mod(i-1,1:r)],V[2,mod(i-1,1:r)]))
+    !is_primitive(p1) && push!(vs, u)
     push!(vs,first(hb))
     for j = 2 : length(hb)-1
         if hb[j]-hb[j-1] != hb[j+1]-hb[j]
@@ -84,12 +79,12 @@ function remove_vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
         end
     end
     push!(vs,last(hb))
-    !is_primitive(p2) && push!(vs, (V[1,mod(i+1,1:r)],V[2,mod(i+1,1:r)]))
-    for j = i+2 : i+r-2
-        push!(vs, (V[1,mod(j,1:r)], V[2,mod(j,1:r)]))
+    !is_primitive(p2) && push!(vs, w)
+    for j = i+2 : i+N-2
+        push!(vs, lattice_vertex(P,j))
     end
 
-    Q = RationalPolygon(vs, k)
+    Q = RationalPolygon(vs, rationality(P))
 
     return Q
 
