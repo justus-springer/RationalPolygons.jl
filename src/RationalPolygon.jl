@@ -55,7 +55,7 @@ RationalPolygon(graham_scan(points))
 convex_hull(points :: Vector{RationalPoint{T}}, k :: T) where {T <: Integer} =
 RationalPolygon(graham_scan(points), k)
 
-number_of_vertices(P :: RationalPolygon{T,N}) where {N, T <: Integer} = N
+number_of_vertices(P :: RationalPolygon{T,N,M}) where {N,M,T <: Integer} = N
 
 rationality(P :: RationalPolygon{T,N}) where {N,T <: Integer} = P.rationality
 
