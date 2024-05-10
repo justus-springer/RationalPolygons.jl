@@ -65,29 +65,41 @@ Remove the `i`-th vertex from `P`, i.e. return the convex hull of all
 
 """
 function remove_vertex(P :: RationalPolygon{T,N}, i :: Int; primitive :: Bool = false) where {N,T <: Integer}
-    u, v, w = lattice_vertex(P, i-1), lattice_vertex(P,i), lattice_vertex(P,i+1)
-    p1, p2 = u - v, w - v
-    q1, q2 = primitivize(p1), primitivize(p2)
-    hb = [p + v for p ∈ hilbert_basis(q1,q2)]
-    primitive && filter!(is_primitive, hb)
 
-    vs = LatticePoint{T}[]
-    !is_primitive(p1) && push!(vs, u)
-    push!(vs,first(hb))
-    for j = 2 : length(hb)-1
-        if hb[j]-hb[j-1] != hb[j+1]-hb[j]
-            push!(vs, hb[j])
+    if primitive
+        k = rationality(P)
+        v = vertex(P,i)
+        ps = k_rational_points(k, P; primitive)
+        filter!(p -> p != v, ps)
+        return convex_hull(ps, k)
+    else
+        # the shortcut via hilbert bases only works in the non-primitive
+        # case at the moment
+        u, v, w = lattice_vertex(P, i-1), lattice_vertex(P,i), lattice_vertex(P,i+1)
+        p1, p2 = u - v, w - v
+        q1, q2 = primitivize(p1), primitivize(p2)
+        hb = [p + v for p ∈ hilbert_basis(q1,q2)]
+        primitive && filter!(is_primitive, hb)
+
+        vs = LatticePoint{T}[]
+        !is_primitive(p1) && push!(vs, u)
+        push!(vs,first(hb))
+        for j = 2 : length(hb)-1
+            if hb[j]-hb[j-1] != hb[j+1]-hb[j]
+                push!(vs, hb[j])
+            end
         end
-    end
-    push!(vs,last(hb))
-    !is_primitive(p2) && push!(vs, w)
-    for j = i+2 : i+N-2
-        push!(vs, lattice_vertex(P,j))
-    end
+        push!(vs,last(hb))
+        !is_primitive(p2) && push!(vs, w)
+        for j = i+2 : i+N-2
+            push!(vs, lattice_vertex(P,j))
+        end
 
-    Q = RationalPolygon(vs, rationality(P))
+        Q = RationalPolygon(vs, rationality(P))
 
-    return Q
+        return Q
+
+    end
 
 end
 

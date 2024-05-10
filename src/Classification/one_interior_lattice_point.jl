@@ -23,7 +23,7 @@ function classify_maximal_polygons_genus_one_m1p1(k :: T; primitive :: Bool = fa
         H_upper = affine_halfplane(RationalPoint{T}(0,-1),-T(1))
         H_lower = affine_halfplane(RationalPoint{T}(0,1),-T(1))
 
-        P = k_rational_hull(k, intersect_halfplanes([H1,H2,H_upper,H_lower]))
+        P = k_rational_hull(k, intersect_halfplanes([H1,H2,H_upper,H_lower]); primitive)
         interior_lattice_points(P) == [zero(LatticePoint{T})] || continue
         all(Q -> !are_equivalent(P,Q), Ps) || continue
         is_maximal(P; primitive) || continue
@@ -69,7 +69,7 @@ function classify_maximal_polygons_genus_one_m1p2(k :: T; primitive :: Bool = fa
             H_upper = affine_halfplane(RationalPoint{T}(1,2),RationalPoint{T}(0,2))
             H_lower = affine_halfplane(RationalPoint{T}(0,-1),RationalPoint{T}(1,-1))
 
-            P = k_rational_hull(k, intersect_halfplanes([Ha1,Ha2,Hb1,Hb2,H_upper,H_lower]))
+            P = k_rational_hull(k, intersect_halfplanes([Ha1,Ha2,Hb1,Hb2,H_upper,H_lower]); primitive)
             interior_lattice_points(P) == [zero(LatticePoint{T})] || continue
             all(Q -> !are_equivalent(P,Q), Ps) || continue
             is_maximal(P; primitive) || continue
@@ -141,7 +141,7 @@ function classify_maximal_polygons_genus_one_m2p2(k :: T, q :: Int; primitive ::
                 H_upper = affine_halfplane(RationalPoint{T}(1,2),RationalPoint{T}(0,2))
                 H_lower = affine_halfplane(RationalPoint{T}(0,-2),RationalPoint{T}(1,-2))
 
-                P = k_rational_hull(k, intersect_halfplanes([Ha1,Ha2,Hb1,Hb2,Hc1,Hc2,H_upper,H_lower]))
+                P = k_rational_hull(k, intersect_halfplanes([Ha1,Ha2,Hb1,Hb2,Hc1,Hc2,H_upper,H_lower]); primitive)
                 interior_lattice_points(P) == [zero(LatticePoint{T})] || continue
                 all(Q -> !are_equivalent(P,Q), Ps) || continue
                 is_maximal(P; primitive) || continue
