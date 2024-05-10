@@ -110,12 +110,6 @@ function classify_maximal_polygons_genus_one_m2p2(k :: T, q :: Int) where {T <: 
     elseif q == 3
         C = convex_hull(RationalPoint{T}[(0,-1),(0,-2),(2,-2),(1,-1)], k)
         c1,c2 = RationalPoint{T}(0,-1), RationalPoint{T}(1,-1)
-    elseif q == 4
-        C = convex_hull(RationalPoint{T}[(1,-1),(2,-2),(4,-2),(2,-1)], k)
-        c1,c2 = RationalPoint{T}(1,-1), RationalPoint{T}(2,-1)
-    elseif q == 5
-        C = convex_hull(RationalPoint{T}[(2,-1),(4,-2),(5,-2),(3,-1)], k)
-        c1,c2 = RationalPoint{T}(2,-1), RationalPoint{T}(3,-1)
     end
     
     vs = filter(v -> v[2] > 1, k_rational_points(k, A))
@@ -189,7 +183,7 @@ function classify_maximal_polygons_genus_one(k :: T ; logging = false) where {T 
 
     logging && @info "Found $count maximal polygons in QQ x [-1,2]. New: $new_count, total: $total_count"
     
-    for q = 1 : 5
+    for q = 1 : 3
 
         new_Ps = classify_maximal_polygons_genus_one_m2p2(k, q)
         count = length(new_Ps)
