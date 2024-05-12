@@ -94,33 +94,47 @@ function classify_maximal_polygons_genus_one_m2p2(k :: T, q :: Int) where {T <: 
     
     Ps = RationalPolygon{T}[]
 
-    A = convex_hull(RationalPoint{T}.([(-1,1),(0,1),(0,2),(-2,2)]), k)
+    A = convex_hull(RationalPoint{T}[(-1,1),(0,1),(0,2),(-2,2)], k)
     B = convex_hull(RationalPoint{T}[(-1,0),(1,0),(3,-1),(-2,-1)], k)
 
     a1,a2 = RationalPoint{T}(-1,1), RationalPoint{T}(0,1)
     b1,b2 = RationalPoint{T}(-1,0), RationalPoint{T}(1,0)
 
     if q == 1
+        B1 = convex_hull(RationalPoint{T}[(-2,-1),(-1,-1),(-1,0)], k)
+        B2 = convex_hull(RationalPoint{T}[(-2,-1),(3,-1),(1,0)], k)
         C = convex_hull(RationalPoint{T}[(-2,-1),(-3,-2),(-2,-2),(-1,-1)], k)
         c1,c2 = RationalPoint{T}(-2,-1), RationalPoint{T}(-1,-1)
     elseif q == 2
+        B1 = convex_hull(RationalPoint{T}[(-2,-1),(0,-1),(-1,0)], k)
+        B2 = convex_hull(RationalPoint{T}[(-1,-1),(3,-1),(1,0)], k)
         C = convex_hull(RationalPoint{T}[(-1,-1),(-2,-2),(0,-2),(0,-1)], k)
         c1,c2 = (-one(T), -one(T)), (zero(T), -one(T))
         c1,c2 = RationalPoint{T}(-1,-1), RationalPoint{T}(0,-1)
     elseif q == 3
+        B1 = convex_hull(RationalPoint{T}[(-2,-1),(1,-1),(-1,0)], k)
+        B2 = convex_hull(RationalPoint{T}[(0,-1),(3,-1),(1,0)], k)
         C = convex_hull(RationalPoint{T}[(0,-1),(0,-2),(2,-2),(1,-1)], k)
         c1,c2 = RationalPoint{T}(0,-1), RationalPoint{T}(1,-1)
     end
     
-    vs = filter(v -> v[2] > 1, k_rational_points(k, A))
-    ws = unique(filter(w -> w[2] < 0, [k_rational_points(k, B) ; k_rational_points(k,C)]))
-    us = filter(u -> u[2] < -1, k_rational_points(k,C))
+    vs = k_rational_points(k,A)
+    filter!(v -> v[2] > 1, vs)
+
+    us = k_rational_points(k,C)
+    filter!(u -> u[2] < -1, us)
+
+    ws1 = append!(k_rational_points(k,B1), us)
+    filter!(w -> w[2] < 0, ws1)
+
+    ws2 = append!(k_rational_points(k,B2), us)
+    filter!(w -> w[2] < 0, ws2)
 
     for v1 ∈ vs, v2 ∈ vs
         Ha1, Ha2 = affine_halfplane(v1,a1), affine_halfplane(a2,v2)
         v1 ∈ Ha2 && v2 ∈ Ha1 || continue
         
-        for w1 ∈ ws, w2 ∈ ws
+        for w1 ∈ ws1, w2 ∈ ws2
             w1 ∈ Ha1 && w1 ∈ Ha2 && w2 ∈ Ha1 && w2 ∈ Ha2 || continue
 
             Hb1, Hb2 = affine_halfplane(b1,w1), affine_halfplane(w2,b2)
