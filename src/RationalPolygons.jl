@@ -15,6 +15,6 @@ include("interior_points.jl")
 include("normal_form.jl")
 include("subpolygons.jl")
 
-include("Classification/one_interior_lattice_point.jl")
+include("classification.jl")
 
 end # module RationalPolygons

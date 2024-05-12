@@ -1,3 +1,6 @@
+export classify_maximal_lattice_free_polygons_m1p1
+export classify_maximal_lattice_free_polygons_m1p2
+export classify_maximal_lattice_free_polygons
 export vertical_line
 export horizontal_line
 export line_through_points
