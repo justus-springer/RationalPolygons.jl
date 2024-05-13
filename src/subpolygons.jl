@@ -10,7 +10,7 @@ mutable struct SubpolygonStorage{T<:Integer}
     dict :: Dict{T,Set{RationalPolygon{T}}}
     last_volume :: T
 
-    function SubpolygonStorage{T}(starting_polygons :: Vector{RationalPolygon{T}}, dir :: Union{String, Missing} = missing) where {T <: Integer}
+    function SubpolygonStorage{T}(starting_polygons :: Vector{<:RationalPolygon{T}}, dir :: Union{String, Missing} = missing) where {T <: Integer}
         !isempty(starting_polygons) || error("must provide a non-empty list of starting polygons")
         if !ismissing(dir)
             isdir(dir) || error("$dir is not a directory")
@@ -24,7 +24,7 @@ mutable struct SubpolygonStorage{T<:Integer}
 
 end
 
-function save!(st :: SubpolygonStorage{T}, Ps :: Vector{RationalPolygon{T}}) where {T <: Integer}
+function save!(st :: SubpolygonStorage{T}, Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
     for P ∈ Ps
         a = area(P)
         if !haskey(st.dict, a) 
@@ -148,9 +148,13 @@ function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path
 
     logging && @info "Volume: $current_area. Number of polygons: $(length(Ps)). Total: $total_count"
 
-    return st
+    if ismissing(out_path)
+        return Ps = vcat(collect.(values(st.dict))...)
+    else
+        return st
+    end
                     
 end
 
 subpolygons(P :: RationalPolygon{T}) where {T <: Integer} =
-subpolygons!([P])
+subpolygons([P])
