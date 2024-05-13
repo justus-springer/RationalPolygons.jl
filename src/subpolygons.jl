@@ -37,7 +37,10 @@ end
 
 function next_polygons!(st :: SubpolygonStorage{T}) where {T <: Integer}
     # Get the polygons with maximal area
-    a = maximum(filter(b -> b < st.last_volume, keys(st.dict)))
+    smaller_areas = filter(b -> b < st.last_volume, keys(st.dict))
+    isempty(smaller_areas) && return (RationalPolygon{T}[], 0)
+
+    a = maximum(smaller_areas)
     Ps = st.dict[a]
 
     # save them to a file and delete from our dictionary
