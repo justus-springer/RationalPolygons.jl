@@ -10,6 +10,9 @@ export clockwise
 export classify_maximal_polygons_genus_one_m2p2
 export classify_polygons_genus_one
 export SubpolygonStorage
+export InMemorySubpolygonStorage
+export subpolygon_storage
+export OnDiskSubpolygonStorage
 export save!
 export next_polygons!
 export vertex

@@ -13,7 +13,8 @@ include("RationalPolygon.jl")
 include("AffineHalfplane/intersect.jl")
 include("interior_points.jl")
 include("normal_form.jl")
-include("subpolygons.jl")
+include("Subpolygons/subpolygons.jl")
+include("Subpolygons/SubpolygonStorage.jl")
 
 include("classification.jl")
 

@@ -1,63 +1,5 @@
 
 @doc raw"""
-    mutable struct SubpolygonStorage{T<:Integer}   
-
-A struct used by the function `subpolygons` to hold intermediate results.
-
-"""
-mutable struct SubpolygonStorage{T<:Integer}
-    dir :: Union{String, Missing}
-    dict :: Dict{T,Set{RationalPolygon{T}}}
-    last_volume :: T
-
-    function SubpolygonStorage{T}(starting_polygons :: Vector{<:RationalPolygon{T}}, dir :: Union{String, Missing} = missing) where {T <: Integer}
-        !isempty(starting_polygons) || error("must provide a non-empty list of starting polygons")
-        if !ismissing(dir)
-            isdir(dir) || error("$dir is not a directory")
-        end
-
-        a = maximum(area.(starting_polygons))
-        st = new{T}(dir, Dict{T,Vector{RationalPolygon{T}}}(), a + 1)
-        save!(st, starting_polygons)
-        return st
-    end
-
-end
-
-function save!(st :: SubpolygonStorage{T}, Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
-    for P ∈ Ps
-        a = area(P)
-        if !haskey(st.dict, a) 
-            st.dict[a] = Set{RationalPolygon{T}}()
-        end
-        P ∉ st.dict[a] || continue
-        push!(st.dict[a], P)
-    end
-end
-
-function next_polygons!(st :: SubpolygonStorage{T}) where {T <: Integer}
-    # Get the polygons with maximal area
-    a = maximum(filter(b -> b < st.last_volume, keys(st.dict)))
-    Ps = st.dict[a]
-
-    # save them to a file and delete from our dictionary
-    if !ismissing(st.dir)
-        open(joinpath(st.dir, "vol_$a.txt"), "w") do f
-            for P ∈ Ps
-                V = vertex_matrix(P)
-                println(f, [Vector(V[:,i]) for i = 1 : number_of_vertices(P)])
-            end
-        end
-        delete!(st.dict, a)
-    end
-
-    st.last_volume = a
-
-    return (collect(Ps), a)
-
-end
-
-@doc raw"""
     remove_vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
 
 Remove the `i`-th vertex from `P`, i.e. return the convex hull of all
@@ -109,7 +51,7 @@ function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path
     all(P -> rationality(P) == k, starting_polygons) || error("all polygons must have the same rationality")
     all(P -> number_of_interior_lattice_points(P) == n, starting_polygons) || error("all polygons must have the same number of interior lattice points")
 
-    st = SubpolygonStorage{T}(starting_polygons, out_path)
+    st = subpolygon_storage(starting_polygons, out_path)
     Ps, current_area = next_polygons!(st)
     total_count = length(Ps)
 
@@ -149,9 +91,9 @@ function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path
     logging && @info "Volume: $current_area. Number of polygons: $(length(Ps)). Total: $total_count"
 
     if ismissing(out_path)
-        return Ps = vcat(collect.(values(st.dict))...)
+        return Ps = vcat(values(st.polygons_dict)...)
     else
-        return st
+        return nothing
     end
                     
 end
