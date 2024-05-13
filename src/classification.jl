@@ -26,7 +26,8 @@ function classify_maximal_polygons_genus_one_m1p1(k :: T; primitive :: Bool = fa
         P = k_rational_hull(k, intersect_halfplanes([H1,H2,H_upper,H_lower]); primitive)
         interior_lattice_points(P) == [zero(LatticePoint{T})] || continue
         all(Q -> !are_equivalent(P,Q), Ps) || continue
-        is_maximal(P; primitive) || continue
+
+        !primitive && (is_maximal(P) || continue)
 
         push!(Ps, normal_form(P))
 
@@ -72,7 +73,8 @@ function classify_maximal_polygons_genus_one_m1p2(k :: T; primitive :: Bool = fa
             P = k_rational_hull(k, intersect_halfplanes([Ha1,Ha2,Hb1,Hb2,H_upper,H_lower]); primitive)
             interior_lattice_points(P) == [zero(LatticePoint{T})] || continue
             all(Q -> !are_equivalent(P,Q), Ps) || continue
-            is_maximal(P; primitive) || continue
+
+            !primitive && (is_maximal(P) || continue)
 
             push!(Ps, normal_form(P))
         end
@@ -158,7 +160,8 @@ function classify_maximal_polygons_genus_one_m2p2(k :: T, q :: Int; primitive ::
                 P = k_rational_hull(k, intersect_halfplanes([Ha1,Ha2,Hb1,Hb2,Hc1,Hc2,H_upper,H_lower]); primitive)
                 interior_lattice_points(P) == [zero(LatticePoint{T})] || continue
                 all(Q -> !are_equivalent(P,Q), Ps) || continue
-                is_maximal(P; primitive) || continue
+
+                !primitive && (is_maximal(P) || continue)
 
                 push!(Ps, normal_form(P))
             end
