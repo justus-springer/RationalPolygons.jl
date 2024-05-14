@@ -9,8 +9,8 @@ lattice point that can be realized in $\mathbb{Q} \times [-1,1]$.
 function classify_maximal_polygons_genus_one_m1p1(k :: T; primitive :: Bool = false) where {T <: Integer}
     Ps = RationalPolygon{T}[]
 
-    A = convex_hull(RationalPoint{T}.([(-1,0),(0,1),(-1,1)]), k)
-    B = convex_hull(RationalPoint{T}.([(-1,0),(1,0),(2,1),(-1,1)]), k)
+    A = RationalPolygon(SA[-k 0 -k ; 0 k k], k)
+    B = RationalPolygon(SA[-k k 2k -k ; 0 0 k k], k)
 
     vs = [v for v ∈ k_rational_points(k,A; primitive) if v[2] > 0]
     ws = [w for w ∈ k_rational_points(k,B; primitive) if w[2] > 0]
@@ -47,8 +47,8 @@ lattice point that can be realized in $\mathbb{Q} \times [-1,2]$.
 function classify_maximal_polygons_genus_one_m1p2(k :: T; primitive :: Bool = false) where {T <: Integer}
     Ps = RationalPolygon{T}[]
 
-    A = convex_hull(RationalPoint{T}.([(-1,1),(0,1),(0,2),(-2,2)]), k)
-    B = convex_hull(RationalPoint{T}.([(-1,0),(1,0),(3,-1),(-2,-1)]), k)
+    A = RationalPolygon(SA[-2k -k 0 0 ; 2k k k 2k], k)
+    B = RationalPolygon(SA[-2k 3k k -k ; -k -k 0 0], k)
 
     a1,a2 = RationalPoint{T}(-1,1), RationalPoint{T}(0,1)
     b1,b2 = RationalPoint{T}(-1,0), RationalPoint{T}(1,0)
@@ -96,27 +96,26 @@ function classify_maximal_polygons_genus_one_m2p2(k :: T, q :: Int; primitive ::
     
     Ps = RationalPolygon{T}[]
 
-    A = convex_hull(RationalPoint{T}[(-1,1),(0,1),(0,2),(-2,2)], k)
-    B = convex_hull(RationalPoint{T}[(-1,0),(1,0),(3,-1),(-2,-1)], k)
+    A = RationalPolygon(SA[-2k -k 0 0 ; 2k k k 2k], k)
 
     a1,a2 = RationalPoint{T}(-1,1), RationalPoint{T}(0,1)
     b1,b2 = RationalPoint{T}(-1,0), RationalPoint{T}(1,0)
 
     if q == 1
-        B1 = convex_hull(RationalPoint{T}[(-2,-1),(-1,-1),(-1,0)], k)
-        B2 = convex_hull(RationalPoint{T}[(-2,-1),(3,-1),(1,0)], k)
-        C = convex_hull(RationalPoint{T}[(-2,-1),(-3,-2),(-2,-2),(-1,-1)], k)
+        B1 = RationalPolygon(SA[-2k -k -k ; -k -k 0], k)
+        B2 = RationalPolygon(SA[-2k 3k k ; -k -k 0], k)
+        C = RationalPolygon(SA[-3k -2k -k -2k ; -2k -2k -k -k], k)
         c1,c2 = RationalPoint{T}(-2,-1), RationalPoint{T}(-1,-1)
     elseif q == 2
-        B1 = convex_hull(RationalPoint{T}[(-2,-1),(0,-1),(-1,0)], k)
-        B2 = convex_hull(RationalPoint{T}[(-1,-1),(3,-1),(1,0)], k)
-        C = convex_hull(RationalPoint{T}[(-1,-1),(-2,-2),(0,-2),(0,-1)], k)
+        B1 = RationalPolygon(SA[-2k 0 -k ; -k -k 0], k)
+        B2 = RationalPolygon(SA[-k 3k k ; -k -k 0], k)
+        C = RationalPolygon(SA[-2k 0 0 -k ; -2k -2k -k -k], k)
         c1,c2 = (-one(T), -one(T)), (zero(T), -one(T))
         c1,c2 = RationalPoint{T}(-1,-1), RationalPoint{T}(0,-1)
     elseif q == 3
-        B1 = convex_hull(RationalPoint{T}[(-2,-1),(1,-1),(-1,0)], k)
-        B2 = convex_hull(RationalPoint{T}[(0,-1),(3,-1),(1,0)], k)
-        C = convex_hull(RationalPoint{T}[(0,-1),(0,-2),(2,-2),(1,-1)], k)
+        B1 = RationalPolygon(SA[-2k k -k ; -k -k 0], k)
+        B2 = RationalPolygon(SA[0 3k k ; -k -k 0], k)
+        C = RationalPolygon(SA[0 2k k 0 ; -2k -2k -k -k], k)
         c1,c2 = RationalPoint{T}(0,-1), RationalPoint{T}(1,-1)
     end
     
