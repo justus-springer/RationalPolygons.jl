@@ -17,13 +17,13 @@ struct RationalPolygon{T<:Integer,N,M}
                     rationality :: T; 
                     is_normal_form :: Bool = false,
                     vertex_offset :: Int = 1, 
-                    clockwise :: Bool = false) where {N, T <: Integer} =
+                    clockwise :: Bool = false) where {T <: Integer} =
     RationalPolygon(hcat(scaled_points...), rationality; is_normal_form, vertex_offset, clockwise)
 
     function RationalPolygon(points :: Vector{RationalPoint{T}};
             is_normal_form :: Bool = false,
             vertex_offset :: Int = 1, 
-            clockwise :: Bool = false) where {N, T <: Integer}
+            clockwise :: Bool = false) where {T <: Integer}
         k = lcm(rationality.(points))
         scaled_points = numerator.(k .* points)
         return RationalPolygon(scaled_points, k; is_normal_form, vertex_offset, clockwise)
@@ -33,7 +33,7 @@ struct RationalPolygon{T<:Integer,N,M}
             rationality :: T;
             is_normal_form :: Bool = false, 
             vertex_offset :: Int = 1, 
-            clockwise :: Bool = false) where {N, M, T <: Integer}
+            clockwise :: Bool = false) where {T <: Integer}
         scaled_points = numerator.(rationality .* points)
         return RationalPolygon(scaled_points, rationality; is_normal_form, vertex_offset)
     end
