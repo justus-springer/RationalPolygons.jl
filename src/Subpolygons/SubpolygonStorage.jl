@@ -74,7 +74,7 @@ function save!(st :: InMemorySubpolygonStorage{T}, Ps :: Vector{<:RationalPolygo
     end
 end
 
-function next_polygons!(st :: InMemorySubpolygonStorage{T}) where {T <: Integer}
+function next_polygons(st :: InMemorySubpolygonStorage{T}) where {T <: Integer}
     a = maximum(filter(b -> b < st.last_volume, keys(st.polygons_dict)))
     return (st.polygons_dict[a], a)
 end
