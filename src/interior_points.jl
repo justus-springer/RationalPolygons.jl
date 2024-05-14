@@ -1,5 +1,7 @@
 
-function _generic_k_rational_points(k :: T, P :: RationalPolygon{T,N}; mode :: Symbol = :interior) where {N,T <: Integer}
+function _generic_k_rational_points(k :: T, P :: RationalPolygon{T,N}; 
+        mode :: Symbol = :interior,
+        primitive :: Bool = false) where {N,T <: Integer}
 
     mode ∈ [:interior, :integer_hull, :boundary, :all] || error("mode must be one of :interior, :integer_hull, :boundary and :all")
 
@@ -51,19 +53,28 @@ function _generic_k_rational_points(k :: T, P :: RationalPolygon{T,N}; mode :: S
 
     end
 
+    primitive && filter!(p -> is_primitive(k * p), res)
+
     return res
 
 end
 
 
 @doc raw"""
-    boundary_k_rational_points(k :: T, P :: RationalPolygon{T,N}) where {T <: Integer} 
+    boundary_k_rational_points(k :: T, P :: RationalPolygon{T,N}; primitive :: Bool = false) where {T <: Integer} 
 
 Return all `k`-rational points on the boundary of `P`.
 
 """
-boundary_k_rational_points(k :: T, P :: RationalPolygon{T,N}) where {N,T <: Integer} =
-unique(vcat([k_rational_points_on_line_segment(k, P[i], P[i+1]; interior = false) for i = 1 : N]...))
+function boundary_k_rational_points(k :: T, P :: RationalPolygon{T,N}; primitive :: Bool = false) where {N,T <: Integer}
+
+    res = unique(vcat([k_rational_points_on_line_segment(k, P[i], P[i+1]; interior = false) for i = 1 : N]...))
+    primitive && filter!(p -> is_primitive(k * p), res)
+
+    return res
+
+end
+
 
 
 @doc raw"""
@@ -73,7 +84,11 @@ Return the number of `k`-rational points on the boundary of `P`.
 
 """
 number_of_boundary_k_rational_points(k :: T, P :: RationalPolygon{T}) where {T <: Integer} =
-length(boundary_k_rational_points(k,P))
+length(boundary_k_rational_points(k,P; primitive = false))
+
+number_of_primitive_boundary_k_rational_points(k :: T, P :: RationalPolygon{T}) where {T <: Integer} =
+length(boundary_k_rational_points(k,P; primitive = true))
+
 
 
 @doc raw"""
@@ -82,8 +97,8 @@ length(boundary_k_rational_points(k,P))
 Return all lattice points on the boundary of `P`.
 
 """
-boundary_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
-numerator.(boundary_k_rational_points(T(1), P))
+boundary_lattice_points(P :: RationalPolygon{T}; primitive :: Bool = false) where {T <: Integer} =
+numerator.(boundary_k_rational_points(T(1), P; primitive))
 
 
 @doc raw"""
@@ -93,7 +108,10 @@ Return the number of lattice points on the boundary of `P`.
 
 """
 number_of_boundary_lattice_points(P :: RationalPolygon) =
-length(boundary_lattice_points(P))
+length(boundary_lattice_points(P; primitive = false))
+
+number_of_primitive_boundary_lattice_points(P :: RationalPolygon) =
+length(boundary_lattice_points(P; primitive = true))
 
 
 @doc raw"""
@@ -102,8 +120,8 @@ length(boundary_lattice_points(P))
 Return all `k`-rational points in the interior of `P`.
 
 """
-interior_k_rational_points(k :: T, P :: RationalPolygon{T}) where {T <: Integer} =
-_generic_k_rational_points(k, P; mode = :interior)
+interior_k_rational_points(k :: T, P :: RationalPolygon{T}; primitive = false) where {T <: Integer} =
+_generic_k_rational_points(k, P; mode = :interior, primitive)
 
 
 @doc raw"""
@@ -113,8 +131,10 @@ Return the number of `k`-rational points in the interior of `P`.
 
 """
 number_of_interior_k_rational_points(k :: T, P :: RationalPolygon{T}) where {T <: Integer} =
-length(interior_k_rational_points(k,P))
+length(interior_k_rational_points(k,P; primitive = false))
 
+number_of_primitive_interior_k_rational_points(k :: T, P :: RationalPolygon{T}) where {T <: Integer} =
+length(interior_k_rational_points(k,P; primitive = true))
 
 @doc raw"""
     interior_lattice_points(k :: T, P :: RationalPolygon{T}) where {T <: Integer}
@@ -122,8 +142,8 @@ length(interior_k_rational_points(k,P))
 Return all `k`-rational points in the interior of `P`.
 
 """
-interior_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
-numerator.(interior_k_rational_points(T(1), P))
+interior_lattice_points(P :: RationalPolygon{T}; primitive = false) where {T <: Integer} =
+numerator.(interior_k_rational_points(T(1), P; primitive))
 
 
 @doc raw"""
@@ -133,7 +153,10 @@ Return the number of `k`-rational points in the interior of `P`.
 
 """
 number_of_interior_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
-length(interior_lattice_points(P))
+length(interior_lattice_points(P; primitive = false))
+
+number_of_primitive_interior_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
+length(interior_lattice_points(P; primitive = true))
 
 
 @doc raw"""
@@ -142,8 +165,8 @@ length(interior_lattice_points(P))
 Return all `k`-rational points in `P`.
 
 """
-k_rational_points(k :: T, P :: RationalPolygon{T}) where {T <: Integer} =
-_generic_k_rational_points(k, P; mode = :all)
+k_rational_points(k :: T, P :: RationalPolygon{T}; primitive = false) where {T <: Integer} =
+_generic_k_rational_points(k, P; mode = :all, primitive)
 
 
 @doc raw"""
@@ -153,7 +176,10 @@ Return the number of `k`-rational points in `P`.
 
 """
 number_of_k_rational_points(k :: T, P :: RationalPolygon{T}) where {T <: Integer} =
-length(k_rational_points(k,P))
+length(k_rational_points(k,P; primitive = false))
+
+number_of_primitive_k_rational_points(k :: T, P :: RationalPolygon{T}) where {T <: Integer} =
+length(k_rational_points(k,P; primitive = true))
 
 
 @doc raw"""
@@ -162,8 +188,8 @@ length(k_rational_points(k,P))
 Return all lattice points in `P`.
 
 """
-lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
-numerator.(k_rational_points(T(1), P))
+lattice_points(P :: RationalPolygon{T}; primitive = false) where {T <: Integer} =
+numerator.(k_rational_points(T(1), P; primitive))
 
 
 @doc raw"""
@@ -173,12 +199,14 @@ Return the number of lattice points in `P`.
 
 """
 number_of_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
-length(lattice_points(P))
+length(lattice_points(P; primitive = false))
+
+number_of_primitive_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
+length(lattice_points(P; primitive = true))
 
 
-k_rational_hull(k :: T, P :: RationalPolygon{T}) where {T <: Integer} =
-convex_hull(_generic_k_rational_points(k, P; mode = :integer_hull), k)
+k_rational_hull(k :: T, P :: RationalPolygon{T}; primitive = false) where {T <: Integer} =
+convex_hull(_generic_k_rational_points(k, P; mode = :all, primitive), k)
 
-integer_hull(P :: RationalPolygon{T}) where {T <: Integer} =
-k_rational_hull(T(1), P)
-
+integer_hull(P :: RationalPolygon{T}; primitive = false) where {T <: Integer} =
+k_rational_hull(T(1), P; primitive)

@@ -6,29 +6,42 @@ Remove the `i`-th vertex from `P`, i.e. return the convex hull of all
 `k`-rational points of `P` except the `i`-th vertex.
 
 """
-function remove_vertex(P :: RationalPolygon{T,N}, i :: Int) where {N,T <: Integer}
-    u, v, w = lattice_vertex(P, i-1), lattice_vertex(P,i), lattice_vertex(P,i+1)
-    p1, p2 = u - v, w - v
-    q1, q2 = primitivize(p1), primitivize(p2)
-    hb = [p + v for p ∈ hilbert_basis(q1,q2)]
+function remove_vertex(P :: RationalPolygon{T,N}, i :: Int; primitive :: Bool = false) where {N,T <: Integer}
 
-    vs = LatticePoint{T}[]
-    !is_primitive(p1) && push!(vs, u)
-    push!(vs,first(hb))
-    for j = 2 : length(hb)-1
-        if hb[j]-hb[j-1] != hb[j+1]-hb[j]
-            push!(vs, hb[j])
+    if primitive
+        k = rationality(P)
+        v = vertex(P,i)
+        ps = k_rational_points(k, P; primitive)
+        filter!(p -> p != v, ps)
+        return convex_hull(ps, k)
+    else
+        # the shortcut via hilbert bases only works in the non-primitive
+        # case at the moment
+        u, v, w = lattice_vertex(P, i-1), lattice_vertex(P,i), lattice_vertex(P,i+1)
+        p1, p2 = u - v, w - v
+        q1, q2 = primitivize(p1), primitivize(p2)
+        hb = [p + v for p ∈ hilbert_basis(q1,q2)]
+        primitive && filter!(is_primitive, hb)
+
+        vs = LatticePoint{T}[]
+        !is_primitive(p1) && push!(vs, u)
+        push!(vs,first(hb))
+        for j = 2 : length(hb)-1
+            if hb[j]-hb[j-1] != hb[j+1]-hb[j]
+                push!(vs, hb[j])
+            end
         end
-    end
-    push!(vs,last(hb))
-    !is_primitive(p2) && push!(vs, w)
-    for j = i+2 : i+N-2
-        push!(vs, lattice_vertex(P,j))
-    end
+        push!(vs,last(hb))
+        !is_primitive(p2) && push!(vs, w)
+        for j = i+2 : i+N-2
+            push!(vs, lattice_vertex(P,j))
+        end
 
-    Q = RationalPolygon(vs, rationality(P))
+        Q = RationalPolygon(vs, rationality(P))
 
-    return Q
+        return Q
+
+    end
 
 end
 
@@ -42,7 +55,10 @@ and number of interior lattice points `n`, compute all subpolygons sharing
 the same rationality and number of interior lattice points.
 
 """
-function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path :: Union{Missing, String} = missing, logging = false) where {T <: Integer}
+function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; 
+        primitive :: Bool = false, 
+        out_path :: Union{Missing, String} = missing, 
+        logging = false) where {T <: Integer}
 
     logging && @info "Starting to compute subpolygons..."
 
@@ -74,7 +90,7 @@ function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path
             for i = lower_bound : upper_bound
                 P = Ps[i]
                 for j = 1 : number_of_vertices(P)
-                    Q = normal_form(remove_vertex(P,j))
+                    Q = normal_form(remove_vertex(P,j; primitive))
                     number_of_vertices(Q) > 2 || continue
                     number_of_interior_lattice_points(Q) == n || continue
                     push!(out_array[Threads.threadid()], Q)
