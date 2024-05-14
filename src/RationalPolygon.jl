@@ -3,39 +3,29 @@ struct RationalPolygon{T<:Integer,N,M}
     rationality :: T
     vertex_matrix :: SMatrix{2, N, T, M}
     is_normal_form :: Bool
-    vertex_offset :: Int
-    clockwise :: Bool
 
     RationalPolygon(vertex_matrix :: SMatrix{2,N,T,M},
                     rationality :: T; 
-                    is_normal_form :: Bool = false, 
-                    vertex_offset :: Int = 1, 
-                    clockwise :: Bool = false) where {N, M, T <: Integer} =
-    new{T,N,M}(rationality, vertex_matrix, is_normal_form, vertex_offset, clockwise)
+                    is_normal_form :: Bool = false) where {N, M, T <: Integer} =
+    new{T,N,M}(rationality, vertex_matrix, is_normal_form)
 
     RationalPolygon(scaled_points :: Vector{LatticePoint{T}}, 
                     rationality :: T; 
-                    is_normal_form :: Bool = false,
-                    vertex_offset :: Int = 1, 
-                    clockwise :: Bool = false) where {T <: Integer} =
-    RationalPolygon(hcat(scaled_points...), rationality; is_normal_form, vertex_offset, clockwise)
+                    is_normal_form :: Bool = false) where {T <: Integer} =
+    RationalPolygon(hcat(scaled_points...), rationality)
 
     function RationalPolygon(points :: Vector{RationalPoint{T}};
-            is_normal_form :: Bool = false,
-            vertex_offset :: Int = 1, 
-            clockwise :: Bool = false) where {T <: Integer}
+            is_normal_form :: Bool = false) where {T <: Integer}
         k = lcm(rationality.(points))
         scaled_points = numerator.(k .* points)
-        return RationalPolygon(scaled_points, k; is_normal_form, vertex_offset, clockwise)
+        return RationalPolygon(scaled_points, k; is_normal_form)
     end
 
     function RationalPolygon(points :: Vector{RationalPoint{T}}, 
             rationality :: T;
-            is_normal_form :: Bool = false, 
-            vertex_offset :: Int = 1, 
-            clockwise :: Bool = false) where {T <: Integer}
+            is_normal_form :: Bool = false) where {T <: Integer}
         scaled_points = numerator.(rationality .* points)
-        return RationalPolygon(scaled_points, rationality; is_normal_form, vertex_offset)
+        return RationalPolygon(scaled_points, rationality; is_normal_form)
     end
 
 end
@@ -63,8 +53,6 @@ vertex_matrix(P :: RationalPolygon{T,N}) where {N,T <: Integer} = P.vertex_matri
 
 is_normal_form(P :: RationalPolygon) = P.is_normal_form
 
-vertex_offset(P :: RationalPolygon{T,N}) where {N, T <: Integer} = P.vertex_offset
-
 clockwise(P :: RationalPolygon{T,N}) where {N, T <: Integer} = P.clockwise
 
 Base.:(==)(P1 :: RationalPolygon{T,N}, P2 :: RationalPolygon{T,N}) where {N,T <: Integer} =
@@ -74,9 +62,8 @@ Base.show(io :: IO, P :: RationalPolygon{T,N}) where {N,T <: Integer} =
 Base.print(io, "Rational polygon of rationality $(rationality(P)) with $(number_of_vertices(P)) vertices.")
 
 function lattice_vertex(P :: RationalPolygon{T,N}, i :: Int) where {N,T <: Integer}
-    V, o = vertex_matrix(P), vertex_offset(P)
-    s = clockwise(P) ? -1 : 1
-    i = mod(o + s * (i-1), 1:N)
+    V = vertex_matrix(P)
+    i = mod(i, 1:N)
     return V[:,i]
 end
 
