@@ -45,35 +45,16 @@ function remove_vertex(P :: RationalPolygon{T,N}, i :: Int; primitive :: Bool = 
 
 end
 
-
-
-@doc raw"""
-    subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path :: Union{Missing, String} = missing) where {T <: Integer}
-
-Given some rational polygons `starting_polygons` with shared rationality `k`
-and number of interior lattice points `n`, compute all subpolygons sharing
-the same rationality and number of interior lattice points.
-
-"""
-function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; 
-        primitive :: Bool = false, 
-        out_path :: Union{Missing, String} = missing, 
-        logging = false) where {T <: Integer}
-
-    logging && @info "Starting to compute subpolygons..."
-
-    k = rationality(first(starting_polygons))
-    n = number_of_interior_lattice_points(first(starting_polygons))
-    all(P -> rationality(P) == k, starting_polygons) || error("all polygons must have the same rationality")
-    all(P -> number_of_interior_lattice_points(P) == n, starting_polygons) || error("all polygons must have the same number of interior lattice points")
-
-    st = subpolygon_storage(starting_polygons, out_path)
-    Ps, current_area = next_polygons!(st)
-    total_count = length(Ps)
+function subpolygons(st :: SubpolygonStorage{T};
+        primitive :: Bool = false,
+        logging :: Bool = false) where {T <: Integer}
+    
+    n = number_of_interior_lattice_points(st)
+    Ps, current_area = next_polygons(st)
 
     while current_area > 3
 
-        logging && @info "Volume: $current_area. Number of polygons: $(length(Ps)). Total: $total_count"
+        logging && @info "Volume: $current_area. Number of polygons: $(length(Ps)). Total: $(total_count(st))"
 
         N = length(Ps)
         num_blocks = 2 * Threads.nthreads()
@@ -98,19 +79,34 @@ function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}};
             end
         end
         save!(st, vcat(out_array...))
+        mark_volume_completed(st, current_area)
         
-        Ps, current_area = next_polygons!(st)
-        total_count += length(Ps)
+        Ps, current_area = next_polygons(st)
         
     end
 
-    logging && @info "Volume: $current_area. Number of polygons: $(length(Ps)). Total: $total_count"
+    logging && @info "Found a total of $(total_count(st)) subpolygons"
 
-    if ismissing(out_path)
-        return Ps = vcat(values(st.polygons_dict)...)
-    else
-        return nothing
-    end
+    return return_value(st)
+
+end
+
+
+@doc raw"""
+    subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path :: Union{Missing, String} = missing) where {T <: Integer}
+
+Given some rational polygons `starting_polygons` with shared rationality `k`
+and number of interior lattice points `n`, compute all subpolygons sharing
+the same rationality and number of interior lattice points.
+
+"""
+function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; 
+        primitive :: Bool = false, 
+        out_path :: Union{Missing, String} = missing, 
+        logging = false) where {T <: Integer}
+
+    st = subpolygon_storage(starting_polygons, out_path)
+    return subpolygons(st; primitive, logging)
                     
 end
 

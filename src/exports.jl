@@ -1,3 +1,6 @@
+export mark_volume_completed
+export return_value
+export parse_rational_polygons_file
 export number_of_primitive_boundary_k_rational_points
 export number_of_primitive_boundary_lattice_points
 export number_of_primitive_interior_k_rational_points
@@ -20,7 +23,7 @@ export InMemorySubpolygonStorage
 export subpolygon_storage
 export OnDiskSubpolygonStorage
 export save!
-export next_polygons!
+export next_polygons
 export vertex
 export lattice_vertex
 export area
