@@ -92,8 +92,11 @@ RationalPoint{T}
 
 vertices(P :: RationalPolygon{T,N}) where {N,T <: Integer} = collect(P)
 
+affine_halfplane(P :: RationalPolygon{T,N}, i :: Int) where {N,T <: Integer} =
+affine_halfplane(line_through_points(P[i], P[i+1]))
+
 affine_halfplanes(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
-[affine_halfplane(line_through_points(P[i], P[mod(i+1,1:N)])) for i = 1 : N]
+[affine_halfplane(P, i) for i = 1 : N]
 
 Base.in(x :: Point{T}, P :: RationalPolygon{T,N}) where {N,T <: Integer} =
 all(H -> x ∈ H, affine_halfplanes(P))
@@ -115,11 +118,20 @@ the same rationality and number of interior lattice points.
 """
 function is_maximal(P :: RationalPolygon{T,N}) where {N,T <: Integer}
     k = rationality(P)
-    ps = k_rational_points(k,P)
-    Q = intersect_halfplanes(affine_halfplanes(P) .- 1 // k)
+    Hs = affine_halfplanes(P)
+    Q = intersect_halfplanes(Hs .- 1 // k)
+
+    nonempty_edges_indices = filter(i -> !isempty(integral_points_on_line_segment(P[i], P[i+1])), 1 : N)
+    integral_vertices_indices = filter(i -> is_integral(P[i]), 1 : N)
+
     for p ∈ boundary_k_rational_points(k, Q)
-        new_P = convex_hull([ps ; [p]], k)
-        number_of_interior_lattice_points(new_P) <= number_of_interior_lattice_points(P) && return false
+        if all(i -> p ∈ Hs[i], nonempty_edges_indices) &&
+           all(i -> p ∈ Hs[mod(i-1,1:N)] || p ∈ Hs[i], integral_vertices_indices)
+            return false
+        end
     end
+
     return true
+
 end
+
