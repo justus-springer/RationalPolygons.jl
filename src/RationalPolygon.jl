@@ -2,30 +2,35 @@
 struct RationalPolygon{T<:Integer,N,M}
     rationality :: T
     vertex_matrix :: SMatrix{2, N, T, M}
-    is_normal_form :: Bool
+    is_unimodular_normal_form :: Bool
+    is_affine_normal_form :: Bool
 
     RationalPolygon(vertex_matrix :: SMatrix{2,N,T,M},
                     rationality :: T; 
-                    is_normal_form :: Bool = false) where {N, M, T <: Integer} =
-    new{T,N,M}(rationality, vertex_matrix, is_normal_form)
+                    is_unimodular_normal_form :: Bool = false,
+                    is_affine_normal_form :: Bool = false) where {N, M, T <: Integer} =
+    new{T,N,M}(rationality, vertex_matrix, is_unimodular_normal_form, is_affine_normal_form)
 
     RationalPolygon(scaled_points :: Vector{LatticePoint{T}}, 
                     rationality :: T; 
-                    is_normal_form :: Bool = false) where {T <: Integer} =
-    RationalPolygon(hcat(scaled_points...), rationality)
+                    is_unimodular_normal_form :: Bool = false,
+                    is_affine_normal_form :: Bool = false) where {T <: Integer} =
+    RationalPolygon(hcat(scaled_points...), rationality; is_unimodular_normal_form, is_affine_normal_form)
 
     function RationalPolygon(points :: Vector{RationalPoint{T}};
-            is_normal_form :: Bool = false) where {T <: Integer}
+            is_unimodular_normal_form :: Bool = false,
+            is_affine_normal_form :: Bool = false) where {T <: Integer}
         k = lcm(rationality.(points))
         scaled_points = numerator.(k .* points)
-        return RationalPolygon(scaled_points, k; is_normal_form)
+        return RationalPolygon(scaled_points, k; is_unimodular_normal_form, is_affine_normal_form)
     end
 
     function RationalPolygon(points :: Vector{RationalPoint{T}}, 
             rationality :: T;
-            is_normal_form :: Bool = false) where {T <: Integer}
+            is_unimodular_normal_form :: Bool = false,
+            is_affine_normal_form :: Bool = false) where {T <: Integer}
         scaled_points = numerator.(rationality .* points)
-        return RationalPolygon(scaled_points, rationality; is_normal_form)
+        return RationalPolygon(scaled_points, rationality; is_unimodular_normal_form, is_affine_normal_form)
     end
 
 end
@@ -51,7 +56,9 @@ rationality(P :: RationalPolygon{T,N}) where {N,T <: Integer} = P.rationality
 
 vertex_matrix(P :: RationalPolygon{T,N}) where {N,T <: Integer} = P.vertex_matrix
 
-is_normal_form(P :: RationalPolygon) = P.is_normal_form
+is_unimodular_normal_form(P :: RationalPolygon) = P.is_unimodular_normal_form
+
+is_affine_normal_form(P :: RationalPolygon) = P.is_affine_normal_form
 
 clockwise(P :: RationalPolygon{T,N}) where {N, T <: Integer} = P.clockwise
 

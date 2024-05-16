@@ -95,9 +95,12 @@ export affine_halfplane
 export is_primitive
 export integer_hull
 export k_rational_hull
-export normal_form
-export is_normal_form
-export are_equivalent
+export unimodular_normal_form
+export is_unimodular_normal_form
+export are_unimodular_equivalent
+export affine_normal_form
+export is_affine_normal_form
+export are_affine_equivalent
 export is_maximal
 export cls_cone_normal_form
 export hirzebruch_jung
@@ -111,4 +114,4 @@ export classify_maximal_polygons_genus_one_m1p1
 export classify_maximal_polygons_genus_one_m1p2
 export classify_maximal_polygons_genus_one
 export lattice_edge_areas
-export special_vertices
+export area_maximizing_vertices

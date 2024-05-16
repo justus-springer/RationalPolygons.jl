@@ -159,7 +159,7 @@ function save!(st :: OnDiskSubpolygonStorage{T}, Ps :: Vector{<:RationalPolygon{
     files = Dict([a => open(joinpath(st.directory, "$(st.file_prefix)$a.txt"), "a") for a ∈ as])
 
     for P ∈ Ps
-        P = normal_form(P)
+        P = unimodular_normal_form(P)
         a = area(P)
         if !haskey(st.hashes_dict, a) 
             st.hashes_dict[a] = Set{RationalPolygon{T}}()

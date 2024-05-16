@@ -71,7 +71,7 @@ function subpolygons(st :: SubpolygonStorage{T};
             for i = lower_bound : upper_bound
                 P = Ps[i]
                 for j = 1 : number_of_vertices(P)
-                    Q = normal_form(remove_vertex(P,j; primitive))
+                    Q = unimodular_normal_form(remove_vertex(P,j; primitive))
                     number_of_vertices(Q) > 2 || continue
                     number_of_interior_lattice_points(Q) == n || continue
                     push!(out_array[Threads.threadid()], Q)

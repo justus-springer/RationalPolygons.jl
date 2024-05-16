@@ -1,5 +1,11 @@
 
-# an elementary implementation of the hermite normal form for 2xn matrices
+@doc raw"""
+    hnf!(A :: MMatrix{2,N,T}) where {N,T<:Integer}
+
+An elementary implementation of the hermite normal form for 2xn integral
+matrices.
+
+"""
 function hnf!(A :: MMatrix{2,N,T}) where {N,T<:Integer}
 
     A[1,1] == 0 && mul!(A, SMatrix{2,2,T,4}(0,1,1,0), copy(A))
@@ -26,39 +32,144 @@ function hnf!(A :: MMatrix{2,N,T}) where {N,T<:Integer}
 
 end
 
-
 lattice_edge_areas(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
 [abs(det(P[i+1] - P[i], P[i] - P[i-1])) for i = 1 : N]
 
-function special_vertices(P :: RationalPolygon{T,N}) where {N,T <: Integer}
+function area_maximizing_vertices(P :: RationalPolygon{T,N}) where {N,T <: Integer}
     ea = lattice_edge_areas(P)
     m = maximum(ea)
     return filter(i -> ea[i] == m, 1 : N)
 end
 
-function normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer}
+@doc raw"""
+    unimodular_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 
-    is_normal_form(P) && return P
+Return a unimodular normal form of a rational polygon. Two rational polygons have
+the same unimodular normal form if and only if the can be transformed into each
+other by applying a unimodular transformation.
+
+"""
+function unimodular_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer}
+
+    is_unimodular_normal_form(P) && return P
 
     V = vertex_matrix(P)
 
+    # For all area maximizing vertices `v`, we consider the vertex numbering
+    # starting at `v` and going clockwise or counterclockwise. For all these
+    # possible numberings, we compute the hermite normal form of the vertex 
+    # matrix
     As = MMatrix{2,N,T,2N}[]
-    for i ∈ special_vertices(P)
+    for i ∈ area_maximizing_vertices(P)
         push!(As, MMatrix{2,N,T,2N}([V[:,i:end] V[:,begin:i-1]]))
         push!(As, MMatrix{2,N,T,2N}([V[:,i:-1:begin] V[:,end:-1:i+1]]))
     end
     hnf!.(As)
 
-    # take the lexicographical minumum of all the hermite normal forms
-    _lt(A, B) = vec(A) < vec(B)
-    A = sort(As; lt = _lt)[1]
+    # We take the normal form to be the lexicographical minimum of all those
+    # hermite normal forms
+    A = argmin(vec, As)
 
-    Q = RationalPolygon(convert(SMatrix,A), rationality(P); is_normal_form = true) 
+    Q = RationalPolygon(convert(SMatrix,A), rationality(P); is_unimodular_normal_form = true) 
 
     return Q
 
 end
 
-function are_equivalent(P :: RationalPolygon, Q :: RationalPolygon)
-    return normal_form(P) == normal_form(Q)
+
+@doc raw"""
+    are_unimodular_equivalent(P :: RationalPolygon, Q :: RationalPolygon)   
+
+Checks whether two rational polygons are equivalent by a unimodular
+transformation.
+
+"""
+are_unimodular_equivalent(P :: RationalPolygon, Q :: RationalPolygon) =
+unimodular_normal_form(P) == unimodular_normal_form(Q)
+
+
+@doc raw"""
+    function _special_vertices_align(k :: T,
+        A1 :: SMatrix{2,N,T}, i1 :: Int, o1 :: Bool,
+        A2 :: SMatrix{2,N,T}, i2 :: Int, o2 :: Bool) where {N, T <: Integer}
+
+This is a helper function for `affine_normal_form`. It checks, whether two
+special vertices of two `k`-rational polygons can be sent to each other via an
+affine unimodular transformation. The matrices `A1, A2` are the vertex matrices
+of the polygons, `i1, i2` are the indices of the special vertices and `o1, o2`
+are the orientations, i.e. whether the vertices of `A1` and `A2` are sorted
+clockwise or counterclockwise.
+
+"""
+function _special_vertices_align(k :: T,
+        A1 :: SMatrix{2,N,T}, i1 :: Int, o1 :: Bool,
+        A2 :: SMatrix{2,N,T}, i2 :: Int, o2 :: Bool) where {N, T <: Integer}
+    s1 = o1 ? -1 : 1
+    s2 = o2 ? -1 : 1
+    v1, v2, v3 = A1[:,mod(i1-s1,1:N)], A1[:,mod(i1,1:N)], A1[:,mod(i1+s1,1:N)]
+    w1, w2, w3 = A2[:,mod(i2-s2,1:N)], A2[:,mod(i2,1:N)], A2[:,mod(i2+s2,1:N)]
+    d1, d2, d3 = det(w2,w3), det(w3,w1), det(w1,w2)
+    d = d1 + d2 + d3
+    b1 = (v1[1] * d1 + v2[1] * d2 + v3[1] * d3) // d
+    b2 = (v1[2] * d1 + v2[2] * d2 + v3[2] * d3) // d
+    return b1 % k == 0 && b2 % k == 0
 end
+
+@doc raw"""
+    affine_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer}   
+
+Return a affine normal form of a rational polygon. Two rational polygons have
+the same affine normal form if and only if the can be transformed into each
+other by applying an affine unimodular transformation.
+
+"""
+function affine_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer}
+    is_affine_normal_form(P) && return P
+
+    V = vertex_matrix(P)
+    k = rationality(P)
+
+    As = MMatrix{2,N,T,2N}[]
+    is = area_maximizing_vertices(P)
+    for i ∈ is
+        # move the vertex to the origin
+        A = V .- lattice_vertex(P,i)
+        push!(As, MMatrix{2,N,T,2N}([A[:,i+1:end] A[:,begin:i]]))
+        push!(As, MMatrix{2,N,T,2N}([A[:,i-1:-1:begin] A[:,end:-1:i]]))
+    end
+    hnf!.(As)
+
+    A = argmin(vec, As)
+    special_vertices = Tuple{Int,Bool}[]
+    for j = 1 : length(As)
+        if As[j] == A
+            (l,o) = divrem(j+1,2)
+            push!(special_vertices, (is[l], o == 1))
+        end
+    end
+    A = convert(SMatrix,A)
+
+    for x = 0 : k-1, y = 0 : k-1
+        At = A .+ LatticePoint{T}(x,y)
+        if any(sv -> _special_vertices_align(k, At, N, false, V, sv[1], sv[2]), special_vertices)
+            A = At
+            break
+        end
+    end
+
+    Q = RationalPolygon(A, rationality(P); is_affine_normal_form = true) 
+
+    return Q
+
+end
+
+
+@doc raw"""
+    are_affine_equivalent(P :: RationalPolygon, Q :: RationalPolygon)   
+
+Checks whether two rational polygons are equivalent by an affine unimodular
+transformation.
+
+"""
+are_affine_equivalent(P :: RationalPolygon, Q :: RationalPolygon) =
+affine_normal_form(P) == affine_normal_form(Q)
