@@ -7,7 +7,6 @@ lattice point that can be realized in $\mathbb{Q} \times [-1,1]$.
 
 """
 function classify_maximal_polygons_genus_one_m1p1(k :: T; primitive :: Bool = false) where {T <: Integer}
-    Ps = RationalPolygon{T}[]
 
     A = RationalPolygon(SA[-k 0 -k ; 0 k k], k)
     B = RationalPolygon(SA[-k k 2k -k ; 0 0 k k], k)
@@ -15,22 +14,36 @@ function classify_maximal_polygons_genus_one_m1p1(k :: T; primitive :: Bool = fa
     vs = [v for v ∈ k_rational_points(k,A; primitive) if v[2] > 0]
     ws = [w for w ∈ k_rational_points(k,B; primitive) if w[2] > 0]
 
-    for v ∈ vs, w ∈ ws
-        H1 = affine_halfplane(v,RationalPoint{T}(-1,0))
-        H2 = affine_halfplane(RationalPoint{T}(1,0),w)
-        w ∈ H1 && v ∈ H2 || continue
+    Pss = Vector{RationalPolygon{T}}[]
+    for k = 1 : Threads.nthreads()
+        push!(Pss, RationalPolygon{T}[])
+    end
 
-        H_upper = affine_halfplane(RationalPoint{T}(0,-1),-T(1))
-        H_lower = affine_halfplane(RationalPoint{T}(0,1),-T(1))
+    Threads.@threads for v ∈ vs
+        for w ∈ ws
+            H1 = affine_halfplane(v,RationalPoint{T}(-1,0))
+            H2 = affine_halfplane(RationalPoint{T}(1,0),w)
+            w ∈ H1 && v ∈ H2 || continue
 
-        P = k_rational_hull(k, intersect_halfplanes([H1,H2,H_upper,H_lower]); primitive)
-        interior_lattice_points(P) == [zero(LatticePoint{T})] || continue
-        all(Q -> !are_unimodular_equivalent(P,Q), Ps) || continue
+            H_upper = affine_halfplane(RationalPoint{T}(0,-1),-T(1))
+            H_lower = affine_halfplane(RationalPoint{T}(0,1),-T(1))
 
-        !primitive && (is_maximal(P) || continue)
+            P = k_rational_hull(k, intersect_halfplanes([H1,H2,H_upper,H_lower]); primitive)
+            interior_lattice_points(P) == [zero(LatticePoint{T})] || continue
+            all(Q -> !are_unimodular_equivalent(P,Q), Pss[Threads.threadid()]) || continue
 
-        push!(Ps, unimodular_normal_form(P))
+            !primitive && (is_maximal(P) || continue)
 
+            push!(Pss[Threads.threadid()], unimodular_normal_form(P))
+        end
+    end
+
+    Ps = RationalPolygon{T}[]
+    for k = 1 : Threads.nthreads()
+        for P ∈ Pss[k]
+            all(Q -> !are_unimodular_equivalent(P,Q), Ps) || continue
+            push!(Ps, P)
+        end
     end
 
     return Ps
@@ -45,7 +58,6 @@ lattice point that can be realized in $\mathbb{Q} \times [-1,2]$.
 
 """
 function classify_maximal_polygons_genus_one_m1p2(k :: T; primitive :: Bool = false) where {T <: Integer}
-    Ps = RationalPolygon{T}[]
 
     A = RationalPolygon(SA[-2k -k 0 0 ; 2k k k 2k], k)
     B = RationalPolygon(SA[-2k 3k k -k ; -k -k 0 0], k)
@@ -56,27 +68,42 @@ function classify_maximal_polygons_genus_one_m1p2(k :: T; primitive :: Bool = fa
     vs = filter(v -> v[2] > 1, k_rational_points(k, A; primitive))
     ws = filter(w -> w[2] < 0, k_rational_points(k, B; primitive))
 
-    for v1 ∈ vs, v2 ∈ vs
-        Ha1, Ha2 = affine_halfplane(v1,a1), affine_halfplane(a2,v2)
-        v1 ∈ Ha2 && v2 ∈ Ha1 || continue
+    Pss = Vector{RationalPolygon{T}}[]
+    for k = 1 : Threads.nthreads()
+        push!(Pss, RationalPolygon{T}[])
+    end
 
-        for w1 ∈ ws, w2 ∈ ws
-            w1 ∈ Ha1 && w1 ∈ Ha2 && w2 ∈ Ha1 && w2 ∈ Ha2 || continue
+    Threads.@threads for v1 ∈ vs
+        for v2 ∈ vs
+            Ha1, Ha2 = affine_halfplane(v1,a1), affine_halfplane(a2,v2)
+            v1 ∈ Ha2 && v2 ∈ Ha1 || continue
 
-            Hb1, Hb2 = affine_halfplane(b1,w1), affine_halfplane(w2,b2)
-            w1 ∈ Hb2 && w2 ∈ Hb1 || continue
-            v1 ∈ Hb1 && v1 ∈ Hb2 && v2 ∈ Hb1 && v2 ∈ Hb2 || continue
+            for w1 ∈ ws, w2 ∈ ws
+                w1 ∈ Ha1 && w1 ∈ Ha2 && w2 ∈ Ha1 && w2 ∈ Ha2 || continue
 
-            H_upper = affine_halfplane(RationalPoint{T}(1,2),RationalPoint{T}(0,2))
-            H_lower = affine_halfplane(RationalPoint{T}(0,-1),RationalPoint{T}(1,-1))
+                Hb1, Hb2 = affine_halfplane(b1,w1), affine_halfplane(w2,b2)
+                w1 ∈ Hb2 && w2 ∈ Hb1 || continue
+                v1 ∈ Hb1 && v1 ∈ Hb2 && v2 ∈ Hb1 && v2 ∈ Hb2 || continue
 
-            P = k_rational_hull(k, intersect_halfplanes([Ha1,Ha2,Hb1,Hb2,H_upper,H_lower]); primitive)
-            interior_lattice_points(P) == [zero(LatticePoint{T})] || continue
+                H_upper = affine_halfplane(RationalPoint{T}(1,2),RationalPoint{T}(0,2))
+                H_lower = affine_halfplane(RationalPoint{T}(0,-1),RationalPoint{T}(1,-1))
+
+                P = k_rational_hull(k, intersect_halfplanes([Ha1,Ha2,Hb1,Hb2,H_upper,H_lower]); primitive)
+                interior_lattice_points(P) == [zero(LatticePoint{T})] || continue
+                all(Q -> !are_unimodular_equivalent(P,Q), Pss[Threads.threadid()]) || continue
+
+                !primitive && (is_maximal(P) || continue)
+
+                push!(Pss[Threads.threadid()], unimodular_normal_form(P))
+            end
+        end
+    end
+
+    Ps = RationalPolygon{T}[]
+    for k = 1 : Threads.nthreads()
+        for P ∈ Pss[k]
             all(Q -> !are_unimodular_equivalent(P,Q), Ps) || continue
-
-            !primitive && (is_maximal(P) || continue)
-
-            push!(Ps, unimodular_normal_form(P))
+            push!(Ps, P)
         end
     end
 
@@ -94,7 +121,6 @@ intersection with the `q`-th classification box, where `1 ≤ q ≤ 3`.
 """
 function classify_maximal_polygons_genus_one_m2p2(k :: T, q :: Int; primitive :: Bool = false) where {T <: Integer}
     
-    Ps = RationalPolygon{T}[]
 
     A = RationalPolygon(SA[-2k -k 0 0 ; 2k k k 2k], k)
 
@@ -131,39 +157,54 @@ function classify_maximal_polygons_genus_one_m2p2(k :: T, q :: Int; primitive ::
     ws2 = append!(k_rational_points(k,B2; primitive), us)
     filter!(w -> w[2] < 0, ws2)
 
-    for v1 ∈ vs, v2 ∈ vs
-        Ha1, Ha2 = affine_halfplane(v1,a1), affine_halfplane(a2,v2)
-        v1 ∈ Ha2 && v2 ∈ Ha1 || continue
-        
-        for w1 ∈ ws1, w2 ∈ ws2
-            w1 ∈ Ha1 && w1 ∈ Ha2 && w2 ∈ Ha1 && w2 ∈ Ha2 || continue
+    Pss = Vector{RationalPolygon{T}}[]
+    for k = 1 : Threads.nthreads()
+        push!(Pss, RationalPolygon{T}[])
+    end
 
-            Hb1, Hb2 = affine_halfplane(b1,w1), affine_halfplane(w2,b2)
-            w1 ∈ Hb2 && w2 ∈ Hb1 || continue
-            v1 ∈ Hb1 && v1 ∈ Hb2 && v2 ∈ Hb1 && v2 ∈ Hb2 || continue
+    Threads.@threads for v1 ∈ vs
+        for v2 ∈ vs
+            Ha1, Ha2 = affine_halfplane(v1,a1), affine_halfplane(a2,v2)
+            v1 ∈ Ha2 && v2 ∈ Ha1 || continue
+            
+            for w1 ∈ ws1, w2 ∈ ws2
+                w1 ∈ Ha1 && w1 ∈ Ha2 && w2 ∈ Ha1 && w2 ∈ Ha2 || continue
 
-            for u1 ∈ us, u2 ∈ us
+                Hb1, Hb2 = affine_halfplane(b1,w1), affine_halfplane(w2,b2)
+                w1 ∈ Hb2 && w2 ∈ Hb1 || continue
+                v1 ∈ Hb1 && v1 ∈ Hb2 && v2 ∈ Hb1 && v2 ∈ Hb2 || continue
 
-                u1 ∈ Ha1 && u1 ∈ Ha2 && u2 ∈ Ha1 && u2 ∈ Ha2 || continue
-                u1 ∈ Hb1 && u1 ∈ Hb2 && u2 ∈ Hb1 && u2 ∈ Hb2 || continue
+                for u1 ∈ us, u2 ∈ us
 
-                Hc1, Hc2 = affine_halfplane(c1,u1), affine_halfplane(u2,c2)
-                u1 ∈ Hc2 && u2 ∈ Hc1 || continue
+                    u1 ∈ Ha1 && u1 ∈ Ha2 && u2 ∈ Ha1 && u2 ∈ Ha2 || continue
+                    u1 ∈ Hb1 && u1 ∈ Hb2 && u2 ∈ Hb1 && u2 ∈ Hb2 || continue
 
-                v1 ∈ Hc1 && v1 ∈ Hc2 && v2 ∈ Hc1 && v2 ∈ Hc2 || continue
-                w1 ∈ Hc1 && w1 ∈ Hc2 && w2 ∈ Hc1 && w2 ∈ Hc2 || continue
+                    Hc1, Hc2 = affine_halfplane(c1,u1), affine_halfplane(u2,c2)
+                    u1 ∈ Hc2 && u2 ∈ Hc1 || continue
 
-                H_upper = affine_halfplane(RationalPoint{T}(1,2),RationalPoint{T}(0,2))
-                H_lower = affine_halfplane(RationalPoint{T}(0,-2),RationalPoint{T}(1,-2))
+                    v1 ∈ Hc1 && v1 ∈ Hc2 && v2 ∈ Hc1 && v2 ∈ Hc2 || continue
+                    w1 ∈ Hc1 && w1 ∈ Hc2 && w2 ∈ Hc1 && w2 ∈ Hc2 || continue
 
-                P = k_rational_hull(k, intersect_halfplanes([Ha1,Ha2,Hb1,Hb2,Hc1,Hc2,H_upper,H_lower]); primitive)
-                interior_lattice_points(P) == [zero(LatticePoint{T})] || continue
-                all(Q -> !are_unimodular_equivalent(P,Q), Ps) || continue
+                    H_upper = affine_halfplane(RationalPoint{T}(1,2),RationalPoint{T}(0,2))
+                    H_lower = affine_halfplane(RationalPoint{T}(0,-2),RationalPoint{T}(1,-2))
 
-                !primitive && (is_maximal(P) || continue)
+                    P = k_rational_hull(k, intersect_halfplanes([Ha1,Ha2,Hb1,Hb2,Hc1,Hc2,H_upper,H_lower]); primitive)
+                    interior_lattice_points(P) == [zero(LatticePoint{T})] || continue
+                    all(Q -> !are_unimodular_equivalent(P,Q), Pss[Threads.threadid()]) || continue
 
-                push!(Ps, unimodular_normal_form(P))
+                    !primitive && (is_maximal(P) || continue)
+
+                    push!(Pss[Threads.threadid()], unimodular_normal_form(P))
+                end
             end
+        end
+    end
+
+    Ps = RationalPolygon{T}[]
+    for k = 1 : Threads.nthreads()
+        for P ∈ Pss[k]
+            all(Q -> !are_unimodular_equivalent(P,Q), Ps) || continue
+            push!(Ps, P)
         end
     end
 
@@ -234,7 +275,6 @@ can be realized in $\mathbb{Q} \times [-1,1]$.
 
 """
 function classify_maximal_lattice_free_polygons_m1p1(k :: T) where {T <: Integer}
-    Ps = RationalPolygon{T}[]
 
     A = convex_hull(RationalPoint{T}.([(-1,0),(0,1),(-1,1)]), k)
     B = convex_hull(RationalPoint{T}.([(-1,0),(0,0),(1,1),(-1,1)]), k)
@@ -242,21 +282,35 @@ function classify_maximal_lattice_free_polygons_m1p1(k :: T) where {T <: Integer
     vs = [v for v ∈ k_rational_points(k,A) if v[2] > 0]
     ws = [w for w ∈ k_rational_points(k,B) if w[2] > 0]
 
-    for v ∈ vs, w ∈ ws
-        H1 = affine_halfplane(v,RationalPoint{T}(-1,0))
-        H2 = affine_halfplane(RationalPoint{T}(0,0),w)
-        w ∈ H1 && v ∈ H2 || continue
+    Pss = Vector{RationalPolygon{T}}[]
+    for k = 1 : Threads.nthreads()
+        push!(Pss, RationalPolygon{T}[])
+    end
 
-        H_upper = affine_halfplane(RationalPoint{T}(0,-1),-T(1))
-        H_lower = affine_halfplane(RationalPoint{T}(0,1),-T(1))
+    Threads.@threads for v ∈ vs
+        for w ∈ ws
+            H1 = affine_halfplane(v,RationalPoint{T}(-1,0))
+            H2 = affine_halfplane(RationalPoint{T}(0,0),w)
+            w ∈ H1 && v ∈ H2 || continue
 
-        P = k_rational_hull(k, intersect_halfplanes([H1,H2,H_upper,H_lower]))
-        number_of_interior_lattice_points(P) == 0 || continue
-        all(Q -> !are_affine_equivalent(P,Q), Ps) || continue
-        is_maximal(P) || continue
+            H_upper = affine_halfplane(RationalPoint{T}(0,-1),-T(1))
+            H_lower = affine_halfplane(RationalPoint{T}(0,1),-T(1))
 
-        push!(Ps, affine_normal_form(P))
+            P = k_rational_hull(k, intersect_halfplanes([H1,H2,H_upper,H_lower]))
+            number_of_interior_lattice_points(P) == 0 || continue
+            all(Q -> !are_affine_equivalent(P,Q), Pss[Threads.threadid()]) || continue
+            is_maximal(P) || continue
 
+            push!(Pss[Threads.threadid()], affine_normal_form(P))
+        end
+    end
+
+    Ps = RationalPolygon{T}[]
+    for k = 1 : Threads.nthreads()
+        for P ∈ Pss[k]
+            all(Q -> !are_unimodular_equivalent(P,Q), Ps) || continue
+            push!(Ps, P)
+        end
     end
 
     return Ps
@@ -272,7 +326,6 @@ can be realized in $\mathbb{Q} \times [-1,2]$.
 
 """
 function classify_maximal_lattice_free_polygons_m1p2(k :: T) where {T <: Integer}
-    Ps = RationalPolygon{T}[]
 
     A = convex_hull(RationalPoint{T}.([(0,1),(1,2),(-2,2),(-1,1)]), k)
     B = convex_hull(RationalPoint{T}.([(0,0),(1,-1),(-2,-1),(-1,0)]), k)
@@ -283,27 +336,42 @@ function classify_maximal_lattice_free_polygons_m1p2(k :: T) where {T <: Integer
     vs = filter(v -> v[2] > 1, k_rational_points(k, A))
     ws = filter(w -> w[2] < 0, k_rational_points(k, B))
 
-    for v1 ∈ vs, v2 ∈ vs
-        Ha1, Ha2 = affine_halfplane(v1,a1), affine_halfplane(a2,v2)
-        v1 ∈ Ha2 && v2 ∈ Ha1 || continue
+    Pss = Vector{RationalPolygon{T}}[]
+    for k = 1 : Threads.nthreads()
+        push!(Pss, RationalPolygon{T}[])
+    end
 
-        for w1 ∈ ws, w2 ∈ ws
-            w1 ∈ Ha1 && w1 ∈ Ha2 && w2 ∈ Ha1 && w2 ∈ Ha2 || continue
+    Threads.@threads for v1 ∈ vs
+        for v2 ∈ vs
+            Ha1, Ha2 = affine_halfplane(v1,a1), affine_halfplane(a2,v2)
+            v1 ∈ Ha2 && v2 ∈ Ha1 || continue
 
-            Hb1, Hb2 = affine_halfplane(b1,w1), affine_halfplane(w2,b2)
-            w1 ∈ Hb2 && w2 ∈ Hb1 || continue
-            v1 ∈ Hb1 && v1 ∈ Hb2 && v2 ∈ Hb1 && v2 ∈ Hb2 || continue
+            for w1 ∈ ws, w2 ∈ ws
+                w1 ∈ Ha1 && w1 ∈ Ha2 && w2 ∈ Ha1 && w2 ∈ Ha2 || continue
 
-            H_upper = affine_halfplane(RationalPoint{T}(1,2),RationalPoint{T}(0,2))
-            H_lower = affine_halfplane(RationalPoint{T}(0,-1),RationalPoint{T}(1,-1))
+                Hb1, Hb2 = affine_halfplane(b1,w1), affine_halfplane(w2,b2)
+                w1 ∈ Hb2 && w2 ∈ Hb1 || continue
+                v1 ∈ Hb1 && v1 ∈ Hb2 && v2 ∈ Hb1 && v2 ∈ Hb2 || continue
 
-            P = k_rational_hull(k, intersect_halfplanes([Ha1,Ha2,Hb1,Hb2,H_upper,H_lower]))
-            number_of_vertices(P) > 2 || continue
-            number_of_interior_lattice_points(P) == 0 || continue
-            all(Q -> !are_affine_equivalent(P,Q), Ps) || continue
-            is_maximal(P) || continue
+                H_upper = affine_halfplane(RationalPoint{T}(1,2),RationalPoint{T}(0,2))
+                H_lower = affine_halfplane(RationalPoint{T}(0,-1),RationalPoint{T}(1,-1))
 
-            push!(Ps, affine_normal_form(P))
+                P = k_rational_hull(k, intersect_halfplanes([Ha1,Ha2,Hb1,Hb2,H_upper,H_lower]))
+                number_of_vertices(P) > 2 || continue
+                number_of_interior_lattice_points(P) == 0 || continue
+                all(Q -> !are_affine_equivalent(P,Q), Pss[Threads.threadid()]) || continue
+                is_maximal(P) || continue
+
+                push!(Pss[Threads.threadid()], affine_normal_form(P))
+            end
+        end
+    end
+
+    Ps = RationalPolygon{T}[]
+    for k = 1 : Threads.nthreads()
+        for P ∈ Pss[k]
+            all(Q -> !are_unimodular_equivalent(P,Q), Ps) || continue
+            push!(Ps, P)
         end
     end
 
