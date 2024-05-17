@@ -1,3 +1,4 @@
+export is_finished
 export mark_volume_completed
 export return_value
 export parse_rational_polygons_file

@@ -74,6 +74,9 @@ function save!(st :: InMemorySubpolygonStorage{T}, Ps :: Vector{<:RationalPolygo
     end
 end
 
+is_finished(st :: InMemorySubpolygonStorage{T}) where {T <: Integer} =
+st.last_volume <= minimum(keys(st.polygons_dict))
+
 function next_polygons(st :: InMemorySubpolygonStorage{T}) where {T <: Integer}
     a = maximum(filter(b -> b < st.last_volume, keys(st.polygons_dict)))
     return (st.polygons_dict[a], a)
@@ -176,6 +179,9 @@ function save!(st :: OnDiskSubpolygonStorage{T}, Ps :: Vector{<:RationalPolygon{
         close(files[a])
     end
 end
+
+is_finished(st :: OnDiskSubpolygonStorage{T}) where {T <: Integer} =
+isempty(st.hashes_dict)
 
 function next_polygons(st :: OnDiskSubpolygonStorage{T}) where {T <: Integer}
     # Get the polygons with maximal area

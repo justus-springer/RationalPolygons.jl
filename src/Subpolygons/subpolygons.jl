@@ -47,12 +47,16 @@ end
 
 function subpolygons(st :: SubpolygonStorage{T};
         primitive :: Bool = false,
+        normal_form :: Symbol = :unimodular,
         logging :: Bool = false) where {T <: Integer}
     
-    n = number_of_interior_lattice_points(st)
-    Ps, current_area = next_polygons(st)
+    normal_form ∈ [:unimodular, :affine] || error("`normal_form` must be either `:unimodular` or `:affine`")
 
-    while current_area > 3
+    n = number_of_interior_lattice_points(st)
+
+    while !is_finished(st)
+
+        Ps, current_area = next_polygons(st)
 
         logging && @info "Volume: $current_area. Number of polygons: $(length(Ps)). Total: $(total_count(st))"
 
@@ -71,7 +75,12 @@ function subpolygons(st :: SubpolygonStorage{T};
             for i = lower_bound : upper_bound
                 P = Ps[i]
                 for j = 1 : number_of_vertices(P)
-                    Q = unimodular_normal_form(remove_vertex(P,j; primitive))
+                    Q = remove_vertex(P, j; primitive)
+                    if normal_form == :unimodular
+                        Q = unimodular_normal_form(remove_vertex(P,j; primitive))
+                    else
+                        Q = affine_normal_form(remove_vertex(P,j; primitive))
+                    end
                     number_of_vertices(Q) > 2 || continue
                     number_of_interior_lattice_points(Q) == n || continue
                     push!(out_array[Threads.threadid()], Q)
@@ -80,8 +89,6 @@ function subpolygons(st :: SubpolygonStorage{T};
         end
         save!(st, vcat(out_array...))
         mark_volume_completed(st, current_area)
-        
-        Ps, current_area = next_polygons(st)
         
     end
 
@@ -102,11 +109,12 @@ the same rationality and number of interior lattice points.
 """
 function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; 
         primitive :: Bool = false, 
+        normal_form :: Symbol = :unimodular,
         out_path :: Union{Missing, String} = missing, 
         logging = false) where {T <: Integer}
 
     st = subpolygon_storage(starting_polygons, out_path)
-    return subpolygons(st; primitive, logging)
+    return subpolygons(st; primitive, normal_form, logging)
                     
 end
 
