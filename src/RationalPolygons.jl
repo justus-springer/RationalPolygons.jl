@@ -16,6 +16,7 @@ include("normal_form.jl")
 include("Subpolygons/SubpolygonStorage.jl")
 include("Subpolygons/subpolygons.jl")
 
-include("classification.jl")
+include("Classification/classification.jl")
+include("Classification/moving_out_the_edges.jl")
 
 end # module RationalPolygons

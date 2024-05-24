@@ -8,12 +8,15 @@ Remove the `i`-th vertex from `P`, i.e. return the convex hull of all
 """
 function remove_vertex(P :: RationalPolygon{T,N}, i :: Int; primitive :: Bool = false) where {N,T <: Integer}
 
+    k = rationality(P)
+
     if primitive
-        k = rationality(P)
         v = vertex(P,i)
         ps = k_rational_points(k, P; primitive)
         filter!(p -> p != v, ps)
-        return convex_hull(ps, k)
+        Q = convex_hull(ps, k)
+        keeps_genus = number_of_interior_lattice_points(P) == number_of_interior_lattice_points(Q)
+        return (Q, keeps_genus)
     else
         # the shortcut via hilbert bases only works in the non-primitive
         # case at the moment
@@ -21,7 +24,8 @@ function remove_vertex(P :: RationalPolygon{T,N}, i :: Int; primitive :: Bool = 
         p1, p2 = u - v, w - v
         q1, q2 = primitivize(p1), primitivize(p2)
         hb = [p + v for p ∈ hilbert_basis(q1,q2)]
-        primitive && filter!(is_primitive, hb)
+        
+        keeps_genus = all(p -> gcd(p) % k != 0, hb[2 : end-1])
 
         vs = LatticePoint{T}[]
         !is_primitive(p1) && push!(vs, u)
@@ -39,7 +43,7 @@ function remove_vertex(P :: RationalPolygon{T,N}, i :: Int; primitive :: Bool = 
 
         Q = RationalPolygon(vs, rationality(P))
 
-        return Q
+        return (Q, keeps_genus)
 
     end
 
@@ -75,14 +79,14 @@ function subpolygons(st :: SubpolygonStorage{T};
             for i = lower_bound : upper_bound
                 P = Ps[i]
                 for j = 1 : number_of_vertices(P)
-                    Q = remove_vertex(P, j; primitive)
-                    if normal_form == :unimodular
-                        Q = unimodular_normal_form(remove_vertex(P,j; primitive))
-                    else
-                        Q = affine_normal_form(remove_vertex(P,j; primitive))
-                    end
+                    Q, keeps_genus = remove_vertex(P, j; primitive)
+                    keeps_genus || continue
                     number_of_vertices(Q) > 2 || continue
-                    number_of_interior_lattice_points(Q) == n || continue
+                    if normal_form == :unimodular
+                        Q = unimodular_normal_form(Q)
+                    else
+                        Q = affine_normal_form(Q)
+                    end
                     push!(out_array[Threads.threadid()], Q)
                 end
             end

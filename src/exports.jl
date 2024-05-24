@@ -1,3 +1,4 @@
+export move_out_edges
 export is_finished
 export mark_volume_completed
 export return_value

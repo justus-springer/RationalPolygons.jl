@@ -142,3 +142,9 @@ function is_maximal(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 
 end
 
+function move_out_edges(P :: RationalPolygon{T,N}) where {N,T <: Integer}
+    k = rationality(P)
+    Hs = affine_halfplanes(P)
+    return intersect_halfplanes(Hs .- 1 // k)
+end
+
