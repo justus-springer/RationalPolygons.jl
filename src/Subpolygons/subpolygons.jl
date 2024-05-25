@@ -9,11 +9,12 @@ Remove the `i`-th vertex from `P`, i.e. return the convex hull of all
 function remove_vertex(P :: RationalPolygon{T,N}, i :: Int; primitive :: Bool = false) where {N,T <: Integer}
 
     k = rationality(P)
+    keeps_genus :: Bool = false
 
     if primitive
-        v = vertex(P,i)
+        v0 = vertex(P,i)
         ps = k_rational_points(k, P; primitive)
-        filter!(p -> p != v, ps)
+        filter!(p -> p != v0, ps)
         Q = convex_hull(ps, k)
         keeps_genus = number_of_interior_lattice_points(P) == number_of_interior_lattice_points(Q)
         return (Q, keeps_genus)

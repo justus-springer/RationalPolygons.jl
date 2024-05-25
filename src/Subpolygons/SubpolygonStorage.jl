@@ -24,7 +24,6 @@ function parse_rational_polygons_file(k :: T, filepath :: String) where {T <: In
     return Ps
 end
 
-
 abstract type SubpolygonStorage{T <: Integer} end
 
 rationality(st :: SubpolygonStorage{T}) where {T <: Integer} = st.rationality
