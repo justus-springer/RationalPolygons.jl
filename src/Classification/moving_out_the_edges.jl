@@ -9,22 +9,25 @@ function classify_maximal_lattice_polygons_with_collinear_interior_points(g :: I
     return Ps
 end
 
-function classify_empty_lattice_polygons_by_boundary_points(R :: Int, T :: Type{<:Integer} = Int)
-    Ps = RationalPolygon{T}[]
-    push!(Ps, RationalPolygon(LatticePoint{T}[(0,0),(R-2,0),(0,1)], 1))
-    for i = 1 : (R÷2)-1
-        push!(Ps, RationalPolygon(LatticePoint{T}[(0,0),(R-i-2,0),(i,1),(0,1)], 1))
-    end
-    R == 6 && push!(Ps, RationalPolygon(LatticePoint{T}[(0,0),(2,0),(0,2)], 1))
-    return Ps
-end
+function classify_maximal_lattice_polygons_with_two_dimensional_empty_fine_interior(g :: Int, T :: Type{<:Integer} = Int)
 
-function classify_maximal_lattice_polygons_with_empty_fine_interior(g :: Int, T :: Type{<:Integer} = Int)
     g <= 2 && return RationalPolygon{T}[]
-    Ps = classify_empty_lattice_polygons_by_boundary_points(g, T)
-    Qs = move_out_edges.(Ps)
-    filter!(Q -> rationality(Q) == 1, Qs)
-    return Qs
+    g == 3 && return [RationalPolygon(LatticePoint{T}[(0,0),(4,0),(0,4)], 1)]
+
+    Ps = RationalPolygon{T}[]
+
+    if g % 3 == 1
+        push!(Ps, RationalPolygon(LatticePoint{T}[(-1,-1),(g+1,-1),(-1,2)], 1))
+    end
+    imin = g % 3 == 1 ? ((g+1) ÷ 3) + 1 : ((g+1) ÷ 3)
+    imax = g ÷ 2
+    for i = imin : imax
+        push!(Ps, RationalPolygon(LatticePoint{T}[(-1,-1),(2g-3i,-1),(3i-g,2),(-1,2)], 1))
+    end
+    if g == 6
+        push!(Ps, RationalPolygon(LatticePoint{T}[(0,0),(5,0),(0,5)], 1))
+    end
+    return Ps
 end
 
 function _is_internal_quick(P :: RationalPolygon{T,N}) where {N,T <: Integer}
@@ -166,7 +169,7 @@ function classify_lattice_polygons_by_genus(
     for i = st.last_completed_genus + 1 : st.maximal_genus
 
         Ps_max = next_maximal_polygons(st)
-        append!(Ps_max, classify_maximal_lattice_polygons_with_empty_fine_interior(i,T))
+        append!(Ps_max, classify_maximal_lattice_polygons_with_two_dimensional_empty_fine_interior(i,T))
         append!(Ps_max, classify_maximal_lattice_polygons_with_collinear_interior_points(i,T))
 
         Ps_all = subpolygons(Ps_max; normal_form = :affine)
