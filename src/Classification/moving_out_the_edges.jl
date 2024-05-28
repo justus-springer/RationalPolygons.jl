@@ -1,4 +1,11 @@
 
+@doc raw"""
+    classify_maximal_lattice_polygons_with_collinear_interior_points(g :: Int, T :: Type{<:Integer} = Int)
+
+Return all maximal lattice polygons with `g` collinear interior lattice
+points.
+
+"""
 function classify_maximal_lattice_polygons_with_collinear_interior_points(g :: Int, T :: Type{<:Integer} = Int)
     Ps = RationalPolygon{T}[]
     g <= 1 && return Ps
@@ -9,6 +16,14 @@ function classify_maximal_lattice_polygons_with_collinear_interior_points(g :: I
     return Ps
 end
 
+@doc raw"""
+    classify_maximal_lattice_polygons_with_two_dimensional_empty_fine_interior(g :: Int, T :: Type{<:Integer} = Int)
+
+Return all maximal lattice polygons with `g` interior lattice points, where the
+convex hull of these points is a two-dimensional lattice polygon without
+interior lattice points.
+
+"""
 function classify_maximal_lattice_polygons_with_two_dimensional_empty_fine_interior(g :: Int, T :: Type{<:Integer} = Int)
 
     g <= 2 && return RationalPolygon{T}[]
@@ -203,6 +218,17 @@ function classify_lattice_polygons_by_genus(
 
 end
 
+@doc raw"""
+    classify_lattice_polygons_by_genus(g :: Int, T :: Type{<:Integer} = Int; out_path :: Union{Missing,String} = missing, logging :: Bool = false)
+
+Classify all lattice polygons with up to `g` interior lattice points. If
+`out_path` is specified, the polygons will be saved to that location, with one
+text file for each number `1 ≤ i ≤ g` of interior lattice points. If `out_path`
+is not specified, the resulting polygons will be kept in memory and returnd as
+a tuple `(Ps, Ps_max)`, where `Ps` and `Ps_max` are vectors of length `g`
+containing all polygons and just the maximal polygons respectively.
+
+"""
 classify_lattice_polygons_by_genus(
         g :: Int, T :: Type{<:Integer} = Int; 
         out_path :: Union{Missing,String} = missing,
