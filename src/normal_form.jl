@@ -41,17 +41,7 @@ function area_maximizing_vertices(P :: RationalPolygon{T,N}) where {N,T <: Integ
     return filter(i -> ea[i] == m, 1 : N)
 end
 
-@doc raw"""
-    unimodular_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer}
-
-Return a unimodular normal form of a rational polygon. Two rational polygons have
-the same unimodular normal form if and only if the can be transformed into each
-other by applying a unimodular transformation.
-
-"""
-function unimodular_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer}
-
-    is_unimodular_normal_form(P) && return P
+function unimodular_normal_form_with_automorphism_group(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 
     V = vertex_matrix(P)
 
@@ -69,12 +59,27 @@ function unimodular_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer
     # We take the normal form to be the lexicographical minimum of all those
     # hermite normal forms
     A = argmin(vec, As)
+    special_indices = map(l -> divrem(l+1, 2), findall(B -> A == B, As))
 
     Q = RationalPolygon(convert(SMatrix,A), rationality(P); is_unimodular_normal_form = true) 
-
-    return Q
+    if all(sv -> sv[2] == 0, special_indices) || all(sv -> sv[2] == 1, special_indices)
+        return (Q, CyclicGroup(length(special_indices)))
+    else
+        return (Q, DihedralGroup(length(special_indices) ÷ 2))
+    end
 
 end
+
+@doc raw"""
+    unimodular_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer}
+
+Return a unimodular normal form of a rational polygon. Two rational polygons have
+the same unimodular normal form if and only if the can be transformed into each
+other by applying a unimodular transformation.
+
+"""
+unimodular_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
+is_unimodular_normal_form(P) ? P : unimodular_normal_form_with_automorphism_group(P)[1]
 
 
 @doc raw"""
@@ -86,6 +91,16 @@ transformation.
 """
 are_unimodular_equivalent(P :: RationalPolygon, Q :: RationalPolygon) =
 unimodular_normal_form(P) == unimodular_normal_form(Q)
+
+@doc raw"""
+    unimodular_automorphism_group(P :: RationalPolygon)
+
+Return the automorphism group of `P` with respect to unimodular
+transformations.
+
+"""
+unimodular_automorphism_group(P :: RationalPolygon) =
+unimodular_normal_form_with_automorphism_group(P)[2]
 
 
 @doc raw"""
@@ -102,10 +117,10 @@ clockwise or counterclockwise.
 
 """
 function _special_vertices_align(k :: T,
-        A1 :: SMatrix{2,N,T}, i1 :: Int, o1 :: Bool,
-        A2 :: SMatrix{2,N,T}, i2 :: Int, o2 :: Bool) where {N, T <: Integer}
-    s1 = o1 ? -1 : 1
-    s2 = o2 ? -1 : 1
+        A1 :: SMatrix{2,N,T}, i1 :: Int, o1 :: Int,
+        A2 :: SMatrix{2,N,T}, i2 :: Int, o2 :: Int) where {N, T <: Integer}
+    s1 = o1 == 0 ? 1 : -1
+    s2 = o2 == 0 ? 1 : -1
     v1, v2, v3 = A1[:,mod(i1-s1,1:N)], A1[:,mod(i1,1:N)], A1[:,mod(i1+s1,1:N)]
     w1, w2, w3 = A2[:,mod(i2-s2,1:N)], A2[:,mod(i2,1:N)], A2[:,mod(i2+s2,1:N)]
     d1, d2, d3 = det(w2,w3), det(w3,w1), det(w1,w2)
@@ -115,22 +130,15 @@ function _special_vertices_align(k :: T,
     return b1 % k == 0 && b2 % k == 0
 end
 
-@doc raw"""
-    affine_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer}   
 
-Return a affine normal form of a rational polygon. Two rational polygons have
-the same affine normal form if and only if the can be transformed into each
-other by applying an affine unimodular transformation.
-
-"""
-function affine_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer}
-    is_affine_normal_form(P) && return P
+function affine_normal_form_with_automorphism_group(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 
     V = vertex_matrix(P)
     k = rationality(P)
 
     As = MMatrix{2,N,T,2N}[]
     is = area_maximizing_vertices(P)
+
     for i ∈ is
         # move the vertex to the origin
         A = V .- lattice_vertex(P,i)
@@ -140,28 +148,43 @@ function affine_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer}
     hnf!.(As)
 
     A = argmin(vec, As)
-    special_vertices = Tuple{Int,Bool}[]
-    for j = 1 : length(As)
-        if As[j] == A
-            (l,o) = divrem(j+1,2)
-            push!(special_vertices, (is[l], o == 1))
-        end
-    end
+    special_indices = map(l -> divrem(l+1, 2), findall(B -> A == B, As))
     A = convert(SMatrix,A)
 
+    really_special_indices = Tuple{Int,Int}[]
+    local At
     for x = 0 : k-1, y = 0 : k-1
         At = A .+ LatticePoint{T}(x,y)
-        if any(sv -> _special_vertices_align(k, At, N, false, V, sv[1], sv[2]), special_vertices)
-            A = At
-            break
+        empty!(really_special_indices)
+        for (j,o) ∈ special_indices
+            if _special_vertices_align(k, At, N, 0, V, is[j], o)
+                push!(really_special_indices, (j,o))
+            end
         end
+        !isempty(really_special_indices) && break
     end
 
-    Q = RationalPolygon(A, rationality(P); is_affine_normal_form = true) 
+    Q = RationalPolygon(At, rationality(P); is_affine_normal_form = true) 
 
-    return Q
+    if length(unique(last.(really_special_indices))) == 1
+        return (Q, CyclicGroup(length(really_special_indices)))
+    else
+        return (Q, DihedralGroup(length(really_special_indices) ÷ 2))
+    end
 
 end
+
+
+@doc raw"""
+    affine_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer}
+
+Return a affine normal form of a rational polygon. Two rational polygons have
+the same affine normal form if and only if the can be transformed into each
+other by applying an affine unimodular transformation.
+
+"""
+affine_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
+is_affine_normal_form(P) ? P : affine_normal_form_with_automorphism_group(P)[1]
 
 
 @doc raw"""
@@ -173,3 +196,13 @@ transformation.
 """
 are_affine_equivalent(P :: RationalPolygon, Q :: RationalPolygon) =
 affine_normal_form(P) == affine_normal_form(Q)
+
+@doc raw"""
+    affine_automorphism_group(P :: RationalPolygon{T,N}) where {N,T <: Integer}
+
+Return the automorphism group of `P` with respect to affine unimodular
+transformations.
+
+"""
+affine_automorphism_group(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
+affine_normal_form_with_automorphism_group(P)[2]
