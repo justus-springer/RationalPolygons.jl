@@ -141,14 +141,18 @@ function affine_normal_form_with_automorphism_group(P :: RationalPolygon{T,N}) w
 
     for i ∈ is
         # move the vertex to the origin
-        A = V .- lattice_vertex(P,i)
-        push!(As, MMatrix{2,N,T,2N}([A[:,i+1:end] A[:,begin:i]]))
-        push!(As, MMatrix{2,N,T,2N}([A[:,i-1:-1:begin] A[:,end:-1:i]]))
+        push!(As, MMatrix{2,N,T,2N}([V[:,i+1:end] V[:,begin:i]]) .- lattice_vertex(P,i))
+        push!(As, MMatrix{2,N,T,2N}([V[:,i-1:-1:begin] V[:,end:-1:i]]) .- lattice_vertex(P,i))
     end
     hnf!.(As)
 
     A = argmin(vec, As)
-    special_indices = map(l -> divrem(l+1, 2), findall(B -> A == B, As))
+    special_indices = Tuple{Int,Int}[]
+    for l = 1 : length(As)
+        if As[l] == A
+            push!(special_indices, divrem(l+1, 2))
+        end
+    end
     A = convert(SMatrix,A)
 
     really_special_indices = Tuple{Int,Int}[]
@@ -164,7 +168,7 @@ function affine_normal_form_with_automorphism_group(P :: RationalPolygon{T,N}) w
         !isempty(really_special_indices) && break
     end
 
-    Q = RationalPolygon(At, rationality(P); is_affine_normal_form = true) 
+    Q = RationalPolygon(At, rationality(P); is_affine_normal_form = true)
 
     if length(unique(last.(really_special_indices))) == 1
         return (Q, CyclicGroup(length(really_special_indices)))
