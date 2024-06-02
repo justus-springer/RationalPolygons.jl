@@ -131,7 +131,7 @@ function is_maximal(P :: RationalPolygon{T,N}) where {N,T <: Integer}
     nonempty_edges_indices = filter(i -> !isempty(integral_points_on_line_segment(P[i], P[i+1])), 1 : N)
     integral_vertices_indices = filter(i -> is_integral(P[i]), 1 : N)
 
-    for p ∈ boundary_k_rational_points(k, Q)
+    for p ∈ boundary_k_rational_points(Q, k)
         if all(i -> p ∈ Hs[i], nonempty_edges_indices) &&
            all(i -> p ∈ Hs[mod(i-1,1:N)] || p ∈ Hs[i], integral_vertices_indices)
             return false

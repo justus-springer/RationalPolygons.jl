@@ -13,7 +13,7 @@ function remove_vertex(P :: RationalPolygon{T,N}, i :: Int; primitive :: Bool = 
 
     if primitive
         v0 = vertex(P,i)
-        ps = k_rational_points(k, P; primitive)
+        ps = filter(p -> is_primitive(k*p), k_rational_points(P, k))
         filter!(p -> p != v0, ps)
         Q = convex_hull(ps, k)
         keeps_genus = number_of_interior_lattice_points(P) == number_of_interior_lattice_points(Q)
