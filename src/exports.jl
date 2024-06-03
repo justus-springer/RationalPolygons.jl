@@ -1,3 +1,10 @@
+export ehrhart_quasipolynomial_with_periods
+export ehrhart_quasipolynomial
+export ehrhart_quasipolynomial_period
+export ehrhart_quasipolynomial_periods
+export is_quasiintegral
+export is_periodic
+export period
 export PolygonAutomorphismGroup
 export CyclicGroup
 export DihedralGroup
