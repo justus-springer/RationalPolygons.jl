@@ -247,6 +247,16 @@ width(P :: RationalPolygon) = width_with_direction_vectors(P)[1]
 
 
 @doc raw"""
+    scaled_width(P :: RationalPolygon)
+
+Return the width of the scaled lattice polygon `k * P`, where `k` is the
+rationality of `P`. This equals `k * width(P)` and is always an integer.
+
+"""
+scaled_width(P :: RationalPolygon) = numerator(rationality(P) * width(P))
+
+
+@doc raw"""
     width_direction_vectors(P :: RationalPolygon)
 
 Return the lattice width direction vectors of `P`.

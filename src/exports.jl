@@ -1,4 +1,5 @@
 export width
+export scaled_width
 export width_with_direction_vectors
 export width_direction_vectors
 export dual
