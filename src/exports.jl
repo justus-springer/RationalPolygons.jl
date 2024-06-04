@@ -1,3 +1,10 @@
+export SliceBehaviour
+export NoSlice
+export SliceThroughInterior
+export SliceThroughBoundary
+export SliceThroughVertex
+export slice_length
+export slice
 export width
 export scaled_width
 export width_with_direction_vectors
