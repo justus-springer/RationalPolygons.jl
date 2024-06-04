@@ -52,7 +52,7 @@ function slice(L :: Line{T}, P :: RationalPolygon{T,N}) where {N,T <: Integer}
     unique!(points)
     length(points) == 1 && return SliceThroughVertex{T}(points[1])
     through_interior && return SliceThroughInterior{T}(points[1],points[2])
-    return SliceThroughBoundary{T}(p,q)
+    return SliceThroughBoundary{T}(points[1],points[2])
 end
 
 
