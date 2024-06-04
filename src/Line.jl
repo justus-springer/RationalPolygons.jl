@@ -54,15 +54,15 @@ Line(Point(x, zero(x)), Point(zero(x), one(x)))
 
 
 
-abstract type IntersectionBehaviour end
+abstract type IntersectionBehaviour{T <: Integer} end
 
-struct IntersectInPoint{T <: Integer} <: IntersectionBehaviour
+struct IntersectInPoint{T <: Integer} <: IntersectionBehaviour{T}
     p :: RationalPoint{T}
 end
 
-struct NoIntersection <: IntersectionBehaviour end
+struct NoIntersection{T <: Integer} <: IntersectionBehaviour{T} end
 
-struct LinesAreEqual <: IntersectionBehaviour end 
+struct LinesAreEqual{T <: Integer} <: IntersectionBehaviour{T} end 
 
 
 @doc raw"""
@@ -80,7 +80,7 @@ function intersection_behaviour(L1 :: Line{T}, L2 :: Line{T}) where {T <: Intege
 
     d = det(v1,-v2)
     if d == 0
-        return x1 ∈ L2 ? LinesAreEqual() : NoIntersection()
+        return x1 ∈ L2 ? LinesAreEqual{T}() : NoIntersection{T}()
     end
 
     t = (v2[1]*(x2[2]-x1[2]) - v2[2]*(x2[1]-x1[1])) // d
