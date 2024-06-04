@@ -1,3 +1,7 @@
+export width
+export width_with_direction_vectors
+export width_direction_vectors
+export dual
 export ehrhart_quasipolynomial_with_periods
 export ehrhart_quasipolynomial
 export ehrhart_quasipolynomial_period

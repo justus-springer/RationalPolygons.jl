@@ -148,3 +148,109 @@ function move_out_edges(P :: RationalPolygon{T,N}) where {N,T <: Integer}
     return intersect_halfplanes(Hs .- 1 // k)
 end
 
+
+@doc raw"""
+    dual(P :: RationalPolygon{T}) where {T <: Integer}
+
+Return the dual of a polygon `P`. Note that `P` must contain the origin in its interior.
+
+"""
+function dual(P :: RationalPolygon{T}) where {T <: Integer}
+    Hs = affine_halfplanes(P)
+    all(H -> translation(H) < 0, Hs) || error("this polygon does not contain the origin in its interior")
+    return convex_hull([normal_vector(H) // translation(H) for H ∈ Hs])
+end
+
+
+@doc raw"""
+    Base.:(+)(P :: RationalPolygon{T}, Q :: RationalPolygon{T}) where {T <: Integer}
+
+Return the Minkowski sum of two rational polygons sharing the same
+rationality.
+
+"""
+function Base.:(+)(P :: RationalPolygon{T}, Q :: RationalPolygon{T}) where {T <: Integer}
+    rationality(P) == rationality(Q) || error("the rationalities must coincide for the minkowski sum")
+    return convex_hull([v + w for v ∈ vertices(P) for w ∈ vertices(Q)], rationality(P))
+end
+
+
+@doc raw"""
+    Base.:(+)(P :: RationalPolygon{T}, v :: LatticePoint{T}) where {T <: Integer}
+
+For a `k`-rational polygon `P`, return the translated polygons `P + (v // k)`.
+
+"""
+Base.:(+)(P :: RationalPolygon{T}, v :: LatticePoint{T}) where {T <: Integer} =
+RationalPolygon(vertex_matrix(P) .+ v, rationality(P))
+
+
+Base.:(-)(P :: RationalPolygon) =
+RationalPolygon(-vertex_matrix(P), rationality(P))
+
+Base.:(-)(P :: RationalPolygon{T}, Q :: RationalPolygon{T}) where {T <: Integer} =
+P + (-Q)
+
+Base.:(-)(P :: RationalPolygon{T}, v :: LatticePoint{T}) where {T <: Integer} =
+P + (-v)
+
+Base.:(*)(c :: T, P :: RationalPolygon{T}) where {T <: Integer} =
+RationalPolygon(c * vertex_matrix(P), rationality(P))
+
+Base.:(*)(c :: Rational{T}, P :: RationalPolygon{T}) where {T <: Integer} =
+RationalPolygon(numerator(c) * vertex_matrix(P), denominator(c) * rationality(P))
+
+Base.:(//)(P :: RationalPolygon{T}, c :: T) where {T <: Integer} =
+RationalPolygon(vertex_matrix(P), c * rationality(P))
+
+Base.:(//)(P :: RationalPolygon{T}, c :: Rational{T}) where {T <: Integer} =
+RationalPolygon(denominator(c) * vertex_matrix(P), numerator(c) * rationality(P))
+
+
+@doc raw"""
+    width(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
+
+Return the lattice width of `P` in direction `w`.
+
+"""
+function width(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
+    values_on_vertices = [dot(v,w) for v ∈ vertices(P)]
+    return maximum(values_on_vertices) - minimum(values_on_vertices)
+end
+
+
+@doc raw"""
+    width_with_direction_vectors(P :: RationalPolygon{T}) where {T <: Integer}
+
+Return the lattice width of `P` together with the list of direction vectors
+that realize this width.
+
+"""
+function width_with_direction_vectors(P :: RationalPolygon{T}) where {T <: Integer}
+    c = min(width(P, RationalPoint{T}(0,1)), width(P, RationalPoint{T}(1,0)))
+    vs = lattice_points(c * dual(P - P))
+    filter!(v -> v[1] > 0 || (v[1] == 0 && v[2] > 0), vs)
+    widths = [width(P, v) for v ∈ vs]
+    w = minimum(widths)
+    direction_vectors = [vs[i] for i = 1 : length(vs) if widths[i] == w]
+    return (w,direction_vectors)
+end
+
+
+@doc raw"""
+    width(P :: RationalPolygon)
+
+Return the lattice width of `P`.
+
+"""
+width(P :: RationalPolygon) = width_with_direction_vectors(P)[1]
+
+
+@doc raw"""
+    width_direction_vectors(P :: RationalPolygon)
+
+Return the lattice width direction vectors of `P`.
+
+"""
+width_direction_vectors(P :: RationalPolygon) = width_with_direction_vectors(P)[2]
+

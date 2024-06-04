@@ -22,4 +22,5 @@ import StaticArrays:
     SA
 
 import LinearAlgebra:
-    mul!
+    mul!,
+    dot
