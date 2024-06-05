@@ -44,7 +44,8 @@ export move_out_edges
 export is_finished
 export mark_volume_completed
 export return_value
-export parse_rational_polygons_file
+export parse_rational_polygons
+export write_rational_polygons
 export classify_maximal_lattice_free_polygons_m1p1
 export classify_maximal_lattice_free_polygons_m1p2
 export classify_maximal_lattice_free_polygons

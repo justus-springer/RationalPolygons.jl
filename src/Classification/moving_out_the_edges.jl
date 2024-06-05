@@ -136,7 +136,7 @@ end
 function next_maximal_polygons(st :: OnDiskLatticePolygonsByGenusStorage{T}) where {T <: Integer}
     i = st.last_completed_genus + 1
     filepath = joinpath(st.directory, st.maximal_file_prefix * "$i.txt")
-    return parse_rational_polygons_file(one(T), filepath)
+    return parse_rational_polygons(one(T), filepath)
 end
 
 function finish_genus(

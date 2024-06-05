@@ -1,29 +1,3 @@
-@doc raw"""
-    parse_rational_polygons_file(k :: T, filepath :: String) where {T <: Integer}
-
-Parse a file containing the vertices of a `k`-rational polygon. The file
-must have one polygon per line and the vertices must be given as a list of
-lists of integers, i.e. as in the following example:
-
-[[2, 0], [1, 3], [-1, 0], [-3, -4]]
-[[1, 0], [2, 6], [-4, -9]]
-[[1, 0], [3, 5], [0, 1], [-5, -8]]
-....
-
-"""
-function parse_rational_polygons_file(k :: T, filepath :: String) where {T <: Integer}
-    f = open(filepath, "r")
-    Ps = RationalPolygon{T}[]
-    for str ∈ readlines(f)
-        substrings = map(s -> replace(s, "[" => "", "]" => ""), split(str, ", ["))
-        vs = [parse.(Int,split(s, ",")) for s ∈ substrings]
-        P = RationalPolygon([LatticePoint{T}(v[1],v[2]) for v ∈ vs], k)
-        push!(Ps, P)
-    end
-    close(f)
-    return Ps
-end
-
 abstract type SubpolygonStorage{T <: Integer} end
 
 rationality(st :: SubpolygonStorage{T}) where {T <: Integer} = st.rationality
@@ -143,7 +117,7 @@ mutable struct OnDiskSubpolygonStorage{T<:Integer} <: SubpolygonStorage{T}
             filepath = joinpath(directory, filename)
             total_count += countlines(filepath)
             a < last_volume || continue
-            Ps = parse_rational_polygons_file(k, filepath)
+            Ps = parse_rational_polygons(k, filepath)
             hashes_dict[a] = Set(hash.(Ps))
             files[a] = open(joinpath(directory, filename), "a")
         end
@@ -187,7 +161,7 @@ function next_polygons(st :: OnDiskSubpolygonStorage{T}) where {T <: Integer}
     a = maximum(filter(b -> b < st.last_volume, keys(st.hashes_dict)))
 
     filepath = joinpath(st.directory, "$(st.file_prefix)$a.txt")
-    Ps = parse_rational_polygons_file(st.rationality, filepath)
+    Ps = parse_rational_polygons(st.rationality, filepath)
 
     return (Ps, a)
 
