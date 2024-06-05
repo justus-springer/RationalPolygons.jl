@@ -9,6 +9,14 @@ export width
 export scaled_width
 export width_with_direction_vectors
 export width_direction_vectors
+export adjust_to_width_direction
+export LatticeWidthData
+export lattice_width_data
+export lattice_width_datas
+export position_of_longest_vertical_slice_length
+export number_of_interior_integral_vertical_lines
+export positions_of_longest_vertical_slice_length
+export numbers_of_interior_integral_vertical_lines
 export dual
 export ehrhart_quasipolynomial_with_periods
 export ehrhart_quasipolynomial

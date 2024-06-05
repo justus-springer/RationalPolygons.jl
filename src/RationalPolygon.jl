@@ -200,67 +200,13 @@ RationalPolygon(c * vertex_matrix(P), rationality(P))
 Base.:(*)(c :: Rational{T}, P :: RationalPolygon{T}) where {T <: Integer} =
 RationalPolygon(numerator(c) * vertex_matrix(P), denominator(c) * rationality(P))
 
+function Base.:(*)(U :: Matrix2{T}, P :: RationalPolygon{T}) where {T <: Integer}
+    det(U) ∈ [1,-1] || error("the given matrix is not unimodular")
+    return RationalPolygon(U * vertex_matrix(P), rationality(P))
+end
+
 Base.:(//)(P :: RationalPolygon{T}, c :: T) where {T <: Integer} =
 RationalPolygon(vertex_matrix(P), c * rationality(P))
 
 Base.:(//)(P :: RationalPolygon{T}, c :: Rational{T}) where {T <: Integer} =
 RationalPolygon(denominator(c) * vertex_matrix(P), numerator(c) * rationality(P))
-
-
-@doc raw"""
-    width(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
-
-Return the lattice width of `P` in direction `w`.
-
-"""
-function width(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
-    values_on_vertices = [dot(v,w) for v ∈ vertices(P)]
-    return maximum(values_on_vertices) - minimum(values_on_vertices)
-end
-
-
-@doc raw"""
-    width_with_direction_vectors(P :: RationalPolygon{T}) where {T <: Integer}
-
-Return the lattice width of `P` together with the list of direction vectors
-that realize this width.
-
-"""
-function width_with_direction_vectors(P :: RationalPolygon{T}) where {T <: Integer}
-    c = min(width(P, RationalPoint{T}(0,1)), width(P, RationalPoint{T}(1,0)))
-    vs = lattice_points(c * dual(P - P))
-    filter!(v -> v[1] > 0 || (v[1] == 0 && v[2] > 0), vs)
-    widths = [width(P, v) for v ∈ vs]
-    w = minimum(widths)
-    direction_vectors = [vs[i] for i = 1 : length(vs) if widths[i] == w]
-    return (w,direction_vectors)
-end
-
-
-@doc raw"""
-    width(P :: RationalPolygon)
-
-Return the lattice width of `P`.
-
-"""
-width(P :: RationalPolygon) = width_with_direction_vectors(P)[1]
-
-
-@doc raw"""
-    scaled_width(P :: RationalPolygon)
-
-Return the width of the scaled lattice polygon `k * P`, where `k` is the
-rationality of `P`. This equals `k * width(P)` and is always an integer.
-
-"""
-scaled_width(P :: RationalPolygon) = numerator(rationality(P) * width(P))
-
-
-@doc raw"""
-    width_direction_vectors(P :: RationalPolygon)
-
-Return the lattice width direction vectors of `P`.
-
-"""
-width_direction_vectors(P :: RationalPolygon) = width_with_direction_vectors(P)[2]
-
