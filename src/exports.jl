@@ -1,3 +1,4 @@
+export filter_fano_polygons
 export contains_origin_in_interior
 export is_fano
 export SliceBehaviour

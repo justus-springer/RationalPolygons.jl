@@ -234,3 +234,22 @@ classify_lattice_polygons_by_genus(
         out_path :: Union{Missing,String} = missing,
         logging :: Bool = false) =
 classify_lattice_polygons_by_genus(lattice_polygons_by_genus_storage(g, out_path, T); logging)
+
+
+@doc raw"""
+    filter_fano_polygons(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}   
+
+Given a list of rational polygons `Ps`, return the list of all fano polygons
+that are affine equivalent to a polygons from `Ps`.
+
+"""
+function filter_fano_polygons(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
+    res = RationalPolygon{T}[]
+    for P ∈ Ps, p ∈ interior_lattice_points(P)
+        Q = P - p
+        is_fano(Q) || continue
+        all(Q2 -> !are_unimodular_equivalent(Q,Q2), res) || continue
+        push!(res,Q)
+    end
+    return res
+end
