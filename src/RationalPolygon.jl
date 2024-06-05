@@ -171,6 +171,22 @@ end
 
 
 @doc raw"""
+    gorenstein_index(P :: RationalPolygon{T}) where {T <: Integer}
+
+Return the gorenstein index of a `k`-rational polygon `P`, i.e. the smallest
+positive integer `i` such that `i * dual(k * P)` is a lattice polygon.
+
+"""
+function gorenstein_index(P :: RationalPolygon{T}) where {T <: Integer}
+    is_fano(P) || error("the gorenstein index is only defined for fano polygons")
+    k = rationality(P)
+    local_gorenstein_indices = [numerator(k*translation(H)) for H ∈ affine_halfplanes(P)]
+    return lcm(local_gorenstein_indices)
+end
+
+
+
+@doc raw"""
     Base.:(+)(P :: RationalPolygon{T}, Q :: RationalPolygon{T}) where {T <: Integer}
 
 Return the Minkowski sum of two rational polygons sharing the same
