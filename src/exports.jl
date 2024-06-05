@@ -1,3 +1,5 @@
+export contains_origin_in_interior
+export is_fano
 export SliceBehaviour
 export NoSlice
 export SliceThroughInterior

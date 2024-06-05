@@ -108,8 +108,16 @@ affine_halfplanes(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
 Base.in(x :: Point{T}, P :: RationalPolygon{T,N}) where {N,T <: Integer} =
 all(H -> x ∈ H, affine_halfplanes(P))
 
+contains_in_interior(x :: Point{T}, P :: RationalPolygon{T,N}) where {N,T <: Integer} =
+all(H -> contains_in_interior(x, H), affine_halfplanes(P))
+
+contains_origin_in_interior(P :: RationalPolygon{T}) where {T <: Integer} =
+contains_in_interior(LatticePoint{T}(0,0), P)
+
 is_primitive(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
 all(i -> is_primitive(lattice_vertex(P,i)), 1 : N)
+
+is_fano(P :: RationalPolygon) = contains_origin_in_interior(P) && is_primitive(P)
 
 function area(P :: RationalPolygon{T,N}) where {N,T <: Integer}
     V = vertex_matrix(P)
