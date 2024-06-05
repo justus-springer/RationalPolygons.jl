@@ -60,8 +60,6 @@ is_unimodular_normal_form(P :: RationalPolygon) = P.is_unimodular_normal_form
 
 is_affine_normal_form(P :: RationalPolygon) = P.is_affine_normal_form
 
-clockwise(P :: RationalPolygon{T,N}) where {N, T <: Integer} = P.clockwise
-
 Base.:(==)(P1 :: RationalPolygon{T,N}, P2 :: RationalPolygon{T,N}) where {N,T <: Integer} =
 rationality(P1) == rationality(P2) && vertex_matrix(P1) == vertex_matrix(P2)
 

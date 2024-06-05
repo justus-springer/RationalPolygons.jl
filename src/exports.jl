@@ -53,8 +53,6 @@ export vertical_line
 export horizontal_line
 export line_through_points
 export Matrix2
-export vertex_offset
-export clockwise
 export classify_maximal_polygons_genus_one_m2p2
 export classify_polygons_genus_one
 export SubpolygonStorage
@@ -72,7 +70,6 @@ export RationalPolygon
 export rationality
 export vertices
 export det
-export lattice_vertices
 export pseudo_angle_with_distance
 export pseudo_angle
 export graham_scan!
@@ -98,13 +95,8 @@ export floor_k_rational
 export ceil_k_rational
 export k_rational_points_on_line_segment
 export integral_points_on_line_segment
-export next_k_rational_point
-export next_integral_point
-export previous_k_rational_point
-export previous_integral_point
 export norm
 export distance
-export edges
 export number_of_vertices
 export boundary_k_rational_points
 export boundary_lattice_points
@@ -126,8 +118,6 @@ export multiplicity
 export primitivize
 export line
 export contains_in_interior
-export affine_halfplane_through_points
-export affine_halfspaces
 export intersect_halfplanes
 export is_bounded
 export affine_halfplane
@@ -145,8 +135,6 @@ export cls_cone_normal_form
 export hirzebruch_jung
 export hilbert_basis
 export hnf!
-export hnf
-export reset_attributes!
 export subpolygons
 export remove_vertex
 export classify_maximal_polygons_genus_one_m1p1
