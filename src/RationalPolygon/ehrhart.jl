@@ -1,9 +1,22 @@
+@doc raw"""
+    is_periodic(v :: Vector, k :: Int)
+
+Check if a vector `v` is `k`-periodic, i.e. `v[i] == v[mod(i+k,1:n)]` for all
+`i`, where `n = length(v)`.
+
+"""
 function is_periodic(v :: Vector, k :: Int)
     n = length(v)
     n % k != 0 && return false
     return all(i -> v[i] == v[mod(i+k,1:n)], 1 : n)
 end
 
+@doc raw"""
+    period(v :: Vector)
+
+Return the smallest positive integer `k` such that `v` is `k`-periodic.
+
+"""
 function period(v :: Vector)
     n = length(v)
     res = Int[]

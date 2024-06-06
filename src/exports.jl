@@ -1,3 +1,4 @@
+export gorenstein_index
 export filter_fano_polygons
 export contains_origin_in_interior
 export is_fano
@@ -62,8 +63,9 @@ export OnDiskSubpolygonStorage
 export save!
 export next_polygons
 export vertex
-export lattice_vertex
-export area
+export scaled_vertex
+export normalized_area
+export euclidian_area
 export empty_polygon
 export vertex_matrix
 export RationalPolygon
@@ -79,8 +81,6 @@ export LatticePoint
 export RationalPoint
 export Point
 export Line
-export point_by_parameter
-export reverse_direction
 export direction_vector
 export base_point
 export IntersectionBehaviour
@@ -91,8 +91,6 @@ export intersection_behaviour
 export intersection_point
 export is_k_rational
 export is_integral
-export floor_k_rational
-export ceil_k_rational
 export k_rational_points_on_line_segment
 export integral_points_on_line_segment
 export norm

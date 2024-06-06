@@ -21,7 +21,7 @@ function remove_vertex(P :: RationalPolygon{T,N}, i :: Int; primitive :: Bool = 
     else
         # the shortcut via hilbert bases only works in the non-primitive
         # case at the moment
-        u, v, w = lattice_vertex(P, i-1), lattice_vertex(P,i), lattice_vertex(P,i+1)
+        u, v, w = scaled_vertex(P, i-1), scaled_vertex(P,i), scaled_vertex(P,i+1)
         p1, p2 = u - v, w - v
         q1, q2 = primitivize(p1), primitivize(p2)
         hb = [p + v for p ∈ hilbert_basis(q1,q2)]
@@ -39,7 +39,7 @@ function remove_vertex(P :: RationalPolygon{T,N}, i :: Int; primitive :: Bool = 
         push!(vs,last(hb))
         !is_primitive(p2) && push!(vs, w)
         for j = i+2 : i+N-2
-            push!(vs, lattice_vertex(P,j))
+            push!(vs, scaled_vertex(P,j))
         end
 
         Q = RationalPolygon(vs, rationality(P))
@@ -49,6 +49,7 @@ function remove_vertex(P :: RationalPolygon{T,N}, i :: Int; primitive :: Bool = 
     end
 
 end
+
 
 function subpolygons(st :: SubpolygonStorage{T};
         primitive :: Bool = false,
@@ -105,23 +106,49 @@ end
 
 
 @doc raw"""
-    subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; out_path :: Union{Missing, String} = missing) where {T <: Integer}
+    subpolygons(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
+    subpolygons(P :: RationalPolygon{T}) where {T <: Integer}
+    subpolygons(st :: SubpolygonStorage{T}) where {T <: Integer}
 
-Given some rational polygons `starting_polygons` with shared rationality `k`
-and number of interior lattice points `n`, compute all subpolygons sharing
-the same rationality and number of interior lattice points.
+Given a list of rational polygons with shared rationality and number of
+interior lattice points, compute all subpolygons with the same number of
+)nterior lattice points. The following keyword arguments are supported:
+
+- `primitive :: Bool`: If set to true, only subpolygons with primitive vertices
+are returned.
+
+- `normal_form :: Symbol`: Can be either `:unimodular` or `:affine`. Used to
+control which normal form should be used when comparing subpolygons for
+equivalence.
+
+- `out_path :: Union{Missing, String}`: If out_path is `missing`, then all
+polygons are kept in memory. By specifying `out_path` to be a path to an empty
+directory, the storage of the resulting polygons is delegated to the disk. In
+this case, `subpolygons` will save the polygons to text files according to
+their normalized area. Additionally, a file `last_volume` will be created and
+constantly updated to hold the last fully completed area. This is useful for
+resuming a lengthy computation at a later point, see also
+`OnDiskSubpolygonStorage` for details on how to resume an unfinished
+computations of subpolygons.
+
+- `logging :: Bool`: Controls whether to show log messages showing the
+progress.
 
 """
-function subpolygons(starting_polygons :: Vector{<:RationalPolygon{T}}; 
+function subpolygons(Ps :: Vector{<:RationalPolygon{T}}; 
         primitive :: Bool = false, 
         normal_form :: Symbol = :unimodular,
         out_path :: Union{Missing, String} = missing, 
-        logging = false) where {T <: Integer}
+        logging :: Bool = false) where {T <: Integer}
 
-    st = subpolygon_storage(starting_polygons, out_path)
+    st = subpolygon_storage(Ps, out_path)
     return subpolygons(st; primitive, normal_form, logging)
                     
 end
 
-subpolygons(P :: RationalPolygon{T}) where {T <: Integer} =
-subpolygons([P])
+subpolygons(P :: RationalPolygon{T},
+        primitive :: Bool = false, 
+        normal_form :: Symbol = :unimodular,
+        out_path :: Union{Missing, String} = missing, 
+        logging :: Bool = false) where {T <: Integer} =
+subpolygons([P]; primitive, normal_form, out_path, logging)

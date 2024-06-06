@@ -47,7 +47,7 @@ end
 
 function _is_internal_quick(P :: RationalPolygon{T,N}) where {N,T <: Integer}
     for i = 1 : N
-        u, v, w = lattice_vertex(P, i-1), lattice_vertex(P,i), lattice_vertex(P,i+1)
+        u, v, w = scaled_vertex(P, i-1), scaled_vertex(P,i), scaled_vertex(P,i+1)
         p1, p2 = u - v, w - v
         q1, q2 = primitivize(p1), primitivize(p2)
         d, k, _ = cls_cone_normal_form(SA[q1[1] q2[1] ; q1[2] q2[2]])
@@ -224,7 +224,7 @@ end
 Classify all lattice polygons with up to `g` interior lattice points. If
 `out_path` is specified, the polygons will be saved to that location, with one
 text file for each number `1 ≤ i ≤ g` of interior lattice points. If `out_path`
-is not specified, the resulting polygons will be kept in memory and returnd as
+is not specified, the resulting polygons will be kept in memory and returned as
 a tuple `(Ps, Ps_max)`, where `Ps` and `Ps_max` are vectors of length `g`
 containing all polygons and just the maximal polygons respectively.
 
@@ -238,7 +238,6 @@ classify_lattice_polygons_by_genus(lattice_polygons_by_genus_storage(g, out_path
 
 @doc raw"""
     filter_fano_polygons(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}   
-
 Given a list of rational polygons `Ps`, return the list of all fano polygons
 that are affine equivalent to a polygons from `Ps`.
 

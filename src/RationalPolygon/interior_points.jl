@@ -1,4 +1,13 @@
 
+@doc raw"""
+    generic_lattice_points(P :: RationalPolygon{T,N}, k :: T)
+
+Return the lattice points in the `k`-fold of the rational polygon `P`. If the
+keyword argument `interior = true` is passed, only the interior lattice points
+are computed. If `only_count = true` is passed, only the total number of
+lattice points is returned.
+        
+"""
 function generic_lattice_points(
         P :: RationalPolygon{T,N},
         k :: T;
@@ -159,11 +168,28 @@ number_of_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
 generic_lattice_points(P, one(T), only_count = true)
 
 
+@doc raw"""
+    k_rational_hull(P :: RationalPolygon{T}, k :: T) where {T <: Integer}
+
+Return the convex hull of all `k`-rational points in the interior of `P`. If
+`primitive = true` is passed, only the primitive interior `k`-rational points
+are taken.
+
+"""
 function k_rational_hull(P :: RationalPolygon{T}, k :: T; primitive = false) where {T <: Integer}
     ps = k_rational_points(P, k)
     primitive && filter!(p -> is_primitive(k*p), ps)
     return convex_hull(ps, k)
 end
 
+
+@doc raw"""
+    integer_hull(P :: RationalPolygon{T}) where {T <: Integer}
+
+Return the convex hull of all lattice points in the interior of `P`. If
+`primitive = true` is passed, only the primitive interior lattice points are
+taken.
+
+"""
 integer_hull(P :: RationalPolygon{T}; primitive = false) where {T <: Integer} =
 k_rational_hull(P, one(T); primitive)

@@ -1,6 +1,14 @@
 ccw(a::RationalPoint{T}, b::RationalPoint{T}, c::RationalPoint{T}) where {T <: Integer} =
 (b[1] - a[1]) * (c[2] - a[2]) - (b[2] - a[2]) * (c[1] - a[1])
 
+
+@doc raw"""
+    graham_scan!(points :: Vector{RationalPoint{T}}) where {T <: Integer}
+
+Perform a graham scan on the given points, removing all points that are not
+vertices of their convex hull.
+
+"""
 function graham_scan!(points :: Vector{RationalPoint{T}}) where {T <: Integer}
     # remove duplicate points
     unique!(points)
@@ -53,4 +61,11 @@ function graham_scan!(points :: Vector{RationalPoint{T}}) where {T <: Integer}
     return points[1:k]
 end
 
+
+@doc raw"""
+    graham_scan(points :: Vector{RationalPoint{T}}) where {T <: Integer}
+
+A non-modifying version of `graham_scan!`.
+
+"""
 graham_scan(points :: Vector{RationalPoint{T}}) where {T <: Integer} = graham_scan!(deepcopy(points))

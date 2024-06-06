@@ -32,6 +32,15 @@ function is_bounded(halfplanes :: Vector{AffineHalfplane{T}}) where {T <: Intege
     return true
 end
 
+
+@doc raw"""
+    intersect_halfplanes(halfplanes :: Vector{AffineHalfplane{T}}; rationality :: Union{Missing,T} = missing) where {T <: Integer}
+
+Return the polygon described by the intersection of the given affine
+halfplanes. Throws an error if the intersection is unbounded. If `rationality`
+is not provided, it will be inferred from the input.
+
+"""
 function intersect_halfplanes(halfplanes :: Vector{AffineHalfplane{T}}; rationality :: Union{Missing,T} = missing) where {T <: Integer}
 
     n = length(halfplanes)

@@ -1,3 +1,12 @@
+@doc raw"""
+    SubpolygonStorage{T <: Integer}
+
+An abstract supertype of storage options for computing subpolygons. There are
+two subtypes `InMemorySubpolygonStorage` and `OnDiskSubpolygonStorage`. The
+former keeps all subpolygons in memory, the latter delegeates their storage to
+the disk.
+
+"""
 abstract type SubpolygonStorage{T <: Integer} end
 
 rationality(st :: SubpolygonStorage{T}) where {T <: Integer} = st.rationality
@@ -12,6 +21,14 @@ mutable struct InMemorySubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
     last_volume :: T
     total_count :: Int
 
+    @doc raw"""
+        InMemorySubpolygonStorage{T}(starting_polygons :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
+
+    Construct an in-memory storage container of subpolygons starting with the
+    given list of polygons. When using this constructor, the subpolygons are
+    not yet computed. To compute the subpolygons, use [`subpolygons`](@ref).
+    
+    """
     function InMemorySubpolygonStorage{T}(starting_polygons :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
         !isempty(starting_polygons) || error("must provide a non-empty list of starting polygons")
 
@@ -23,7 +40,7 @@ mutable struct InMemorySubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
 
         hashes_dict = Dict{T, Set{UInt}}()
         polygons_dict = Dict{T, Vector{RationalPolygon{T}}}()
-        last_volume = maximum(area.(starting_polygons)) + 1
+        last_volume = maximum(normalized_area.(starting_polygons)) + 1
         total_count = 0 
         st = new{T}(k, n, hashes_dict, polygons_dict, last_volume, total_count)
         save!(st, starting_polygons)
@@ -34,7 +51,7 @@ end
 
 function save!(st :: InMemorySubpolygonStorage{T}, Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
     for P ∈ Ps
-        a = area(P)
+        a = normalized_area(P)
         if !haskey(st.hashes_dict, a) 
             st.hashes_dict[a] = Set{UInt}()
             st.polygons_dict[a] = RationalPolygon{T}[]
@@ -62,12 +79,6 @@ end
 return_value(st :: InMemorySubpolygonStorage) = vcat(values(st.polygons_dict)...)
 
 
-@doc raw"""
-    mutable struct OnDiskSubpolygonStorage{T<:Integer}   
-
-A struct used by the function `subpolygons` to hold intermediate results.
-
-"""
 mutable struct OnDiskSubpolygonStorage{T<:Integer} <: SubpolygonStorage{T}
     rationality :: T
     number_of_interior_lattice_points :: Int
@@ -78,6 +89,13 @@ mutable struct OnDiskSubpolygonStorage{T<:Integer} <: SubpolygonStorage{T}
     last_volume :: T
     total_count :: Int
 
+    @doc raw"""
+        OnDiskSubpolygonStorage{T}(starting_polygons :: Vector{<:RationalPolygon{T}}, directory :: String; file_prefix :: String = "vol_") where {T <: Integer}
+
+    Construct a new on-disk subpolygon storage container at the given
+    directory, starting with the given list of polygons.
+    
+    """
     function OnDiskSubpolygonStorage{T}(starting_polygons :: Vector{<:RationalPolygon{T}}, directory :: String; file_prefix :: String = "vol_") where {T <: Integer}
         !isempty(starting_polygons) || error("must provide a non-empty list of starting polygons")
         isdir(directory) || error("$directory is not a directory")
@@ -90,13 +108,23 @@ mutable struct OnDiskSubpolygonStorage{T<:Integer} <: SubpolygonStorage{T}
 
         hashes_dict = Dict{T,Set{UInt}}()
         files = Dict{T, IOStream}()
-        last_volume = maximum(area.(starting_polygons)) + 1
+        last_volume = maximum(normalized_area.(starting_polygons)) + 1
         total_count = 0
         st = new{T}(k, n, hashes_dict, directory, file_prefix, files, last_volume, total_count)
         save!(st, starting_polygons)
         return st
     end
 
+    @doc raw"""
+        OnDiskSubpolygonStorage{T}(k :: T, n :: T, directory :: String; file_prefix :: String = "vol_") where {T <: Integer}
+
+    This constructor can be used to resume an unfinished computations of
+    subpolygons. It takes the rationality `k` and the number of interior
+    lattice points `n` as well as the file path where [`subpolygons`](@ref) has
+    stored its unfinished results. The resulting object can the be passed to
+    [`subpolygons`](@ref) and it will resume the computation where it left off.
+    
+    """
     function OnDiskSubpolygonStorage{T}(k :: T, n :: T, directory :: String; file_prefix :: String = "vol_") where {T <: Integer}
 
         isdir(directory) || error("$directory is not a directory")
@@ -131,12 +159,12 @@ end
 
 
 function save!(st :: OnDiskSubpolygonStorage{T}, Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
-    as = unique(area.(Ps))
+    as = unique(normalized_area.(Ps))
     files = Dict([a => open(joinpath(st.directory, "$(st.file_prefix)$a.txt"), "a") for a ∈ as])
 
     for P ∈ Ps
         P = unimodular_normal_form(P)
-        a = area(P)
+        a = normalized_area(P)
         if !haskey(st.hashes_dict, a) 
             st.hashes_dict[a] = Set{RationalPolygon{T}}()
         end
@@ -157,7 +185,7 @@ is_finished(st :: OnDiskSubpolygonStorage{T}) where {T <: Integer} =
 isempty(st.hashes_dict)
 
 function next_polygons(st :: OnDiskSubpolygonStorage{T}) where {T <: Integer}
-    # Get the polygons with maximal area
+    # Get the polygons with maximal normalized_area
     a = maximum(filter(b -> b < st.last_volume, keys(st.hashes_dict)))
 
     filepath = joinpath(st.directory, "$(st.file_prefix)$a.txt")

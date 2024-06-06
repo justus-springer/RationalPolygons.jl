@@ -32,15 +32,38 @@ function hnf!(A :: MMatrix{2,N,T}) where {N,T<:Integer}
 
 end
 
+@doc raw"""
+    lattice_edge_areas(P :: RationalPolygon)
+
+To each vertex of a polygon, we associate the area spanned by the two adjacent
+edges. This function returns the vector of all those areas.
+
+"""
 lattice_edge_areas(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
 [abs(det(P[i+1] - P[i], P[i] - P[i-1])) for i = 1 : N]
 
+
+@doc raw"""
+    area_maximizing_vertices(P :: RationalPolygon)
+
+Return the indices of those vertices of `P` that maximize the lattice edge
+area.
+
+"""
 function area_maximizing_vertices(P :: RationalPolygon{T,N}) where {N,T <: Integer}
     ea = lattice_edge_areas(P)
     m = maximum(ea)
     return filter(i -> ea[i] == m, 1 : N)
 end
 
+
+@doc raw"""
+    unimodular_normal_form_with_automorphism_group(P :: RationalPolygon)
+
+Return a pair `(Q,G)` where `Q` is the unimodular normal form of `P` and `G` is
+the unimodular automorphism group of `P`.
+
+"""
 function unimodular_normal_form_with_automorphism_group(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 
     V = vertex_matrix(P)
@@ -131,6 +154,13 @@ function _special_vertices_align(k :: T,
 end
 
 
+@doc raw"""
+    affine_normal_form_with_automorphism_group(P :: RationalPolygon)
+
+Return a pair `(Q,G)` where `Q` is the affine normal form of `P` and `G` is the
+affine automorphism group of `P`.
+
+"""
 function affine_normal_form_with_automorphism_group(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 
     V = vertex_matrix(P)
@@ -141,8 +171,8 @@ function affine_normal_form_with_automorphism_group(P :: RationalPolygon{T,N}) w
 
     for i ∈ is
         # move the vertex to the origin
-        push!(As, MMatrix{2,N,T,2N}([V[:,i+1:end] V[:,begin:i]]) .- lattice_vertex(P,i))
-        push!(As, MMatrix{2,N,T,2N}([V[:,i-1:-1:begin] V[:,end:-1:i]]) .- lattice_vertex(P,i))
+        push!(As, MMatrix{2,N,T,2N}([V[:,i+1:end] V[:,begin:i]]) .- scaled_vertex(P,i))
+        push!(As, MMatrix{2,N,T,2N}([V[:,i-1:-1:begin] V[:,end:-1:i]]) .- scaled_vertex(P,i))
     end
     hnf!.(As)
 

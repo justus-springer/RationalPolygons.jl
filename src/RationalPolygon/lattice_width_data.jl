@@ -57,6 +57,14 @@ realize the lattice width of `P`.
 """
 width_direction_vectors(P :: RationalPolygon) = width_with_direction_vectors(P)[2]
 
+
+@doc raw"""
+    adjust_to_width_direction(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
+
+Apply an affine unimodular transformation to `P` that transforms the given
+width direction vector to (1,0), see Lemma 2.10 of [Boh23](@cite).
+
+"""
 function adjust_to_width_direction(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
     is_primitive(w) || error("the given direction vector is not primitive")
     k = rationality(P)
@@ -68,6 +76,15 @@ function adjust_to_width_direction(P :: RationalPolygon{T}, w :: Point{T}) where
     return Q + b
 end
 
+
+@doc raw"""
+    LatticeWidthData{T <: Integer}
+
+A struct capturing information about the lattice width of a rational polygon
+with respect to a some width direction vector, see Definition 2.11 of
+[Boh23](@cite).
+
+"""
 struct LatticeWidthData{T <: Integer}
     interval_of_nonzero_vertical_slice_length :: Tuple{Rational{T},Rational{T}}
     interval_of_longest_vertical_slice_length :: Tuple{Rational{T},Rational{T}}
@@ -81,6 +98,14 @@ position_of_longest_vertical_slice_length(lwd :: LatticeWidthData) =
 (lwd.interval_of_longest_vertical_slice_length[1] +
  lwd.interval_of_longest_vertical_slice_length[2]) // 2
 
+
+@doc raw"""
+    lattice_width_data(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
+
+Compute the lattice width data of a rational polygon with respect to a given
+width direction vector, see Definition 2.11 of [Boh23](@cite). This function returns a value of type `LatticeWidthData`.
+
+"""
 function lattice_width_data(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
     Q = adjust_to_width_direction(P, w)
     xs = [v[1] for v ∈ vertices(Q)]
@@ -94,17 +119,57 @@ function lattice_width_data(P :: RationalPolygon{T}, w :: Point{T}) where {T <: 
 
 end
 
+
+@doc raw"""
+    number_of_interior_integral_vertical_lines(P :: RationalPolygon, w :: Point{T}) where {T <: Integer}
+
+Return the number of interior integral vertical lines of `P` with respect to a
+given lattice width direction vector, see Definition 2.11 of [Boh23](@cite). 
+
+"""
 number_of_interior_integral_vertical_lines(P :: RationalPolygon, w :: Point{T}) where {T <: Integer} =
 number_of_interior_integral_vertical_lines(lattice_width_data(P, w))
 
+
+@doc raw"""
+    position_of_longest_vertical_slice_length(P :: RationalPolygon, w :: Point{T}) where {T <: Integer}
+
+Return the position of the longest vertical slicing length of `P` with respect
+to a given lattice width direction vector, see Definition 2.11 of
+[Boh23](@cite). 
+
+"""
 position_of_longest_vertical_slice_length(P :: RationalPolygon, w :: Point{T}) where {T <: Integer} =
 position_of_longest_vertical_slice_length(lattice_width_data(P, w))
 
+
+@doc raw"""
+    lattice_width_datas(P :: RationalPolygon{T}) where {T <: Integer}   
+    
+Return the lattice with datas for all lattice width direction vectors of `P`.
+
+"""
 lattice_width_datas(P :: RationalPolygon{T}) where {T <: Integer} =
 lattice_width_data.(P, width_direction_vectors(P))
 
+
+@doc raw"""
+    numbers_of_interior_integral_vertical_lines(P :: RationalPolygon{T}) where {T <: Integer}
+
+Return the number of interior integral vertical lines for all width direction
+vectors of `P`.
+
+"""
 numbers_of_interior_integral_vertical_lines(P :: RationalPolygon{T}) where {T <: Integer} =
 [number_of_interior_integral_vertical_lines(P, w) for w ∈ width_direction_vectors(P)]
 
+
+@doc raw"""
+    positions_of_longest_vertical_slice_length(P :: RationalPolygon{T}) where {T <: Integer}
+
+Return the positions of the longest vertical slicing lengths for all width
+direction vectors of `P`.
+
+"""
 positions_of_longest_vertical_slice_length(P :: RationalPolygon{T}) where {T <: Integer} =
 [position_of_longest_vertical_slice_length(P, w) for w ∈ width_direction_vectors(P)]
