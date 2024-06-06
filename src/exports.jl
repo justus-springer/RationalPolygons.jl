@@ -1,3 +1,7 @@
+export dimension_of_interior_integer_hull
+export interior_integer_hull
+export interior_k_rational_hull
+export dim
 export classify_maximal_polygons_m1p1
 export gorenstein_index
 export filter_fano_polygons

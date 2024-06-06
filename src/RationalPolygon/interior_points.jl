@@ -171,13 +171,28 @@ generic_lattice_points(P, one(T), only_count = true)
 @doc raw"""
     k_rational_hull(P :: RationalPolygon{T}, k :: T) where {T <: Integer}
 
-Return the convex hull of all `k`-rational points in the interior of `P`. If
-`primitive = true` is passed, only the primitive interior `k`-rational points
+Return the convex hull of all `k`-rational points contained in `P`. If
+`primitive = true` is passed, only the primitive `k`-rational points
 are taken.
 
 """
 function k_rational_hull(P :: RationalPolygon{T}, k :: T; primitive = false) where {T <: Integer}
     ps = k_rational_points(P, k)
+    primitive && filter!(p -> is_primitive(k*p), ps)
+    return convex_hull(ps, k)
+end
+
+
+@doc raw"""
+    interior_k_rational_hull(P :: RationalPolygon{T}, k :: T) where {T <: Integer}
+
+Return the convex hull of all interior `k`-rational points of `P`. If
+`primitive = true` is passed, only the primitive `k`-rational points
+are taken.
+
+"""
+function interior_k_rational_hull(P :: RationalPolygon{T}, k :: T; primitive = false) where {T <: Integer}
+    ps = interior_k_rational_points(P, k)
     primitive && filter!(p -> is_primitive(k*p), ps)
     return convex_hull(ps, k)
 end
@@ -193,3 +208,14 @@ taken.
 """
 integer_hull(P :: RationalPolygon{T}; primitive = false) where {T <: Integer} =
 k_rational_hull(P, one(T); primitive)
+
+
+@doc raw"""
+    interior_integer_hull(P :: RationalPolygon{T}) where {T <: Integer}
+
+Return the convex hull of all interior lattice points of `P`. If `primitive =
+true` is passed, only the primitive lattice points are taken.
+
+"""
+interior_integer_hull(P :: RationalPolygon{T}; primitive = false) where {T <: Integer} =
+interior_k_rational_hull(P, one(T); primitive)

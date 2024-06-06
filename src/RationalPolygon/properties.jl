@@ -1,3 +1,4 @@
+
 @doc raw"""
     affine_halfplane(P :: RationalPolygon, i :: Int)
 
@@ -36,6 +37,29 @@ Check whether a point `x` is contained in the interior of `P`.
 """
 contains_in_interior(x :: Point{T}, P :: RationalPolygon{T,N}) where {N,T <: Integer} =
 all(H -> contains_in_interior(x, H), affine_halfplanes(P))
+
+
+@doc raw"""
+    dim(P :: RationalPolygon)
+
+Return the dimension of `P`. For empty polygons, this returns -1. Otherwise,
+it returns 0, 1 or 2.
+
+"""
+dim(P :: RationalPolygon{T,0}) where {T <: Integer} = -1
+dim(P :: RationalPolygon{T,1}) where {T <: Integer} = 0 
+dim(P :: RationalPolygon{T,2}) where {T <: Integer} = 1 
+dim(P :: RationalPolygon{T,N}) where {N,T <: Integer}  = 2 
+
+
+@doc raw"""
+    dimension_of_interior_integer_hull(P :: RationalPolygon)   
+
+Return the dimension of the convex hull of the interior lattice points of `P`.
+
+"""
+dimension_of_interior_integer_hull(P :: RationalPolygon) =
+dim(interior_integer_hull(P))
 
 
 @doc raw"""
