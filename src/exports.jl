@@ -1,3 +1,4 @@
+export classify_maximal_polygons_m1p1
 export gorenstein_index
 export filter_fano_polygons
 export contains_origin_in_interior
