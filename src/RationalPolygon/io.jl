@@ -44,11 +44,11 @@ line containing its vertices, as in the following example:
 ....
 
 """
-function write_rational_polygons(Ps :: Vector{<:RationalPolygon{T}}, filepath :: String) where {T <: Integer}
-   f = open(filepath, "w")
-   for P ∈ Ps  
+function write_rational_polygons(Ps :: Vector{<:RationalPolygon{T}}, filepath :: String, mode :: String = "w") where {T <: Integer}
+    f = open(filepath, mode) 
+    for P ∈ Ps  
        V = vertex_matrix(P)
        println(f, [Vector(V[:,i]) for i = 1 : number_of_vertices(P)])
-   end
-   close(f)
+    end
+    close(f)
 end
