@@ -80,19 +80,31 @@ mutable struct InMemoryLatticePolygonsByGenusStorage{T <: Integer} <: LatticePol
 
 end
 
-next_maximal_polygons(st :: InMemoryLatticePolygonsByGenusStorage{T}) where {T <: Integer} =
-st.maximal_polygons[st.last_completed_genus + 1]
-
-function finish_genus(
-        st :: InMemoryLatticePolygonsByGenusStorage{T},
-        Ps_all :: Vector{RationalPolygon{T}},
-        Ps_max :: Vector{RationalPolygon{T}},
-        moved_out_polygons :: Vector{Tuple{Int, RationalPolygon{T}}}) where {T <: Integer}
+function classify_next_genus(st :: InMemoryLatticePolygonsByGenusStorage{T}) where {T <: Integer}
 
     i = st.last_completed_genus + 1
-    st.all_polygons[i] = Ps_all
-    st.total_count += length(Ps_all)
-    st.maximal_polygons[i] = Ps_max
+
+    Ps_max = st.maximal_polygons[i]
+    append!(Ps_max, classify_maximal_lattice_polygons_with_two_dimensional_empty_fine_interior(i,T))
+    append!(Ps_max, classify_maximal_lattice_polygons_with_collinear_interior_points(i,T))
+
+    st.all_polygons[i] = subpolygons(Ps_max; normal_form = :affine)
+    st.total_count += length(st.all_polygons[i])
+
+    out_array = Vector{Tuple{Int,RationalPolygon{T}}}[]
+    for i = 1 : Threads.nthreads()
+        push!(out_array, Tuple{Int,RationalPolygon{T}}[])
+    end
+
+    Threads.@threads for P ∈ st.all_polygons[i]
+        _is_internal_quick(P) || continue
+        n = number_of_lattice_points(P)
+        n ≤ st.maximal_genus || continue
+        Q = move_out_edges(P)
+        rationality(Q) == 1 || continue
+        push!(out_array[Threads.threadid()], (n,Q))
+    end
+    moved_out_polygons = vcat(out_array...)
 
     for (n, P) ∈ moved_out_polygons
         push!(st.maximal_polygons[n], P)
@@ -100,78 +112,88 @@ function finish_genus(
 
     st.last_completed_genus = i
 
+    return length(st.all_polygons[i]), length(st.maximal_polygons[i]), st.total_count
+
 end
 
 
 mutable struct OnDiskLatticePolygonsByGenusStorage{T <: Integer} <: LatticePolygonsByGenusStorage{T}
     maximal_genus :: Int
     directory :: String
-    file_prefix :: String
-    maximal_file_prefix :: String
     last_completed_genus :: Int
     total_count :: Int
 
-    function OnDiskLatticePolygonsByGenusStorage{T}(
-            maximal_genus :: Int, 
-            directory :: String; 
-            file_prefix :: String = "i",
-            maximal_file_prefix :: String = "max_i") where {T <: Integer}
+    function OnDiskLatticePolygonsByGenusStorage{T}(maximal_genus :: Int, directory :: String) where {T <: Integer}
 
         isdir(directory) || error("$directory is not a directory")
         isempty(readdir(directory)) || error("$directory is dirty. Please provide an empty directory")
+        mkdir(joinpath(directory, "maximal"))
+        mkdir(joinpath(directory, "all"))
 
-        f = open(joinpath(directory, maximal_file_prefix * "1.txt"), "w")
-        println(f, "[[1, 0], [1, 2], [-3, -4]]\n[[1, 0], [1, 2], [-1, 0], [-1, -2]]\n[[1, 0], [1, 3], [-2, -3]]")
-        close(f)
+        write_rational_polygons(classify_maximal_polygons_genus_one(one(T)), joinpath(directory, "maximal/i1.txt"))
+        mkdir(joinpath(directory, "all/i1"))
+
         for i = 2 : maximal_genus
-            touch(joinpath(directory, maximal_file_prefix * "$i.txt"))
+            touch(joinpath(directory, "maximal/i$i.txt"))
+            mkdir(joinpath(directory, "all/i$i"))
         end
 
-        new{T}(maximal_genus, directory, file_prefix, maximal_file_prefix, 0, 0)
+        new{T}(maximal_genus, directory, 0, 0)
 
     end
 
 end
 
-function next_maximal_polygons(st :: OnDiskLatticePolygonsByGenusStorage{T}) where {T <: Integer}
+function classify_next_genus(st :: OnDiskLatticePolygonsByGenusStorage{T}) where {T <: Integer}
+
     i = st.last_completed_genus + 1
-    filepath = joinpath(st.directory, st.maximal_file_prefix * "$i.txt")
-    return parse_rational_polygons(one(T), filepath)
-end
+    max_file_path = joinpath(st.directory, "maximal/i$i.txt")
+    all_path = joinpath(st.directory, "all/i$i")
 
-function finish_genus(
-        st :: OnDiskLatticePolygonsByGenusStorage{T},
-        Ps_all :: Vector{RationalPolygon{T}},
-        Ps_max :: Vector{RationalPolygon{T}},
-        moved_out_polygons :: Vector{Tuple{Int, RationalPolygon{T}}}) where {T <: Integer}
+    Ps_max = parse_rational_polygons(one(T), max_file_path) 
+    append!(Ps_max, classify_maximal_lattice_polygons_with_two_dimensional_empty_fine_interior(i,T))
+    append!(Ps_max, classify_maximal_lattice_polygons_with_collinear_interior_points(i,T))
 
-    i = st.last_completed_genus + 1 
-    f = open(joinpath(st.directory, st.file_prefix * "$i.txt"), "w")
-    for P ∈ Ps_all
-        V = vertex_matrix(P)
-        println(f, [Vector(V[:,i]) for i = 1 : number_of_vertices(P)])
+    subpolygons(Ps_max; normal_form = :affine, out_path = all_path)
+
+    out_array = Vector{Tuple{Int,RationalPolygon{T}}}[]
+    for i = 1 : Threads.nthreads()
+        push!(out_array, Tuple{Int,RationalPolygon{T}}[])
     end
-    close(f)
-    st.total_count += length(Ps_all)
 
-    f = open(joinpath(st.directory, st.maximal_file_prefix * "$i.txt"), "w")
-    for P ∈ Ps_max
-        V = vertex_matrix(P)
-        println(f, [Vector(V[:,i]) for i = 1 : number_of_vertices(P)])
+    files = readdir(all_path)
+    filter!(f -> startswith(f, "vol_"), files)
+    all_count = 0
+    for f ∈ files
+        Ps = parse_rational_polygons(one(T), joinpath(all_path, f))
+        all_count += length(Ps)
+
+        for P ∈ Ps
+            _is_internal_quick(P) || continue
+            n = number_of_lattice_points(P)
+            n ≤ st.maximal_genus || continue
+            Q = move_out_edges(P)
+            rationality(Q) == 1 || continue
+            push!(out_array[Threads.threadid()], (n,Q))
+        end
     end
-    close(f)
+    st.total_count += all_count
+
+    moved_out_polygons = vcat(out_array...)
 
     for (n, P) ∈ moved_out_polygons
-        f = open(joinpath(st.directory, st.maximal_file_prefix * "$n.txt"), "a")
-        V = vertex_matrix(P)
-        println(f, [Vector(V[:,i]) for i = 1 : number_of_vertices(P)])
-        close(f)
+        filepath = joinpath(st.directory, "maximal/i$n.txt")
+        write_rational_polygons([P], filepath, "a")
     end
+
+    write_rational_polygons(Ps_max, max_file_path, "w")
 
     st.last_completed_genus = i
 
+    return all_count, length(Ps_max), st.total_count
 
 end
+
 
 lattice_polygons_by_genus_storage(maximal_genus :: Int, directory :: Union{Missing,String} = missing, T :: Type{<:Integer} = Int) =
 ismissing(directory) ? InMemoryLatticePolygonsByGenusStorage{T}(maximal_genus) : OnDiskLatticePolygonsByGenusStorage{T}(maximal_genus, directory)
@@ -183,30 +205,9 @@ function classify_lattice_polygons_by_genus(
 
     for i = st.last_completed_genus + 1 : st.maximal_genus
 
-        Ps_max = next_maximal_polygons(st)
-        append!(Ps_max, classify_maximal_lattice_polygons_with_two_dimensional_empty_fine_interior(i,T))
-        append!(Ps_max, classify_maximal_lattice_polygons_with_collinear_interior_points(i,T))
+        all_count, max_count, total_count = classify_next_genus(st)
 
-        Ps_all = subpolygons(Ps_max; normal_form = :affine)
-
-        out_array = Vector{Tuple{Int,RationalPolygon{T}}}[]
-        for i = 1 : Threads.nthreads()
-            push!(out_array, Tuple{Int,RationalPolygon{T}}[])
-        end
-
-        Threads.@threads for P ∈ Ps_all
-            _is_internal_quick(P) || continue
-            n = number_of_lattice_points(P)
-            n ≤ st.maximal_genus || continue
-            Q = move_out_edges(P)
-            rationality(Q) == 1 || continue
-            push!(out_array[Threads.threadid()], (n,Q))
-        end
-        moved_out_polygons = vcat(out_array...)
-
-        finish_genus(st, Ps_all, Ps_max, moved_out_polygons)
-
-        logging && @info "Genus $i. Number of (maximal) polygons: $(length(Ps_all)) ($(length(Ps_max))). Total: $(st.total_count)."
+        logging && @info "Genus $i. Number of (maximal) polygons: $all_count ($max_count). Total: $total_count."
 
     end
 
