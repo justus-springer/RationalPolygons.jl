@@ -24,3 +24,6 @@ import StaticArrays:
 import LinearAlgebra:
     mul!,
     dot
+
+import HDF5:
+    HDF5
