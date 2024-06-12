@@ -131,7 +131,7 @@ export SliceThroughBoundary
 export SliceThroughInterior
 export SliceThroughVertex
 export subpolygons
-export subpolygon_storage
+export subpolygons_single_step
 export SubpolygonStorage
 export translation
 export unimodular_automorphism_group
