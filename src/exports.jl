@@ -1,3 +1,4 @@
+export initialize_hdf_subpolygon_storage
 export append_polygons_to_h5
 export import_polygons_from_h5
 export export_polygons_to_h5
@@ -108,7 +109,7 @@ export number_of_k_rational_points
 export number_of_lattice_points
 export number_of_vertices
 export numbers_of_interior_integral_vertical_lines
-export OnDiskSubpolygonStorage
+export HDFSubpolygonStorage
 export order
 export parse_rational_polygons
 export period

@@ -88,7 +88,7 @@ function classify_next_genus(st :: InMemoryLatticePolygonsByGenusStorage{T}) whe
     append!(Ps_max, classify_maximal_lattice_polygons_with_two_dimensional_empty_fine_interior(i,T))
     append!(Ps_max, classify_maximal_lattice_polygons_with_collinear_interior_points(i,T))
 
-    st.all_polygons[i] = subpolygons(Ps_max; normal_form = :affine)
+    st.all_polygons[i] = subpolygons(Ps_max; use_affine_normal_form = true)
     st.total_count += length(st.all_polygons[i])
 
     out_array = Vector{Tuple{Int,RationalPolygon{T}}}[]

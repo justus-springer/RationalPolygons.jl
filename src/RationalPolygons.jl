@@ -28,7 +28,7 @@ include("RationalPolygon/normal_form.jl")
 include("Subpolygons/remove_vertex.jl")
 include("Subpolygons/SubpolygonStorage.jl")
 include("Subpolygons/InMemorySubpolygonStorage.jl")
-include("Subpolygons/OnDiskSubpolygonStorage.jl")
+include("Subpolygons/HDFSubpolygonStorage.jl")
 include("Subpolygons/subpolygons.jl")
 
 include("Classification/one_interior_lattice_point.jl")

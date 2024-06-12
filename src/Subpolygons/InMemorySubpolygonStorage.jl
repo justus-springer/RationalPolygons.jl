@@ -3,7 +3,7 @@ mutable struct InMemorySubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
     rationality :: T
     number_of_interior_lattice_points :: Int
     primitive :: Bool
-    normal_form :: Symbol
+    use_affine_normal_form :: Bool
     polygons_dict :: Dict{T,Set{RationalPolygon{T}}}
     last_volume :: T
     total_count :: Int
@@ -19,9 +19,8 @@ mutable struct InMemorySubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
     function InMemorySubpolygonStorage{T}(
        starting_polygons :: Vector{<:RationalPolygon{T}};
        primitive :: Bool = false,
-       normal_form :: Symbol = :unimodular) where {T <: Integer}
+       use_affine_normal_form :: Bool = false) where {T <: Integer}
 
-        normal_form ∈ [:unimodular, :affine] || error("`normal_form` must be either `:unimodular` or `:affine`")
         !isempty(starting_polygons) || error("must provide a non-empty list of starting polygons")
 
         k = rationality(first(starting_polygons))
@@ -33,7 +32,7 @@ mutable struct InMemorySubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
         polygons_dict = Dict{T, Set{RationalPolygon{T}}}()
         last_volume = maximum(normalized_area.(starting_polygons)) + 1
         total_count = 0 
-        st = new{T}(k, n, primitive, normal_form, polygons_dict, last_volume, total_count)
+        st = new{T}(k, n, primitive, use_affine_normal_form, polygons_dict, last_volume, total_count)
         save!(st, starting_polygons)
         return st
     end
@@ -83,10 +82,10 @@ function subpolygons_single_step(
                 Q, keeps_genus = remove_vertex(P, j; st.primitive)
                 keeps_genus || continue
                 number_of_vertices(Q) > 2 || continue
-                if st.normal_form == :unimodular
-                    Q = unimodular_normal_form(Q)
-                else
+                if st.use_affine_normal_form
                     Q = affine_normal_form(Q)
+                else
+                    Q = unimodular_normal_form(Q)
                 end
                 push!(out_array[Threads.threadid()], Q)
             end

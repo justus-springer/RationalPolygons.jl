@@ -7,8 +7,6 @@ function subpolygons(
         subpolygons_single_step(st; logging)
     end
 
-    logging && @info "Found a total of $(total_count(st)) subpolygons"
-
     return return_value(st)
 
 end
@@ -45,14 +43,20 @@ progress.
 """
 function subpolygons(Ps :: Vector{<:RationalPolygon{T}}; 
         primitive :: Bool = false, 
-        normal_form :: Symbol = :unimodular,
-        out_path :: Union{Missing, String} = missing, 
+        use_affine_normal_form :: Bool = false,
+        hdf_path :: Union{Missing, String} = missing, 
+        hdf_group :: Union{Missing, String} = missing,
         logging :: Bool = false) where {T <: Integer}
 
-    if ismissing(out_path)
-        st = InMemorySubpolygonStorage{T}(Ps; primitive, normal_form)
+    if ismissing(hdf_path)
+        st = InMemorySubpolygonStorage{T}(Ps; primitive, use_affine_normal_form)
     else
-        st = OnDiskSubpolygonStorage{T}(Ps, out_path; primitive, normal_form)
+        if ismissing(hdf_group)
+            st = HDFSubpolygonStorage{T}(hdf_path)
+        else
+            st = HDFSubpolygonStorage{T}(hdf_path, hdf_group)
+        end
+        initialize_hdf_subpolygon_storage(st, Ps; primitive, use_affine_normal_form)
     end
 
     return subpolygons(st; logging)

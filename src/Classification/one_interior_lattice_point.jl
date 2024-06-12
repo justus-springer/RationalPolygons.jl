@@ -335,12 +335,17 @@ of polygons grows rapidly in `k`, this is the recommended method for `k ≥ 4`.
 current progress.
 
 """
-function classify_polygons_genus_one(k :: T; primitive :: Bool = false, out_path :: Union{Missing,String} = missing, logging = false) where {T <: Integer}
+function classify_polygons_genus_one(
+        k :: T; 
+        primitive :: Bool = false, 
+        hdf_path :: Union{Missing, String} = missing, 
+        hdf_group :: Union{Missing, String} = missing,
+        logging = false) where {T <: Integer}
 
     primstring = primitive ? "primitive " : ""
     logging && @info "Beginning classification of all $(primstring)$k-rational polygons with one interior lattice point."
 
     Ps = classify_maximal_polygons_genus_one(k; primitive, logging)
-    return subpolygons(Ps; primitive, out_path, logging)
+    return subpolygons(Ps; primitive, hdf_path, hdf_group, logging)
 end
 

@@ -26,4 +26,7 @@ import LinearAlgebra:
     dot
 
 import HDF5:
-    HDF5
+    HDF5,
+    attrs,
+    create_group,
+    h5open
