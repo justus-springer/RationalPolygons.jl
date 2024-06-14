@@ -339,7 +339,7 @@ function classify_polygons_genus_one(
         k :: T; 
         primitive :: Bool = false, 
         hdf_path :: Union{Missing, String} = missing, 
-        hdf_group :: Union{Missing, String} = missing,
+        hdf_group :: String = "/",
         logging = false) where {T <: Integer}
 
     primstring = primitive ? "primitive " : ""

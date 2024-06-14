@@ -1,17 +1,4 @@
 
-function subpolygons(
-        st :: SubpolygonStorage{T};
-        logging :: Bool = false) where {T <: Integer}
-
-    while !is_finished(st)
-        subpolygons_single_step(st; logging)
-    end
-
-    return return_value(st)
-
-end
-
-
 @doc raw"""
     subpolygons(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
     subpolygons(P :: RationalPolygon{T}) where {T <: Integer}
@@ -45,27 +32,28 @@ function subpolygons(Ps :: Vector{<:RationalPolygon{T}};
         primitive :: Bool = false, 
         use_affine_normal_form :: Bool = false,
         hdf_path :: Union{Missing, String} = missing, 
-        hdf_group :: Union{Missing, String} = missing,
+        hdf_group :: String = "/",
         logging :: Bool = false) where {T <: Integer}
 
     if ismissing(hdf_path)
         st = InMemorySubpolygonStorage{T}(Ps; primitive, use_affine_normal_form)
+        return subpolygons(st; logging)
     else
-        if ismissing(hdf_group)
-            st = HDFSubpolygonStorage{T}(hdf_path)
-        else
-            st = HDFSubpolygonStorage{T}(hdf_path, hdf_group)
+        f = h5open(hdf_path, "cw")
+        if !haskey(f, hdf_group)
+            create_group(f, hdf_group)
         end
-        initialize_hdf_subpolygon_storage(st, Ps; primitive, use_affine_normal_form)
+        g = f[hdf_group]
+        initialize_hdf_subpolygon_storage(g, Ps; primitive, use_affine_normal_form)
+        return subpolygons(g; logging)
     end
 
-    return subpolygons(st; logging)
-                    
 end
 
 subpolygons(P :: RationalPolygon{T},
         primitive :: Bool = false, 
-        normal_form :: Symbol = :unimodular,
-        out_path :: Union{Missing, String} = missing, 
+        use_affine_normal_form :: Bool = false,
+        hdf_path :: Union{Missing, String} = missing, 
+        hdf_group :: String = "/",
         logging :: Bool = false) where {T <: Integer} =
-subpolygons([P]; primitive, normal_form, out_path, logging)
+subpolygons([P]; primitive, use_affine_normal_form, hdf_path, hdf_group, logging)

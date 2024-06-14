@@ -1,7 +1,7 @@
+export write_polygon_dataset
+export read_polygon_dataset
+export create_polygon_dataset
 export initialize_hdf_subpolygon_storage
-export append_polygons_to_h5
-export import_polygons_from_h5
-export export_polygons_to_h5
 export adjust_to_width_direction
 export affine_automorphism_group
 export affine_halfplane

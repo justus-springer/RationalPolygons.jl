@@ -29,4 +29,10 @@ import HDF5:
     HDF5,
     attrs,
     create_group,
-    h5open
+    h5open,
+    write_attribute,
+    read_attribute,
+    create_dataset,
+    dataspace,
+    datatype,
+    open_dataset

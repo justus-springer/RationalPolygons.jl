@@ -1,13 +1,6 @@
 
-struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
-    hdf_file_path :: String
-    group_path :: String
-    HDFSubpolygonStorage{T}(hdf_file_path :: String, group_path :: String = "/") where {T <: Integer} =
-    new{T}(hdf_file_path, group_path)
-end
-
 function initialize_hdf_subpolygon_storage(
-        st :: HDFSubpolygonStorage{T},
+        f :: Union{HDF5.File, HDF5.Group},
         Ps :: Vector{<:RationalPolygon{T}};
         primitive :: Bool = false,
         use_affine_normal_form :: Bool = false) where {T <: Integer}
@@ -18,69 +11,51 @@ function initialize_hdf_subpolygon_storage(
     all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
     all(P -> number_of_interior_lattice_points(P) == n, Ps) || error("all polygons must have the same number of interior lattice points")
 
-    f = h5open(st.hdf_file_path, "cw")
-    if haskey(f, st.group_path)
-        g = f[st.group_path]
-    else
-        g = create_group(f, st.group_path)
-    end
-
-    attrs(g)["primitive"] = primitive
-    attrs(g)["use_affine_normal_form"] = use_affine_normal_form
-    attrs(g)["rationality"] = k
-    attrs(g)["number_of_interior_lattice_points"] = n
+    write_attribute(f, "primitive", primitive)
+    write_attribute(f, "use_affine_normal_form", use_affine_normal_form)
+    write_attribute(f, "rationality", k)
+    write_attribute(f, "number_of_interior_lattice_points", n)
+    write_attribute(f, "total_count", 0)
+    write_attribute(f, "last_completed_area", maximum(normalized_area.(Ps)) + 1)
+    write_attribute(f, "is_finished", false)
     
     for P ∈ Ps
         a = normalized_area(P)
         N = number_of_vertices(P)
-        if !haskey(g, "a$a")
-            create_group(g, "a$a")
+        if !haskey(f, "a$a")
+            create_group(f, "a$a")
         end
-        if !haskey(g["a$a"], "n$N")
-            export_polygons_to_h5(g["a$a"], "n$N", [P])
-        else
-            append_polygons_to_h5(g["a$a"], "n$N", [P])
-        end
+        write_polygon_dataset(f, "a$a/n$N", [P])
     end
-
-    attrs(g)["total_count"] = length(Ps)
-    attrs(g)["last_completed_area"] = maximum(normalized_area.(Ps)) + 1
-    attrs(g)["is_finished"] = false
-
-    close(f)
 
 end
 
 
 function subpolygons_single_step(
-        st :: HDFSubpolygonStorage{T};
-        logging :: Bool = false) where {T <: Integer}
+        f :: Union{HDF5.File, HDF5.Group};
+        logging :: Bool = false,
+        T :: Type{<:Integer} = Int)
 
-    f = h5open(st.hdf_file_path, "r+")
-    g = f[st.group_path]
-    k = attrs(g)["rationality"]
-    primitive = attrs(g)["primitive"]
-    use_affine_normal_form = attrs(g)["use_affine_normal_form"]
-
-    last_completed_area = attrs(g)["last_completed_area"]
+    k = read_attribute(f, "rationality")
+    primitive = read_attribute(f, "primitive")
+    use_affine_normal_form = read_attribute(f, "use_affine_normal_form")
+    last_completed_area = read_attribute(f, "last_completed_area")
     current_area = last_completed_area - 1
+
     while current_area >= 3
-        haskey(g, "a$(current_area)") && break
+        haskey(f, "a$(current_area)") && break
         current_area -= 1
     end
     if current_area < 3
-        attrs(g)["is_finished"] = true
-        total_count = attrs(g)["total_count"]
-        close(f)
-        return total_count
+        attrs(f)["is_finished"] = true
+        return 
     end
-    current_area_group = g["a$(current_area)"]
+    current_area_group = f["a$(current_area)"]
 
+    ns = sort([parse(Int, s[2:end]) for s ∈ keys(current_area_group)])
+    for n ∈ ns
 
-    for n_string ∈ keys(current_area_group)
-
-        n = parse(Int,n_string[2:end])
-        Ps = import_polygons_from_h5(k, current_area_group, n_string) 
+        Ps = read_polygon_dataset(current_area_group, "n$n") 
 
         out_dicts = Dict{Tuple{T,Int}}{Set{<:RationalPolygon{T}}}[]
         for i = 1 : Threads.nthreads()
@@ -113,36 +88,29 @@ function subpolygons_single_step(
 
         total_dict = mergewith(union!, out_dicts...)
 
-        for ((Qa,Qn), Qs) ∈ total_dict
-            if !haskey(g, "a$(Qa)/n$(Qn)")
-                export_polygons_to_h5(g, "a$(Qa)/n$(Qn)", collect(Qs))
-                attrs(g)["total_count"] += length(Qs)
-            else
-                old_Qs = Set(import_polygons_from_h5(k, g, "a$(Qa)/n$(Qn)"))
-                filter!(Q -> Q ∉ old_Qs, Qs)
-                append_polygons_to_h5(g, "a$(Qa)/n$(Qn)", collect(Qs))
-                attrs(g)["total_count"] += length(Qs)
-            end
+        for ((Qa,Qn),Qs) ∈ total_dict
+            write_polygon_dataset(f, "a$(Qa)/n$(Qn)", collect(Qs); check_duplicates = true)
         end
 
     end
 
-    attrs(g)["last_completed_area"] = current_area
-    total_count = attrs(g)["total_count"]
-    close(f)
+    attrs(f)["last_completed_area"] = current_area
+    total_count = read_attribute(f, "total_count")
 
     logging && @info "[Area = $current_area]. Running total: $total_count"
 
-    return total_count
-
 end
 
-function is_finished(st :: HDFSubpolygonStorage{T}) where {T <: Integer}
-    f = h5open(st.hdf_file_path, "r+")
-    g = f[st.group_path]
-    is_finished = attrs(g)["is_finished"]
-    close(f)
-    return is_finished
-end
+is_finished(f :: Union{HDF5.File, HDF5.Group}) = read_attribute(f, "is_finished")
 
-return_value(::HDFSubpolygonStorage) = nothing
+function subpolygons(
+        f :: Union{HDF5.File, HDF5.Group};
+        logging :: Bool = false)
+
+    while !is_finished(f)
+        subpolygons_single_step(f; logging)
+    end
+
+    return f
+
+end
