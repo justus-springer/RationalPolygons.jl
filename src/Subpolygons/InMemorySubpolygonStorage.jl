@@ -98,5 +98,14 @@ function subpolygons_single_step(
 
 end
 
-return_value(st :: InMemorySubpolygonStorage) =
-collect(union!(values(st.polygons_dict)...))
+function subpolygons(
+        st :: InMemorySubpolygonStorage{T};
+        logging :: Bool = false) where {T <: Integer}
+
+    while !is_finished(st)
+        subpolygons_single_step(st; logging)
+    end
+
+    return collect(union!(values(st.polygons_dict)...))
+
+end

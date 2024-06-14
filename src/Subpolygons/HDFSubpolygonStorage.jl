@@ -15,7 +15,7 @@ function initialize_hdf_subpolygon_storage(
     write_attribute(f, "use_affine_normal_form", use_affine_normal_form)
     write_attribute(f, "rationality", k)
     write_attribute(f, "number_of_interior_lattice_points", n)
-    write_attribute(f, "total_count", 0)
+    write_attribute(f, "total_count", length(Ps))
     write_attribute(f, "last_completed_area", maximum(normalized_area.(Ps)) + 1)
     write_attribute(f, "is_finished", false)
     
@@ -89,7 +89,14 @@ function subpolygons_single_step(
         total_dict = mergewith(union!, out_dicts...)
 
         for ((Qa,Qn),Qs) ∈ total_dict
-            write_polygon_dataset(f, "a$(Qa)/n$(Qn)", collect(Qs); check_duplicates = true)
+            path = "a$(Qa)/n$(Qn)"
+            if !haskey(f, path)
+                create_polygon_dataset(f, path, k, Qn; T)
+            end
+            old_Qs = Set(read_polygon_dataset(f, path))
+            filter!(Q -> Q ∉ old_Qs, Qs)
+            write_polygon_dataset(f, path, collect(Qs))
+            attrs(f)["total_count"] += length(Qs)
         end
 
     end

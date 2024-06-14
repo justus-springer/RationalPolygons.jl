@@ -124,7 +124,6 @@ export rationality
 export RationalPoint
 export RationalPolygon
 export remove_vertex
-export return_value
 export save!
 export scaled_vertex
 export scaled_width

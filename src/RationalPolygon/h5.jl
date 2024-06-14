@@ -40,18 +40,12 @@ end
 function write_polygon_dataset(
         f :: Union{HDF5.File, HDF5.Group},
         path :: String,
-        Ps :: Vector{RationalPolygon{T,N,M}};
-        check_duplicates :: Bool = false) where {N,M,T <: Integer}
+        Ps :: Vector{RationalPolygon{T,N,M}}) where {N,M,T <: Integer}
 
+    isempty(Ps) && return
     k = rationality(first(Ps))
-
     if !haskey(f, path)
         create_polygon_dataset(f, path, k, N; T)
-    end
-
-    if check_duplicates
-        Qs = Set(read_polygon_dataset(f, path))
-        filter!(P -> P ∉ Qs, Ps)
     end
 
     dset = open_dataset(f, path)
@@ -60,7 +54,6 @@ function write_polygon_dataset(
     data = [vertex_matrix(P).data for P ∈ Ps]
     dset[n+1 : n+length(Ps)] = data
     attrs(dset)["count"] += length(Ps)
-    attrs(f)["total_count"] += length(Ps)
     close(dset)
 
 end
