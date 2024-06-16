@@ -1,7 +1,9 @@
 struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
     hdf_path :: String
     hdf_group :: String
-    HDFSubpolygonStorage{T}(hdf_path :: String, hdf_group :: String = "/") where {T <: Integer} = new{T}(hdf_path, hdf_group)
+    hash_sets :: Dict{T,Set{UInt64}}
+    HDFSubpolygonStorage{T}(hdf_path :: String, hdf_group :: String = "/") where {T <: Integer} =
+    new{T}(hdf_path, hdf_group, Dict{T,Set{UInt64}}())
 end
 
 function initialize_hdf_subpolygon_storage(
@@ -32,6 +34,10 @@ function initialize_hdf_subpolygon_storage(
     write_attribute(g, "last_completed_area", maximum(normalized_area.(Ps)) + 1)
     write_attribute(g, "is_finished", false)
     
+    for a = 3 : maximum(normalized_area.(Ps))
+        st.hash_sets[a] = Set{UInt64}()
+    end
+    
     for P ∈ Ps
         a = normalized_area(P)
         N = number_of_vertices(P)
@@ -39,6 +45,7 @@ function initialize_hdf_subpolygon_storage(
             create_group(g, "a$a")
         end
         write_polygon_dataset(g, "a$a/n$N", [P])
+        push!(st.hash_sets[a], hash(P))
     end
 
 end
@@ -97,29 +104,30 @@ function subpolygons_single_step(
                     out_dicts[id][(Qa,Qn)] = Set{RationalPolygon{T,Qn,2*Qn}}()
                 end
                 Q ∉ out_dicts[id][(Qa,Qn)] || continue
+                hash(Q) ∉ st.hash_sets[Qa] || continue
                 push!(out_dicts[id][(Qa,Qn)], Q)
             end
         end
 
-        total_dict = mergewith(union!, out_dicts...)
-
-        for ((Qa,Qn),Qs) ∈ total_dict
+        for dict ∈ out_dicts, ((Qa,Qn), Qs) ∈ dict
             path = "a$(Qa)/n$(Qn)"
-            if !haskey(g, path)
-                create_polygon_dataset(g, path, k, Qn; T)
-            end
-            old_Qs = Set(read_polygon_dataset(g, path))
-            filter!(Q -> Q ∉ old_Qs, Qs)
+            filter!(Q -> hash(Q) ∉ st.hash_sets[Qa], Qs)
             write_polygon_dataset(g, path, collect(Qs))
+            for Q ∈ Qs
+                push!(st.hash_sets[Qa], hash(Q))
+            end
             attrs(g)["total_count"] += length(Qs)
         end
 
     end
 
     attrs(g)["last_completed_area"] = current_area
+    delete!(st.hash_sets, current_area)
+    hash_set_size = sum([length(Qs) for (_,Qs) ∈ st.hash_sets])
+    hash_set_bytes = Base.format_bytes(Base.summarysize(st.hash_sets))
     total_count = read_attribute(g, "total_count")
 
-    logging && @info "[Area = $current_area]. Running total: $total_count"
+    logging && @info "[Area = $current_area]. Running total: $total_count. Hash set size: $hash_set_size ($hash_set_bytes)."
 
     close(f)
 

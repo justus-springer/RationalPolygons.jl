@@ -39,13 +39,9 @@ function subpolygons(Ps :: Vector{<:RationalPolygon{T}};
         st = InMemorySubpolygonStorage{T}(Ps; primitive, use_affine_normal_form)
         return subpolygons(st; logging)
     else
-        f = h5open(hdf_path, "cw")
-        if !haskey(f, hdf_group)
-            create_group(f, hdf_group)
-        end
-        g = f[hdf_group]
-        initialize_hdf_subpolygon_storage(g, Ps; primitive, use_affine_normal_form)
-        return subpolygons(g; logging)
+        st = HDFSubpolygonStorage{T}(hdf_path, hdf_group)
+        initialize_hdf_subpolygon_storage(st, Ps; primitive, use_affine_normal_form)
+        return subpolygons(st; logging)
     end
 
 end
