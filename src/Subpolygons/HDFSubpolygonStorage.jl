@@ -109,9 +109,16 @@ function subpolygons_single_step(
             end
         end
 
-        for dict ∈ out_dicts, ((Qa,Qn), Qs) ∈ dict
+        polygons_in_memory_count = sum([length(values(d)) for d ∈ out_dicts])
+        logging && @info "[Area = $(current_area), #vertices = $n]. Peeling complete. New polygons: $polygons_in_memory_count"
+
+        for i = 2 : length(out_dicts)
+            mergewith!(union!, out_dicts[1], out_dicts[i])
+            out_dicts[i] = Dict{Tuple{T,Int}}{Set{<:RationalPolygon{T}}}()
+        end
+
+        for ((Qa,Qn), Qs) ∈ out_dicts[1]
             path = "a$(Qa)/n$(Qn)"
-            filter!(Q -> hash(Q) ∉ st.hash_sets[Qa], Qs)
             write_polygon_dataset(g, path, collect(Qs))
             for Q ∈ Qs
                 push!(st.hash_sets[Qa], hash(Q))
