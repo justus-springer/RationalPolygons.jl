@@ -49,14 +49,15 @@ function hilbert_basis(A :: Matrix2{T}) where {T <: Integer}
 
     x, y = 0, 1
     a, b = -1, 0
-    res = LatticePoint{T}[]
-    push!(res, M * LatticePoint(0, 1))
-    for z in hj
-        push!(res, M * LatticePoint(y, -b))
+    res = Vector{LatticePoint{T}}(undef, length(hj)+2)
+    res[1] = M * LatticePoint(0, 1)
+    for i = 1 : length(hj)
+        z = hj[i]
+        res[i+1] = M * LatticePoint(y, -b)
         x, y = y, z * y - x
         a, b = b, z * b - a
     end
-    push!(res, M * LatticePoint(y, -b))
+    res[end] = M * LatticePoint(y, -b)
 
     return res
 end
