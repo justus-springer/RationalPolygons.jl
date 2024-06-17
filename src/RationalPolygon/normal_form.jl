@@ -72,10 +72,17 @@ function unimodular_normal_form_with_automorphism_group(P :: RationalPolygon{T,N
     # starting at `v` and going clockwise or counterclockwise. For all these
     # possible numberings, we compute the hermite normal form of the vertex 
     # matrix
-    As = MMatrix{2,N,T,2N}[]
-    for i ∈ area_maximizing_vertices(P)
-        push!(As, MMatrix{2,N,T,2N}([V[:,i:end] V[:,begin:i-1]]))
-        push!(As, MMatrix{2,N,T,2N}([V[:,i:-1:begin] V[:,end:-1:i+1]]))
+    
+    is = area_maximizing_vertices(P)
+    As = SVector{2*length(is), MMatrix{2,N,T,2N}}([MMatrix{2,N,T,2N}(undef) for i = 1 : 2*length(is)])
+    for l = 1 : length(is)
+        i = is[l]
+        for j = 1 : N
+            As[2*l-1][1,j] = V[1, mod(i-1+j, 1:N)]
+            As[2*l-1][2,j] = V[2, mod(i-1+j, 1:N)]
+            As[2*l][1,j] = V[1, mod(i+1-j, 1:N)]
+            As[2*l][2,j] = V[2, mod(i+1-j, 1:N)]
+        end
     end
     hnf!.(As)
 
@@ -101,8 +108,30 @@ the same unimodular normal form if and only if the can be transformed into each
 other by applying a unimodular transformation.
 
 """
-unimodular_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
-is_unimodular_normal_form(P) ? P : unimodular_normal_form_with_automorphism_group(P)[1]
+function unimodular_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer}
+    is_unimodular_normal_form(P) && return P
+
+    V = vertex_matrix(P)
+
+    is = area_maximizing_vertices(P)
+    As = SVector{2*length(is), MMatrix{2,N,T,2N}}([MMatrix{2,N,T,2N}(undef) for i = 1 : 2*length(is)])
+    for l = 1 : length(is)
+        i = is[l]
+        for j = 1 : N
+            As[2*l-1][1,j] = V[1, mod(i-1+j, 1:N)]
+            As[2*l-1][2,j] = V[2, mod(i-1+j, 1:N)]
+            As[2*l][1,j] = V[1, mod(i+1-j, 1:N)]
+            As[2*l][2,j] = V[2, mod(i+1-j, 1:N)]
+        end
+    end
+    hnf!.(As)
+
+    A = argmin(vec, As)
+    Q = RationalPolygon(convert(SMatrix,A), rationality(P); is_unimodular_normal_form = true) 
+
+    return Q
+
+end
 
 
 @doc raw"""
