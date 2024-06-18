@@ -1,36 +1,42 @@
-
 @doc raw"""
-    hnf!(A :: MMatrix{2,N,T}) where {N,T<:Integer}
+    hnf(A :: SMatrix{2,N,T}) where {N,T<:Integer}
 
-An elementary implementation of the hermite normal form for 2xn integral
+An elementary implementation of the hermite normal form for 2xn integ    ral
 matrices.
 
 """
-function hnf!(A :: MMatrix{2,N,T}) where {N,T<:Integer}
+function hnf(A :: SMatrix{2,N,T,M}) where {N,M,T<:Integer}
 
-    A[1,1] == 0 && mul!(A, SMatrix{2,2,T,4}(0,1,1,0), copy(A))
+    if A[1,1] == 0
+        A = SMatrix{2,2,T,4}(0,1,1,0) * A
+    end
 
     d,a,b = gcdx(A[1,1],A[2,1])
     if A[1,1] != d
         _, x, y = gcdx(a,b)
-        mul!(A, SMatrix{2,2,T,4}(a,-y,b,x), copy(A))
+        A = SMatrix{2,2,T,4}(a,-y,b,x) * A
     end
 
 	if A[1,1] != 0 
 		f = div(A[2,1],A[1,1])
-        mul!(A, SMatrix{2,2,T,4}(1,-f,0,1), copy(A))
+        A = SMatrix{2,2,T,4}(1,-f,0,1) * A
 	end
 
-    sign(A[2,2]) == -1 && mul!(A, SMatrix{2,2,T,4}(1,0,0,-1), copy(A))
+    if sign(A[2,2]) == -1
+        A = SMatrix{2,2,T,4}(1,0,0,-1) * A
+    end
 
 	if A[2,2] != 0
 		c = fld(A[1,2],A[2,2])
-        c != 0 && mul!(A, SMatrix{2,2,T,4}(1,0,-c,1), copy(A))
+        if c != 0 
+            A = SMatrix{2,2,T,4}(1,0,-c,1) * A
+        end
 	end
 
     return A
 
 end
+
 
 @doc raw"""
     lattice_edge_areas(P :: RationalPolygon)
@@ -40,7 +46,7 @@ edges. This function returns the vector of all those areas.
 
 """
 lattice_edge_areas(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
-[abs(det(P[i+1] - P[i], P[i] - P[i-1])) for i = 1 : N]
+SVector{N}(abs(det(P[i+1] - P[i], P[i] - P[i-1])) for i = 1 : N)
 
 
 @doc raw"""
@@ -56,6 +62,14 @@ function area_maximizing_vertices(P :: RationalPolygon{T,N}) where {N,T <: Integ
     return filter(i -> ea[i] == m, 1 : N)
 end
 
+function _translate_columns(A :: SMatrix{2,N,T,M}, i :: Int, reverse_columns :: Bool) where {N,M,T}
+    if reverse_columns
+        return SMatrix{2,N,T,2N}(isodd(j) ? A[1,mod(i+1-(j+1)÷2,1:N)] : A[2,mod(i+1-(j+1)÷2,1:N)] for j = 1 : 2N)
+    else
+        return SMatrix{2,N,T,2N}(isodd(j) ? A[1,mod(i-1+(j+1)÷2,1:N)] : A[2,mod(i-1+(j+1)÷2,1:N)] for j = 1 : 2N)
+    end
+
+end
 
 @doc raw"""
     unimodular_normal_form_with_automorphism_group(P :: RationalPolygon)
@@ -73,25 +87,12 @@ function unimodular_normal_form_with_automorphism_group(P :: RationalPolygon{T,N
     # possible numberings, we compute the hermite normal form of the vertex 
     # matrix
     
-    is = area_maximizing_vertices(P)
-    As = SVector{2*length(is), MMatrix{2,N,T,2N}}([MMatrix{2,N,T,2N}(undef) for i = 1 : 2*length(is)])
-    for l = 1 : length(is)
-        i = is[l]
-        for j = 1 : N
-            As[2*l-1][1,j] = V[1, mod(i-1+j, 1:N)]
-            As[2*l-1][2,j] = V[2, mod(i-1+j, 1:N)]
-            As[2*l][1,j] = V[1, mod(i+1-j, 1:N)]
-            As[2*l][2,j] = V[2, mod(i+1-j, 1:N)]
-        end
-    end
-    hnf!.(As)
-
-    # We take the normal form to be the lexicographical minimum of all those
-    # hermite normal forms
+    As = SVector{2N,SMatrix{2,N,T,2N}}(hnf(_translate_columns(V,(i÷2)+1,isodd(i))) for i = 0 : 2N-1)
     A = argmin(vec, As)
+
     special_indices = map(l -> divrem(l+1, 2), findall(B -> A == B, As))
 
-    Q = RationalPolygon(convert(SMatrix,A), rationality(P); is_unimodular_normal_form = true) 
+    Q = RationalPolygon(A, rationality(P); is_unimodular_normal_form = true) 
     if all(sv -> sv[2] == 0, special_indices) || all(sv -> sv[2] == 1, special_indices)
         return (Q, CyclicGroup(length(special_indices)))
     else
@@ -113,21 +114,10 @@ function unimodular_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer
 
     V = vertex_matrix(P)
 
-    is = area_maximizing_vertices(P)
-    As = SVector{2*length(is), MMatrix{2,N,T,2N}}([MMatrix{2,N,T,2N}(undef) for i = 1 : 2*length(is)])
-    for l = 1 : length(is)
-        i = is[l]
-        for j = 1 : N
-            As[2*l-1][1,j] = V[1, mod(i-1+j, 1:N)]
-            As[2*l-1][2,j] = V[2, mod(i-1+j, 1:N)]
-            As[2*l][1,j] = V[1, mod(i+1-j, 1:N)]
-            As[2*l][2,j] = V[2, mod(i+1-j, 1:N)]
-        end
-    end
-    hnf!.(As)
+    As = SVector{2N,SMatrix{2,N,T,2N}}(hnf(_translate_columns(V,(i÷2)+1,isodd(i))) for i = 0 : 2N-1)
 
     A = argmin(vec, As)
-    Q = RationalPolygon(convert(SMatrix,A), rationality(P); is_unimodular_normal_form = true) 
+    Q = RationalPolygon(A, rationality(P); is_unimodular_normal_form = true) 
 
     return Q
 

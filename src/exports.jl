@@ -2,6 +2,7 @@ export write_polygon_dataset
 export read_polygon_dataset
 export create_polygon_dataset
 export initialize_hdf_subpolygon_storage
+export hnf
 export adjust_to_width_direction
 export affine_automorphism_group
 export affine_halfplane
@@ -51,7 +52,6 @@ export graham_scan
 export graham_scan!
 export hilbert_basis
 export hirzebruch_jung
-export hnf!
 export horizontal_line
 export InMemorySubpolygonStorage
 export integer_hull

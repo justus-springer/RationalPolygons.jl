@@ -14,7 +14,7 @@ function cls_cone_normal_form(A :: Matrix2{T}) where {T <: Integer}
     _, x, y = gcdx(A[1,1], A[2,1])
     sg, d, l = sign(det(A)), abs(det(A)), x * A[1,2] + y * A[2,2]
     s, k = ((l + mod(-l, d)) ÷ d, mod(-l, d))
-    M = [s*A[1,1]-sg*y A[1,1] ; s*A[2,1]+sg*x A[2,1]]
+    M = @SMatrix [s*A[1,1]-sg*y A[1,1] ; s*A[2,1]+sg*x A[2,1]]
     return (d, k, M)
 end
 
@@ -71,6 +71,6 @@ primitive vectors `v1` and `v2`.
 
 """
 hilbert_basis(v1 :: LatticePoint{T}, v2 :: LatticePoint{T}) where {T <: Integer} =
-hilbert_basis([v1 v2])
+hilbert_basis(Matrix2{T}(v1[1],v1[2],v2[1],v2[2]))
 
 

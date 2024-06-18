@@ -19,7 +19,8 @@ import StaticArrays:
     StaticMatrix,
     Size,
     MMatrix,
-    SA
+    SA,
+    @SMatrix
 
 import LinearAlgebra:
     mul!,

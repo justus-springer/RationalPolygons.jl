@@ -36,7 +36,7 @@ Return a k x 3-matrix of coefficients of the Ehrhart quasipolynomial of a
 function ehrhart_quasipolynomial_with_periods(P :: RationalPolygon{T}) where {T <: Integer}
     k = rationality(P)
     M = Matrix{Rational{T}}(undef, k, 3)
-    A = area(P) // (2k^2)
+    A = euclidian_area(P)
     ehrhart_values = [number_of_k_rational_points(P,t) for t = 1 : 2k]
     
     for t = 1 : k
