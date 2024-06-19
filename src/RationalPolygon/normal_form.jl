@@ -64,9 +64,9 @@ end
 
 function _translate_columns(A :: SMatrix{2,N,T,M}, i :: Int, reverse_columns :: Bool) where {N,M,T}
     if reverse_columns
-        return SMatrix{2,N,T,2N}(isodd(j) ? A[1,mod(i+1-(j+1)÷2,1:N)] : A[2,mod(i+1-(j+1)÷2,1:N)] for j = 1 : 2N)
+        return SMatrix{2,N,T,2N}(isodd(j) ? A[1,mod(i-(j+1)÷2,1:N)] : A[2,mod(i-(j+1)÷2,1:N)] for j = 1 : 2N)
     else
-        return SMatrix{2,N,T,2N}(isodd(j) ? A[1,mod(i-1+(j+1)÷2,1:N)] : A[2,mod(i-1+(j+1)÷2,1:N)] for j = 1 : 2N)
+        return SMatrix{2,N,T,2N}(isodd(j) ? A[1,mod(i+(j+1)÷2,1:N)] : A[2,mod(i+(j+1)÷2,1:N)] for j = 1 : 2N)
     end
 
 end
@@ -185,32 +185,23 @@ function affine_normal_form_with_automorphism_group(P :: RationalPolygon{T,N}) w
     V = vertex_matrix(P)
     k = rationality(P)
 
-    As = MMatrix{2,N,T,2N}[]
-    is = area_maximizing_vertices(P)
-
-    for i ∈ is
-        # move the vertex to the origin
-        push!(As, MMatrix{2,N,T,2N}([V[:,i+1:end] V[:,begin:i]]) .- scaled_vertex(P,i))
-        push!(As, MMatrix{2,N,T,2N}([V[:,i-1:-1:begin] V[:,end:-1:i]]) .- scaled_vertex(P,i))
-    end
-    hnf!.(As)
-
+    As = SVector{2N,SMatrix{2,N,T,2N}}(hnf(_translate_columns(V,(i÷2)+1,isodd(i)).- scaled_vertex(P,(i÷2)+1)) for i = 0 : 2N-1)
     A = argmin(vec, As)
+
     special_indices = Tuple{Int,Int}[]
-    for l = 1 : length(As)
+    for l = 1 : 2N
         if As[l] == A
             push!(special_indices, divrem(l+1, 2))
         end
     end
-    A = convert(SMatrix,A)
 
     really_special_indices = Tuple{Int,Int}[]
-    local At
+    local At :: SMatrix{2,N,T,2N}
     for x = 0 : k-1, y = 0 : k-1
         At = A .+ LatticePoint{T}(x,y)
         empty!(really_special_indices)
         for (j,o) ∈ special_indices
-            if _special_vertices_align(k, At, N, 0, V, is[j], o)
+            if _special_vertices_align(k, At, N, 0, V, j, o)
                 push!(really_special_indices, (j,o))
             end
         end
