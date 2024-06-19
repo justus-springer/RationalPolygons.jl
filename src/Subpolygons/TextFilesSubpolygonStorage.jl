@@ -7,7 +7,6 @@ mutable struct TextFilesSubpolygonStorage{T} <: SubpolygonStorage{T}
 
     function TextFilesSubpolygonStorage{T}(preferences :: SubpolygonsPreferences{T}, directory :: String) where {T <: Integer}
         isdir(directory) || error("$directory is not a directory")
-        isempty(readdir(directory)) || error("$directory is dirty. Please provide an empty directory")
         return new{T}(preferences, directory, Dict{T,Set{UInt64}}(), 0, 0)
     end
 
@@ -36,15 +35,28 @@ mutable struct TextFilesSubpolygonStorage{T} <: SubpolygonStorage{T}
 end
 
 function export_text_files_subpolygon_storage_status(st :: TextFilesSubpolygonStorage{T}) where {T <: Integer}
-    open(joinpath(st.directory, "total_count.txt"), "w") do f
-        println(f, st.total_count)
-    end
     open(joinpath(st.directory, "last_completed_area.txt"), "w") do f
         println(f, st.last_completed_area)
     end
 end
 
+function restore_text_files_subpolygon_storage_status(st :: TextFilesSubpolygonStorage{T}) where {T <: Integer}
+    st.last_completed_area = parse(Int, first(readlines(joinpath(st.directory, "last_completed_area.txt"))))
+    st.total_count = 0
+    for filename ∈ readdir(st.directory)
+        startswith(filename, "a") || continue
+        filepath = joinpath(st.directory, filename)
+        a = parse(Int, filename[2:end-4])
+        st.total_count += countlines(filepath)
+        a < st.last_completed_area || continue
+        Ps = parse_rational_polygons(st.preferences.rationality, filepath)
+        st.hash_sets[a] = Set([hash(P) for P ∈ Ps])
+    end
+
+end
+
 function initialize_subpolygon_storage(st :: TextFilesSubpolygonStorage{T}, Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
+    isempty(readdir(st.directory)) || error("$(st.directory) is dirty. Please provide an empty directory")
     maximum_area = maximum(normalized_area.(Ps))
     for a = 3 : maximum_area
         touch(joinpath(st.directory, "a$a.txt"))
@@ -109,6 +121,8 @@ function subpolygons_single_step(
     end
 
     st.last_completed_area = current_area
+    delete!(st.hash_sets, current_area)
+    export_text_files_subpolygon_storage_status(st)
 
     logging && @info "[a = $current_area]. Writeout complete. Running total: $(st.total_count)"
 

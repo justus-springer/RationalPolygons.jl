@@ -1,3 +1,5 @@
+export export_text_files_subpolygon_storage_status 
+export restore_text_files_subpolygon_storage_status
 export TextFilesSubpolygonStorage 
 export SubpolygonsPreferences
 export initialize_subpolygon_storage
