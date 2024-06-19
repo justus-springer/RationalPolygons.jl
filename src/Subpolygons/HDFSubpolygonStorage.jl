@@ -15,20 +15,22 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
             rationality :: T = one(T),
             number_of_interior_lattice_points :: Int = 1,
             primitive :: Bool = false,
-            use_affine_normal_form :: Bool = false) where {T <: Integer} = 
-    HDFSubpolygonStorage{T}(SubpolygonsPreferences{T}(rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form), file_path, group_path)
+            use_affine_normal_form :: Bool = false,
+            block_size :: Int = 10^6) where {T <: Integer} = 
+    HDFSubpolygonStorage{T}(SubpolygonsPreferences{T}(;rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, block_size), file_path, group_path)
 
     function HDFSubpolygonStorage{T}(Ps :: Vector{<:RationalPolygon{T}},
             file_path :: String,
             group_path :: String = "/";
             primitive :: Bool = false,
-            use_affine_normal_form :: Bool = false) where {T <: Integer}
+            use_affine_normal_form :: Bool = false,
+            block_size :: Int = 10^6) where {T <: Integer}
         k = rationality(first(Ps))
         n = number_of_interior_lattice_points(first(Ps))
         all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
         all(P -> number_of_interior_lattice_points(P) == n, Ps) || error("all polygons must have the same number of interior lattice points")
 
-        pref = SubpolygonsPreferences{T}(k, n, primitive, use_affine_normal_form)
+        pref = SubpolygonsPreferences{T}(;rationality = k, number_of_interior_lattice_points = n, primitive, use_affine_normal_form, block_size)
         st = HDFSubpolygonStorage{T}(pref, file_path, group_path)
         initialize_subpolygon_storage(st, Ps)
 
@@ -102,12 +104,13 @@ end
 
 function subpolygons_single_step(
         st :: HDFSubpolygonStorage{T};
-        logging :: Bool = false,
-        block_size :: Int = 10^6) where {T <: Integer}
+        logging :: Bool = false) where {T <: Integer}
 
     f = h5open(st.file_path, "r+"; swmr = true)
     g = f[st.group_path]
     k = st.preferences.rationality
+    block_size = st.preferences.block_size
+
     current_area = read_attribute(g, "last_completed_area") - 1
     current_area_group = g["a$(current_area)"]
 
