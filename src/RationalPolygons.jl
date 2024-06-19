@@ -31,7 +31,6 @@ include("Subpolygons/SubpolygonsPreferences.jl")
 include("Subpolygons/InMemorySubpolygonStorage.jl")
 include("Subpolygons/TextFilesSubpolygonStorage.jl")
 include("Subpolygons/HDFSubpolygonStorage.jl")
-include("Subpolygons/subpolygons.jl")
 
 include("Classification/one_interior_lattice_point.jl")
 include("Classification/no_interior_lattice_points.jl")

@@ -105,3 +105,15 @@ function subpolygons(
     return collect(union(values(st.polygons_dict)...))
 
 end
+
+subpolygons(Ps :: Vector{<:RationalPolygon{T}}; 
+    primitive :: Bool = false, 
+    use_affine_normal_form :: Bool = false,
+    logging :: Bool = false) where {T <: Integer} =
+subpolygons(InMemorySubpolygonStorage{T}(Ps; primitive, use_affine_normal_form); logging)
+
+subpolygons(P :: RationalPolygon{T}; 
+    primitive :: Bool = false, 
+    use_affine_normal_form :: Bool = false,
+    logging :: Bool = false) where {T <: Integer} =
+subpolygons([P]; primitive, use_affine_normal_form, logging)
