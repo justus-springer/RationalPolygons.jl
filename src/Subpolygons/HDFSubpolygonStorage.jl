@@ -52,7 +52,6 @@ function initialize_hdf_subpolygon_storage(
 
 end
 
-export restore_hash_set
 function restore_hash_set(st :: HDFSubpolygonStorage{T}) where {T <: Integer}
 
     f = h5open(st.hdf_path, "r+"; swmr = true)

@@ -1,3 +1,6 @@
+export SubpolygonsPreferences
+export initialize_subpolygon_storage
+export restore_hash_set
 export write_polygon_dataset
 export read_polygon_dataset
 export create_polygon_dataset
@@ -124,7 +127,6 @@ export rationality
 export RationalPoint
 export RationalPolygon
 export remove_vertex
-export save!
 export scaled_vertex
 export scaled_width
 export slice

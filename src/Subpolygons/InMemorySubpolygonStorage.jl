@@ -1,100 +1,96 @@
 
 mutable struct InMemorySubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
-    rationality :: T
-    number_of_interior_lattice_points :: Int
-    primitive :: Bool
-    use_affine_normal_form :: Bool
+    preferences :: SubpolygonsPreferences{T}
     polygons_dict :: Dict{T,Set{RationalPolygon{T}}}
-    last_volume :: T
+    last_completed_area :: T
     total_count :: Int
 
-    @doc raw"""
-        InMemorySubpolygonStorage{T}(starting_polygons :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
+    InMemorySubpolygonStorage{T}(preferences :: SubpolygonsPreferences{T}) where {T <: Integer} =
+    new{T}(preferences, Dict{T,Set{RationalPolygon{T}}}(), 0, 0)
 
-    Construct an in-memory storage container of subpolygons starting with the
-    given list of polygons. When using this constructor, the subpolygons are
-    not yet computed. To compute the subpolygons, use [`subpolygons`](@ref).
-    
-    """
+    InMemorySubpolygonStorage{T}(;
+            rationality :: T = one(T),
+            number_of_interior_lattice_points :: Int = 1,
+            primitive :: Bool = false,
+            use_affine_normal_form :: Bool = false) where {T <: Integer} = 
+    InMemorySubpolygonStorage{T}(SubpolygonsPreferences{T}(rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form))
+
     function InMemorySubpolygonStorage{T}(
-       starting_polygons :: Vector{<:RationalPolygon{T}};
-       primitive :: Bool = false,
-       use_affine_normal_form :: Bool = false) where {T <: Integer}
+            Ps :: Vector{<:RationalPolygon{T}};
+            primitive :: Bool = false,
+            use_affine_normal_form :: Bool = false) where {T <: Integer}
+        k = rationality(first(Ps))
+        n = number_of_interior_lattice_points(first(Ps))
+        all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
+        all(P -> number_of_interior_lattice_points(P) == n, Ps) || error("all polygons must have the same number of interior lattice points")
 
-        !isempty(starting_polygons) || error("must provide a non-empty list of starting polygons")
+        pref = SubpolygonsPreferences{T}(k, n, primitive, use_affine_normal_form)
+        st = InMemorySubpolygonStorage{T}(pref)
+        initialize_subpolygon_storage(st, Ps)
 
-        k = rationality(first(starting_polygons))
-        n = number_of_interior_lattice_points(first(starting_polygons))
-        all(P -> rationality(P) == k, starting_polygons) || error("all polygons must have the same rationality")
-        all(P -> number_of_interior_lattice_points(P) == n, starting_polygons) || error("all polygons must have the same number of interior lattice points")
-
-
-        polygons_dict = Dict{T, Set{RationalPolygon{T}}}()
-        last_volume = maximum(normalized_area.(starting_polygons)) + 1
-        total_count = 0 
-        st = new{T}(k, n, primitive, use_affine_normal_form, polygons_dict, last_volume, total_count)
-        save!(st, starting_polygons)
-        return st
     end
 
 end
 
-function save!(st :: InMemorySubpolygonStorage{T}, Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
-    for P ∈ Ps
-        a = normalized_area(P)
-        if !haskey(st.polygons_dict, a) 
-            st.polygons_dict[a] = Set{RationalPolygon{T}}()
-        end
-        P ∉ st.polygons_dict[a] || continue
-        push!(st.polygons_dict[a], P)
-        st.total_count += 1
+function initialize_subpolygon_storage(st :: InMemorySubpolygonStorage{T}, Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
+    maximum_area = maximum(normalized_area.(Ps))
+    for a = 3 : maximum_area
+        st.polygons_dict[a] = Set{RationalPolygon{T}}()
     end
+    for P ∈ Ps
+        push!(st.polygons_dict[normalized_area(P)], P)
+    end
+    st.last_completed_area = maximum_area + 1
+    st.total_count = length(Ps)
+
+    return st
+
 end
 
 is_finished(st :: InMemorySubpolygonStorage{T}) where {T <: Integer} =
-st.last_volume <= minimum(keys(st.polygons_dict))
+st.last_completed_area <= minimum(keys(st.polygons_dict))
 
 
 function subpolygons_single_step(
         st :: InMemorySubpolygonStorage{T};
         logging :: Bool = false) where {T <: Integer}
 
-    a = maximum(filter(b -> b < st.last_volume, keys(st.polygons_dict)))
-    Ps = collect(st.polygons_dict[a])
+    current_area = maximum(filter(b -> b < st.last_completed_area, keys(st.polygons_dict)))
+    Ps = collect(st.polygons_dict[current_area])
 
-    logging && @info "[Area: $a]. Number of polygons: $(length(Ps)). Total: $(st.total_count)"
+    logging && @info "[a = $current_area]. Polygons to peel: $(length(Ps)). Total: $(st.total_count)"
 
-    N = length(Ps)
-    num_blocks = 2 * Threads.nthreads()
-    b = N ÷ num_blocks
-
-    out_array = Vector{RationalPolygon{T}}[]
+    out_array = Set{RationalPolygon{T}}[]
     for i = 1 : Threads.nthreads()
-        push!(out_array, RationalPolygon{T}[])
+        push!(out_array, Set{RationalPolygon{T}}())
     end
 
-    Threads.@threads for k = 1 : num_blocks
-        lower_bound = (k-1) * b + 1
-        upper_bound = k == num_blocks ? N : k * b
-        for i = lower_bound : upper_bound
-            P = Ps[i]
-            for j = 1 : number_of_vertices(P)
-                Q, keeps_genus = remove_vertex(P, j; st.primitive)
-                keeps_genus || continue
-                number_of_vertices(Q) > 2 || continue
-                if st.use_affine_normal_form
-                    Q = affine_normal_form(Q)
-                else
-                    Q = unimodular_normal_form(Q)
-                end
-                push!(out_array[Threads.threadid()], Q)
+    Threads.@threads for P ∈ Ps
+        for j = 1 : number_of_vertices(P)
+            Q, keeps_genus = remove_vertex(P, j; st.preferences.primitive)
+            keeps_genus || continue
+            number_of_vertices(Q) > 2 || continue
+            if st.preferences.use_affine_normal_form
+                Q = affine_normal_form(Q)
+            else
+                Q = unimodular_normal_form(Q)
             end
+            Q ∉ st.polygons_dict[normalized_area(Q)]
+            push!(out_array[Threads.threadid()], Q)
         end
     end
 
-    save!(st, vcat(out_array...))
+    new_polygons = union!(out_array...)
+    logging && @info "[a = $current_area]. Peeling complete. New polygons: $(length(new_polygons))"
 
-    st.last_volume = a
+    for P ∈ new_polygons
+        a = normalized_area(P)
+        P ∉ st.polygons_dict[a] || continue
+        push!(st.polygons_dict[a], P)
+        st.total_count += 1
+    end
+
+    st.last_completed_area = current_area
 
 end
 
@@ -106,6 +102,6 @@ function subpolygons(
         subpolygons_single_step(st; logging)
     end
 
-    return collect(union!(values(st.polygons_dict)...))
+    return collect(union(values(st.polygons_dict)...))
 
 end
