@@ -17,8 +17,9 @@ mutable struct TextFilesSubpolygonStorage{T} <: SubpolygonStorage{T}
             use_affine_normal_form :: Bool = false) where {T <: Integer} = 
     TextFilesSubpolygonStorage{T}(SubpolygonsPreferences{T}(rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form), directory)
 
-    function TextFilesSubpolygonStorage{T}(directory :: String,
-            Ps :: Vector{<:RationalPolygon{T}};
+    function TextFilesSubpolygonStorage{T}(
+            Ps :: Vector{<:RationalPolygon{T}},
+            directory :: String;
             primitive :: Bool = false,
             use_affine_normal_form :: Bool = false) where {T <: Integer}
         k = rationality(first(Ps))
