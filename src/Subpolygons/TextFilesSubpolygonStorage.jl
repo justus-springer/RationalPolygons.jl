@@ -1,0 +1,127 @@
+mutable struct TextFilesSubpolygonStorage{T} <: SubpolygonStorage{T}
+    preferences :: SubpolygonsPreferences{T}
+    directory :: String
+    hash_sets :: Dict{T,Set{UInt64}}
+    last_completed_area :: T
+    total_count :: Int
+
+    function TextFilesSubpolygonStorage{T}(preferences :: SubpolygonsPreferences{T}, directory :: String) where {T <: Integer}
+        isdir(directory) || error("$directory is not a directory")
+        isempty(readdir(directory)) || error("$directory is dirty. Please provide an empty directory")
+        return new{T}(preferences, directory, Dict{T,Set{UInt64}}(), 0, 0)
+    end
+
+    TextFilesSubpolygonStorage{T}(directory :: String;
+            rationality :: T = one(T),
+            number_of_interior_lattice_points :: Int = 1,
+            primitive :: Bool = false,
+            use_affine_normal_form :: Bool = false) where {T <: Integer} = 
+    TextFilesSubpolygonStorage{T}(SubpolygonsPreferences{T}(rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form), directory)
+
+    function TextFilesSubpolygonStorage{T}(directory :: String,
+            Ps :: Vector{<:RationalPolygon{T}};
+            primitive :: Bool = false,
+            use_affine_normal_form :: Bool = false) where {T <: Integer}
+        k = rationality(first(Ps))
+        n = number_of_interior_lattice_points(first(Ps))
+        all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
+        all(P -> number_of_interior_lattice_points(P) == n, Ps) || error("all polygons must have the same number of interior lattice points")
+
+        pref = SubpolygonsPreferences{T}(k, n, primitive, use_affine_normal_form)
+        st = TextFilesSubpolygonStorage{T}(pref, directory)
+        initialize_subpolygon_storage(st, Ps)
+
+    end
+
+end
+
+function export_text_files_subpolygon_storage_status(st :: TextFilesSubpolygonStorage{T}) where {T <: Integer}
+    open(joinpath(st.directory, "total_count.txt"), "w") do f
+        println(f, st.total_count)
+    end
+    open(joinpath(st.directory, "last_completed_area.txt"), "w") do f
+        println(f, st.last_completed_area)
+    end
+end
+
+function initialize_subpolygon_storage(st :: TextFilesSubpolygonStorage{T}, Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
+    maximum_area = maximum(normalized_area.(Ps))
+    for a = 3 : maximum_area
+        touch(joinpath(st.directory, "a$a.txt"))
+        st.hash_sets[a] = Set{UInt64}()
+    end
+    for P ∈ Ps
+        a = normalized_area(P)
+        filepath = joinpath(st.directory, "a$a.txt")
+        write_rational_polygons([P], filepath, "a")
+        push!(st.hash_sets[a], hash(P))
+    end
+    st.last_completed_area = maximum_area + 1
+    st.total_count = length(Ps)
+    export_text_files_subpolygon_storage_status(st)
+
+    return st
+
+end
+
+is_finished(st :: TextFilesSubpolygonStorage{T}) where {T <: Integer} = st.last_completed_area <= 3
+
+function subpolygons_single_step(
+        st :: TextFilesSubpolygonStorage{T};
+        logging :: Bool = false) where {T <: Integer}
+
+    current_area = st.last_completed_area - 1
+    filepath = joinpath(st.directory, "a$current_area.txt")
+    Ps = parse_rational_polygons(st.preferences.rationality, filepath)
+
+    logging && @info "[a = $current_area]. Polygons to peel: $(length(Ps))."
+
+    out_array = Dict{T, Set{RationalPolygon{T}}}[]
+    for i = 1 : Threads.nthreads()
+        push!(out_array, Dict{T, Set{RationalPolygon{T}}}())
+    end
+
+    Threads.@threads for P ∈ Ps
+        id = Threads.threadid()
+        for j = 1 : number_of_vertices(P)
+            Q, keeps_genus = remove_vertex(P, j; st.preferences.primitive)
+            keeps_genus || continue
+            number_of_vertices(Q) > 2 || continue
+            Q = st.preferences.use_affine_normal_form ? affine_normal_form(Q) : unimodular_normal_form(Q)
+            a = normalized_area(Q)
+            if !haskey(out_array[id], a)
+                out_array[id][a] = Set{RationalPolygon{T}}()
+            end
+            hash(Q) ∉ st.hash_sets[a] || continue
+            push!(out_array[id][a], Q)
+        end
+    end
+
+    new_polygons = mergewith(union!, out_array...)
+    new_polygons_count = sum(length.(values(new_polygons)))
+    logging && @info "[a = $current_area]. Peeling complete. New polygons: $new_polygons_count"
+
+    for (a,Qs) ∈ new_polygons
+        filepath = joinpath(st.directory, "a$a.txt")
+        write_rational_polygons(collect(Qs), filepath, "a")
+        union!(st.hash_sets[a], hash.(Qs))
+        st.total_count += length(Qs)
+    end
+
+    st.last_completed_area = current_area
+
+    logging && @info "[a = $current_area]. Writeout complete. Running total: $(st.total_count)"
+
+end
+
+function subpolygons(
+        st :: TextFilesSubpolygonStorage{T};
+        logging :: Bool = false) where {T <: Integer}
+
+    while !is_finished(st)
+        subpolygons_single_step(st; logging)
+    end
+
+    return st
+
+end

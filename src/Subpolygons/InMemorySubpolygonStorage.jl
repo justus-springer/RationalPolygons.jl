@@ -47,8 +47,7 @@ function initialize_subpolygon_storage(st :: InMemorySubpolygonStorage{T}, Ps ::
 
 end
 
-is_finished(st :: InMemorySubpolygonStorage{T}) where {T <: Integer} =
-st.last_completed_area <= minimum(keys(st.polygons_dict))
+is_finished(st :: InMemorySubpolygonStorage{T}) where {T <: Integer} = st.last_completed_area <= 3
 
 
 function subpolygons_single_step(
@@ -58,7 +57,7 @@ function subpolygons_single_step(
     current_area = maximum(filter(b -> b < st.last_completed_area, keys(st.polygons_dict)))
     Ps = collect(st.polygons_dict[current_area])
 
-    logging && @info "[a = $current_area]. Polygons to peel: $(length(Ps)). Total: $(st.total_count)"
+    logging && @info "[a = $current_area]. Polygons to peel: $(length(Ps))."
 
     out_array = Set{RationalPolygon{T}}[]
     for i = 1 : Threads.nthreads()
@@ -75,7 +74,7 @@ function subpolygons_single_step(
             else
                 Q = unimodular_normal_form(Q)
             end
-            Q ∉ st.polygons_dict[normalized_area(Q)]
+            Q ∉ st.polygons_dict[normalized_area(Q)] || continue
             push!(out_array[Threads.threadid()], Q)
         end
     end
@@ -85,12 +84,13 @@ function subpolygons_single_step(
 
     for P ∈ new_polygons
         a = normalized_area(P)
-        P ∉ st.polygons_dict[a] || continue
         push!(st.polygons_dict[a], P)
         st.total_count += 1
     end
 
     st.last_completed_area = current_area
+
+    logging && @info "[a = $current_area]. Writeout complete. Running total: $(st.total_count)"
 
 end
 

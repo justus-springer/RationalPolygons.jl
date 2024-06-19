@@ -1,10 +1,10 @@
+export TextFilesSubpolygonStorage 
 export SubpolygonsPreferences
 export initialize_subpolygon_storage
 export restore_hash_set
 export write_polygon_dataset
 export read_polygon_dataset
 export create_polygon_dataset
-export initialize_hdf_subpolygon_storage
 export hnf
 export adjust_to_width_direction
 export affine_automorphism_group

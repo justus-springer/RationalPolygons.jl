@@ -29,6 +29,7 @@ include("Subpolygons/remove_vertex.jl")
 include("Subpolygons/SubpolygonStorage.jl")
 include("Subpolygons/SubpolygonsPreferences.jl")
 include("Subpolygons/InMemorySubpolygonStorage.jl")
+include("Subpolygons/TextFilesSubpolygonStorage.jl")
 include("Subpolygons/HDFSubpolygonStorage.jl")
 include("Subpolygons/subpolygons.jl")
 
