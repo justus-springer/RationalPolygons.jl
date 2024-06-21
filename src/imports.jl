@@ -36,4 +36,5 @@ import HDF5:
     create_dataset,
     dataspace,
     datatype,
-    open_dataset
+    open_dataset,
+    read_dataset

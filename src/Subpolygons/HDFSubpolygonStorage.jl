@@ -5,6 +5,7 @@ struct HDFSubpolygonsPreferences{T <: Integer}
     use_affine_normal_form :: Bool
     block_size :: Int
     swmr :: Bool
+    maximum_number_of_vertices :: Int
 
     HDFSubpolygonsPreferences{T}(;
         rationality :: T = one(T),
@@ -12,8 +13,9 @@ struct HDFSubpolygonsPreferences{T <: Integer}
         primitive :: Bool = false,
         use_affine_normal_form :: Bool = false,
         block_size :: Int = 10^6,
-        swmr :: Bool = true) where {T <: Integer} =
-    new{T}(rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, block_size, swmr)
+        swmr :: Bool = true,
+        maximum_number_of_vertices :: Int = 100) where {T <: Integer} =
+    new{T}(rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, block_size, swmr, maximum_number_of_vertices)
 
 end
 
@@ -36,8 +38,9 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
             primitive :: Bool = false,
             use_affine_normal_form :: Bool = false,
             block_size :: Int = 10^6,
-            swmr :: Bool = true) where {T <: Integer} = 
-    HDFSubpolygonStorage{T}(HDFSubpolygonsPreferences{T}(;rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, block_size, swmr), file_path, group_path)
+            swmr :: Bool = true,
+            maximum_number_of_vertices :: Int = 100) where {T <: Integer} = 
+    HDFSubpolygonStorage{T}(HDFSubpolygonsPreferences{T}(;rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, block_size, swmr, maximum_number_of_vertices), file_path, group_path)
 
     function HDFSubpolygonStorage{T}(Ps :: Vector{<:RationalPolygon{T}},
             file_path :: String,
@@ -45,13 +48,14 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
             primitive :: Bool = false,
             use_affine_normal_form :: Bool = false,
             block_size :: Int = 10^6,
-            swmr :: Bool = true) where {T <: Integer}
+            swmr :: Bool = true,
+            maximum_number_of_vertices :: Int = 100) where {T <: Integer}
         k = rationality(first(Ps))
         n = number_of_interior_lattice_points(first(Ps))
         all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
         all(P -> number_of_interior_lattice_points(P) == n, Ps) || error("all polygons must have the same number of interior lattice points")
 
-        pref = HDFSubpolygonsPreferences{T}(;rationality = k, number_of_interior_lattice_points = n, primitive, use_affine_normal_form, block_size, swmr)
+        pref = HDFSubpolygonsPreferences{T}(;rationality = k, number_of_interior_lattice_points = n, primitive, use_affine_normal_form, block_size, swmr, maximum_number_of_vertices)
         st = HDFSubpolygonStorage{T}(pref, file_path, group_path)
         initialize_subpolygon_storage(st, Ps)
 
@@ -75,10 +79,11 @@ function initialize_subpolygon_storage(
         g = f[st.group_path]
     end
 
-    st.last_completed_area = maximum(normalized_area.(Ps)) + 1
+    maximum_area = maximum(normalized_area.(Ps))
+    st.last_completed_area = maximum_area + 1
     attrs(g)["last_completed_area"] = st.last_completed_area
     
-    for a = 3 : st.last_completed_area - 1
+    for a = 3 : maximum_area
         st.hash_sets[a] = Set{UInt64}()
         create_group(g, "a$a")
     end
@@ -89,6 +94,16 @@ function initialize_subpolygon_storage(
         N = number_of_vertices(P)
         write_polygon_dataset(g, "a$a/n$N", [P])
         push!(st.hash_sets[a], hash(P))
+    end
+
+    g["numbers_of_polygons"] = zeros(Int, maximum_area, st.preferences.maximum_number_of_vertices) 
+    numbers_of_polygons = g["numbers_of_polygons"]
+    for a = 3 : maximum_area
+        for n = 1 : st.preferences.maximum_number_of_vertices
+            haskey(g["a$a"], "n$n") || continue
+            val = length(dataspace(g["a$a"]["n$n"]))
+            numbers_of_polygons[a,n] = val
+        end
     end
 
     close(f)
@@ -105,12 +120,18 @@ function restore_hdf_subpolygon_storage_status(st :: HDFSubpolygonStorage{T}) wh
 
     st.last_completed_area = read_attribute(g, "last_completed_area")
 
+    A = read_dataset(g, "numbers_of_polygons")
+    st.total_count = sum(A)
     for a_key ∈ keys(g)
+        startswith(a_key, "a") || continue
         a = parse(Int, a_key[2:end])
         st.hash_sets[a] = Set{UInt64}()
-        for n ∈ keys(g[a_key])
-            st.total_count += length(dataspace(g[a_key][n]))
-            Ps = read_polygon_dataset(k, g[a_key], n)
+        for n_key ∈ keys(g[a_key])
+            startswith(n_key, "n") || continue
+            n = parse(Int, n_key[2:end])
+            HDF5.set_extent_dims(g[a_key][n_key], (A[a,n],))
+
+            Ps = read_polygon_dataset(k, g[a_key], n_key)
             a < st.last_completed_area || continue
             for P ∈ Ps
                 push!(st.hash_sets[a], hash(P))
@@ -185,6 +206,7 @@ function subpolygons_single_step(
                 for Q ∈ Qs
                     push!(st.hash_sets[Qa], hash(Q))
                 end
+                g["numbers_of_polygons"][Qa,Qn] += length(Qs)
                 st.total_count += length(Qs)
             end
 
