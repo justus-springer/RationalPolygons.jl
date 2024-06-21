@@ -4,14 +4,16 @@ struct HDFSubpolygonsPreferences{T <: Integer}
     primitive :: Bool
     use_affine_normal_form :: Bool
     block_size :: Int
+    swmr :: Bool
 
     HDFSubpolygonsPreferences{T}(;
         rationality :: T = one(T),
         number_of_interior_lattice_points :: Int = 1,
         primitive :: Bool = false,
         use_affine_normal_form :: Bool = false,
-        block_size :: Int = 10^6) where {T <: Integer} =
-    new{T}(rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, block_size)
+        block_size :: Int = 10^6,
+        swmr :: Bool = true) where {T <: Integer} =
+    new{T}(rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, block_size, swmr)
 
 end
 
@@ -33,21 +35,23 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
             number_of_interior_lattice_points :: Int = 1,
             primitive :: Bool = false,
             use_affine_normal_form :: Bool = false,
-            block_size :: Int = 10^6) where {T <: Integer} = 
-    HDFSubpolygonStorage{T}(HDFSubpolygonsPreferences{T}(;rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, block_size), file_path, group_path)
+            block_size :: Int = 10^6,
+            swmr :: Bool = true) where {T <: Integer} = 
+    HDFSubpolygonStorage{T}(HDFSubpolygonsPreferences{T}(;rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, block_size, swmr), file_path, group_path)
 
     function HDFSubpolygonStorage{T}(Ps :: Vector{<:RationalPolygon{T}},
             file_path :: String,
             group_path :: String = "/";
             primitive :: Bool = false,
             use_affine_normal_form :: Bool = false,
-            block_size :: Int = 10^6) where {T <: Integer}
+            block_size :: Int = 10^6,
+            swmr :: Bool = true) where {T <: Integer}
         k = rationality(first(Ps))
         n = number_of_interior_lattice_points(first(Ps))
         all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
         all(P -> number_of_interior_lattice_points(P) == n, Ps) || error("all polygons must have the same number of interior lattice points")
 
-        pref = HDFSubpolygonsPreferences{T}(;rationality = k, number_of_interior_lattice_points = n, primitive, use_affine_normal_form, block_size)
+        pref = HDFSubpolygonsPreferences{T}(;rationality = k, number_of_interior_lattice_points = n, primitive, use_affine_normal_form, block_size, swmr)
         st = HDFSubpolygonStorage{T}(pref, file_path, group_path)
         initialize_subpolygon_storage(st, Ps)
 
@@ -64,7 +68,7 @@ function initialize_subpolygon_storage(
     all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
     all(P -> number_of_interior_lattice_points(P) == n, Ps) || error("all polygons must have the same number of interior lattice points")
 
-    f = h5open(st.file_path, "cw"; swmr = true)
+    f = h5open(st.file_path, "cw"; swmr = st.preferences.swmr)
     if !haskey(f, st.group_path)
         g = create_group(f, st.group_path)
     else
@@ -95,7 +99,7 @@ end
 
 function restore_hdf_subpolygon_storage_status(st :: HDFSubpolygonStorage{T}) where {T <: Integer}
 
-    f = h5open(st.file_path, "r+"; swmr = true)
+    f = h5open(st.file_path, "r+"; swmr = st.preferences.swmr)
     g = f[st.group_path]
     k = st.preferences.rationality
 
@@ -123,7 +127,7 @@ function subpolygons_single_step(
         st :: HDFSubpolygonStorage{T};
         logging :: Bool = false) where {T <: Integer}
 
-    f = h5open(st.file_path, "r+"; swmr = true)
+    f = h5open(st.file_path, "r+"; swmr = st.preferences.swmr)
     g = f[st.group_path]
     k = st.preferences.rationality
     block_size = st.preferences.block_size
