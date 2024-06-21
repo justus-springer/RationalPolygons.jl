@@ -10,6 +10,8 @@ struct RationalPolygon{T<:Integer,N,M}
 
     rationality :: T
 
+    number_of_vertices :: Int
+
     vertex_matrix :: SMatrix{2, N, T, M}
 
     is_unimodular_normal_form :: Bool
@@ -46,7 +48,7 @@ struct RationalPolygon{T<:Integer,N,M}
                     rationality :: T; 
                     is_unimodular_normal_form :: Bool = false,
                     is_affine_normal_form :: Bool = false) where {N, M, T <: Integer} =
-    new{T,N,M}(rationality, vertex_matrix, is_unimodular_normal_form, is_affine_normal_form)
+    new{T,N,M}(rationality, N, vertex_matrix, is_unimodular_normal_form, is_affine_normal_form)
 
     RationalPolygon(scaled_vertices :: Vector{LatticePoint{T}}, 
                     rationality :: T; 
@@ -133,7 +135,7 @@ RationalPolygon(graham_scan(points), k)
 Return the number of vertices of a polygon.
 
 """
-number_of_vertices(P :: RationalPolygon{T,N,M}) where {N,M,T <: Integer} = N
+number_of_vertices(P :: RationalPolygon{T,N,M}) where {N,M,T <: Integer} = P.number_of_vertices
 
 
 @doc raw"""
