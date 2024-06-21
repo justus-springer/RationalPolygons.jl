@@ -1,11 +1,25 @@
+struct InMemorySubpolygonsPreferences{T <: Integer}
+    rationality :: T
+    number_of_interior_lattice_points :: Int
+    primitive :: Bool
+    use_affine_normal_form :: Bool
+
+    InMemorySubpolygonsPreferences{T}(;
+        rationality :: T = one(T),
+        number_of_interior_lattice_points :: Int = 1,
+        primitive :: Bool = false,
+        use_affine_normal_form :: Bool = false) where {T <: Integer} =
+    new{T}(rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form)
+
+end
 
 mutable struct InMemorySubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
-    preferences :: SubpolygonsPreferences{T}
+    preferences :: InMemorySubpolygonsPreferences{T}
     polygons_dict :: Dict{T,Set{RationalPolygon{T}}}
     last_completed_area :: T
     total_count :: Int
 
-    InMemorySubpolygonStorage{T}(preferences :: SubpolygonsPreferences{T}) where {T <: Integer} =
+    InMemorySubpolygonStorage{T}(preferences :: InMemorySubpolygonsPreferences{T}) where {T <: Integer} =
     new{T}(preferences, Dict{T,Set{RationalPolygon{T}}}(), 0, 0)
 
     InMemorySubpolygonStorage{T}(;
@@ -13,7 +27,7 @@ mutable struct InMemorySubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
             number_of_interior_lattice_points :: Int = 1,
             primitive :: Bool = false,
             use_affine_normal_form :: Bool = false) where {T <: Integer} = 
-    InMemorySubpolygonStorage{T}(SubpolygonsPreferences{T}(;rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form))
+    InMemorySubpolygonStorage{T}(InMemorySubpolygonsPreferences{T}(;rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form))
 
     function InMemorySubpolygonStorage{T}(
             Ps :: Vector{<:RationalPolygon{T}};
@@ -24,7 +38,7 @@ mutable struct InMemorySubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
         all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
         all(P -> number_of_interior_lattice_points(P) == n, Ps) || error("all polygons must have the same number of interior lattice points")
 
-        pref = SubpolygonsPreferences{T}(;rationality = k, number_of_interior_lattice_points = n, primitive, use_affine_normal_form)
+        pref = InMemorySubpolygonsPreferences{T}(;rationality = k, number_of_interior_lattice_points = n, primitive, use_affine_normal_form)
         st = InMemorySubpolygonStorage{T}(pref)
         initialize_subpolygon_storage(st, Ps)
 

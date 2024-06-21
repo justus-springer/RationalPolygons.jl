@@ -1,11 +1,26 @@
+struct TextFilesSubpolygonsPreferences{T <: Integer}
+    rationality :: T
+    number_of_interior_lattice_points :: Int
+    primitive :: Bool
+    use_affine_normal_form :: Bool
+
+    TextFilesSubpolygonsPreferences{T}(;
+        rationality :: T = one(T),
+        number_of_interior_lattice_points :: Int = 1,
+        primitive :: Bool = false,
+        use_affine_normal_form :: Bool = false) where {T <: Integer} =
+    new{T}(rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form)
+
+end
+
 mutable struct TextFilesSubpolygonStorage{T} <: SubpolygonStorage{T}
-    preferences :: SubpolygonsPreferences{T}
+    preferences :: TextFilesSubpolygonsPreferences{T}
     directory :: String
     hash_sets :: Dict{T,Set{UInt64}}
     last_completed_area :: T
     total_count :: Int
 
-    function TextFilesSubpolygonStorage{T}(preferences :: SubpolygonsPreferences{T}, directory :: String) where {T <: Integer}
+    function TextFilesSubpolygonStorage{T}(preferences :: TextFilesSubpolygonsPreferences{T}, directory :: String) where {T <: Integer}
         isdir(directory) || error("$directory is not a directory")
         return new{T}(preferences, directory, Dict{T,Set{UInt64}}(), 0, 0)
     end
@@ -15,7 +30,7 @@ mutable struct TextFilesSubpolygonStorage{T} <: SubpolygonStorage{T}
             number_of_interior_lattice_points :: Int = 1,
             primitive :: Bool = false,
             use_affine_normal_form :: Bool = false) where {T <: Integer} = 
-    TextFilesSubpolygonStorage{T}(SubpolygonsPreferences{T}(;rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form), directory)
+    TextFilesSubpolygonStorage{T}(TextFilesSubpolygonsPreferences{T}(;rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form), directory)
 
     function TextFilesSubpolygonStorage{T}(
             Ps :: Vector{<:RationalPolygon{T}},
@@ -27,7 +42,7 @@ mutable struct TextFilesSubpolygonStorage{T} <: SubpolygonStorage{T}
         all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
         all(P -> number_of_interior_lattice_points(P) == n, Ps) || error("all polygons must have the same number of interior lattice points")
 
-        pref = SubpolygonsPreferences{T}(;rationality = k, number_of_interior_lattice_points = n, primitive, use_affine_normal_form)
+        pref = TextFilesSubpolygonsPreferences{T}(;rationality = k, number_of_interior_lattice_points = n, primitive, use_affine_normal_form)
         st = TextFilesSubpolygonStorage{T}(pref, directory)
         initialize_subpolygon_storage(st, Ps)
 

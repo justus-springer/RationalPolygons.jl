@@ -1,5 +1,22 @@
+struct HDFSubpolygonsPreferences{T <: Integer}
+    rationality :: T
+    number_of_interior_lattice_points :: Int
+    primitive :: Bool
+    use_affine_normal_form :: Bool
+    block_size :: Int
+
+    HDFSubpolygonsPreferences{T}(;
+        rationality :: T = one(T),
+        number_of_interior_lattice_points :: Int = 1,
+        primitive :: Bool = false,
+        use_affine_normal_form :: Bool = false,
+        block_size :: Int = 10^6) where {T <: Integer} =
+    new{T}(rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, block_size)
+
+end
+
 mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
-    preferences :: SubpolygonsPreferences{T}
+    preferences :: HDFSubpolygonsPreferences{T}
     file_path :: String
     group_path :: String
     hash_sets :: Dict{T,Set{UInt64}}
@@ -7,7 +24,7 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
     total_count :: Int
 
 
-    HDFSubpolygonStorage{T}(preferences :: SubpolygonsPreferences{T}, file_path :: String, group_path :: String = "/") where {T <: Integer} =
+    HDFSubpolygonStorage{T}(preferences :: HDFSubpolygonsPreferences{T}, file_path :: String, group_path :: String = "/") where {T <: Integer} =
     new{T}(preferences, file_path, group_path, Dict{T,Set{UInt64}}(), 0, 0)
 
     HDFSubpolygonStorage{T}(file_path :: String, 
@@ -17,7 +34,7 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
             primitive :: Bool = false,
             use_affine_normal_form :: Bool = false,
             block_size :: Int = 10^6) where {T <: Integer} = 
-    HDFSubpolygonStorage{T}(SubpolygonsPreferences{T}(;rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, block_size), file_path, group_path)
+    HDFSubpolygonStorage{T}(HDFSubpolygonsPreferences{T}(;rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, block_size), file_path, group_path)
 
     function HDFSubpolygonStorage{T}(Ps :: Vector{<:RationalPolygon{T}},
             file_path :: String,
@@ -30,7 +47,7 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
         all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
         all(P -> number_of_interior_lattice_points(P) == n, Ps) || error("all polygons must have the same number of interior lattice points")
 
-        pref = SubpolygonsPreferences{T}(;rationality = k, number_of_interior_lattice_points = n, primitive, use_affine_normal_form, block_size)
+        pref = HDFSubpolygonsPreferences{T}(;rationality = k, number_of_interior_lattice_points = n, primitive, use_affine_normal_form, block_size)
         st = HDFSubpolygonStorage{T}(pref, file_path, group_path)
         initialize_subpolygon_storage(st, Ps)
 

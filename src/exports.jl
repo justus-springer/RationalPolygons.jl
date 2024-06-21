@@ -3,7 +3,9 @@ export restore_hdf_subpolygon_storage_status
 export export_text_files_subpolygon_storage_status 
 export restore_text_files_subpolygon_storage_status
 export TextFilesSubpolygonStorage 
-export SubpolygonsPreferences
+export InMemorySubpolygonsPreferences
+export HDFSubpolygonsPreferences
+export TextFilesSubpolygonsPreferences
 export initialize_subpolygon_storage
 export write_polygon_dataset
 export read_polygon_dataset
