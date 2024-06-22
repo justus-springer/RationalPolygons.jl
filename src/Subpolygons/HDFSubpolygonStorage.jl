@@ -23,13 +23,13 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
     preferences :: HDFSubpolygonsPreferences{T}
     file_path :: String
     group_path :: String
-    hash_sets :: Dict{T,Set{UInt64}}
+    hash_sets :: Dict{T,Set{UInt128}}
     last_completed_area :: T
     total_count :: Int
 
 
     HDFSubpolygonStorage{T}(preferences :: HDFSubpolygonsPreferences{T}, file_path :: String, group_path :: String = "/") where {T <: Integer} =
-    new{T}(preferences, file_path, group_path, Dict{T,Set{UInt64}}(), 0, 0)
+    new{T}(preferences, file_path, group_path, Dict{T,Set{UInt128}}(), 0, 0)
 
     HDFSubpolygonStorage{T}(file_path :: String, 
             group_path :: String = "/";
@@ -84,7 +84,7 @@ function initialize_subpolygon_storage(
     attrs(g)["last_completed_area"] = st.last_completed_area
     
     for a = 3 : maximum_area
-        st.hash_sets[a] = Set{UInt64}()
+        st.hash_sets[a] = Set{UInt128}()
         create_group(g, "a$a")
     end
 
@@ -93,7 +93,7 @@ function initialize_subpolygon_storage(
         a = normalized_area(P)
         N = number_of_vertices(P)
         write_polygon_dataset(g, "a$a/n$N", [P])
-        push!(st.hash_sets[a], hash(P))
+        push!(st.hash_sets[a], xxh3_128(vertex_matrix(P)))
     end
 
     g["numbers_of_polygons"] = zeros(Int, maximum_area, st.preferences.maximum_number_of_vertices) 
@@ -125,7 +125,7 @@ function restore_hdf_subpolygon_storage_status(st :: HDFSubpolygonStorage{T}) wh
     for a_key ∈ keys(g)
         startswith(a_key, "a") || continue
         a = parse(Int, a_key[2:end])
-        st.hash_sets[a] = Set{UInt64}()
+        st.hash_sets[a] = Set{UInt128}()
         for n_key ∈ keys(g[a_key])
             startswith(n_key, "n") || continue
             n = parse(Int, n_key[2:end])
@@ -134,7 +134,7 @@ function restore_hdf_subpolygon_storage_status(st :: HDFSubpolygonStorage{T}) wh
             Ps = read_polygon_dataset(k, g[a_key], n_key)
             a < st.last_completed_area || continue
             for P ∈ Ps
-                push!(st.hash_sets[a], hash(P))
+                push!(st.hash_sets[a], xxh3_128(vertex_matrix(P)))
             end
         end
     end
@@ -187,7 +187,7 @@ function subpolygons_single_step(
                     if !haskey(out_dicts[id], (Qa,Qn))
                         out_dicts[id][(Qa,Qn)] = Set{RationalPolygon{T,Qn,2*Qn}}()
                     end
-                    hash(Q) ∉ st.hash_sets[Qa] || continue
+                    xxh3_128(vertex_matrix(Q)) ∉ st.hash_sets[Qa] || continue
                     push!(out_dicts[id][(Qa,Qn)], Q)
                 end
             end
@@ -204,7 +204,7 @@ function subpolygons_single_step(
                 path = "a$(Qa)/n$(Qn)"
                 write_polygon_dataset(g, path, collect(Qs))
                 for Q ∈ Qs
-                    push!(st.hash_sets[Qa], hash(Q))
+                    push!(st.hash_sets[Qa], xxh3_128(vertex_matrix(Q)))
                 end
                 g["numbers_of_polygons"][Qa,Qn] += length(Qs)
                 st.total_count += length(Qs)

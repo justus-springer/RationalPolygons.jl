@@ -16,13 +16,13 @@ end
 mutable struct TextFilesSubpolygonStorage{T} <: SubpolygonStorage{T}
     preferences :: TextFilesSubpolygonsPreferences{T}
     directory :: String
-    hash_sets :: Dict{T,Set{UInt64}}
+    hash_sets :: Dict{T,Set{UInt128}}
     last_completed_area :: T
     total_count :: Int
 
     function TextFilesSubpolygonStorage{T}(preferences :: TextFilesSubpolygonsPreferences{T}, directory :: String) where {T <: Integer}
         isdir(directory) || error("$directory is not a directory")
-        return new{T}(preferences, directory, Dict{T,Set{UInt64}}(), 0, 0)
+        return new{T}(preferences, directory, Dict{T,Set{UInt128}}(), 0, 0)
     end
 
     TextFilesSubpolygonStorage{T}(directory :: String;
@@ -66,7 +66,7 @@ function restore_text_files_subpolygon_storage_status(st :: TextFilesSubpolygonS
         st.total_count += countlines(filepath)
         a < st.last_completed_area || continue
         Ps = parse_rational_polygons(st.preferences.rationality, filepath)
-        st.hash_sets[a] = Set([hash(P) for P ∈ Ps])
+        st.hash_sets[a] = Set([xxh3_128(vertex_matrix(P)) for P ∈ Ps])
     end
 
 end
@@ -76,13 +76,13 @@ function initialize_subpolygon_storage(st :: TextFilesSubpolygonStorage{T}, Ps :
     maximum_area = maximum(normalized_area.(Ps))
     for a = 3 : maximum_area
         touch(joinpath(st.directory, "a$a.txt"))
-        st.hash_sets[a] = Set{UInt64}()
+        st.hash_sets[a] = Set{UInt128}()
     end
     for P ∈ Ps
         a = normalized_area(P)
         filepath = joinpath(st.directory, "a$a.txt")
         write_rational_polygons([P], filepath, "a")
-        push!(st.hash_sets[a], hash(P))
+        push!(st.hash_sets[a], xxh3_128(vertex_matrix(P)))
     end
     st.last_completed_area = maximum_area + 1
     st.total_count = length(Ps)
@@ -120,7 +120,7 @@ function subpolygons_single_step(
             if !haskey(out_array[id], a)
                 out_array[id][a] = Set{RationalPolygon{T}}()
             end
-            hash(Q) ∉ st.hash_sets[a] || continue
+            xxh3_128(vertex_matrix(Q)) ∉ st.hash_sets[a] || continue
             push!(out_array[id][a], Q)
         end
     end
@@ -132,7 +132,7 @@ function subpolygons_single_step(
     for (a,Qs) ∈ new_polygons
         filepath = joinpath(st.directory, "a$a.txt")
         write_rational_polygons(collect(Qs), filepath, "a")
-        union!(st.hash_sets[a], hash.(Qs))
+        union!(st.hash_sets[a], xxh3_128.(Qs))
         st.total_count += length(Qs)
     end
 

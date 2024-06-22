@@ -38,3 +38,6 @@ import HDF5:
     datatype,
     open_dataset,
     read_dataset
+
+import XXhash:
+    xxh3_128
