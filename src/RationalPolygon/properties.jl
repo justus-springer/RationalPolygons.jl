@@ -183,3 +183,26 @@ function gorenstein_index(P :: RationalPolygon{T}) where {T <: Integer}
     local_gorenstein_indices = [numerator(k*translation(H)) for H ∈ affine_halfplanes(P)]
     return lcm(local_gorenstein_indices)
 end
+
+function log_canonicity(P :: RationalPolygon{T,N}, i :: Int) where {N,T <: Integer}
+    V = vertex_matrix(P)
+    v1, v2 = V[:,mod(i,1:N)], V[:,mod(i+1,1:N)]
+    L = line_through_points(v1,v2)
+    discrepancies = Rational{T}[]
+    for p ∈ hilbert_basis(primitivize(v1),primitivize(v2))
+        push!(discrepancies, norm_ratio(primitivize(p), intersection_point(L, line_through_points(zero(RationalPoint{T}), p))))
+    end
+    return minimum(discrepancies)
+end
+
+@doc raw"""
+    log_canonicity(P :: RationalPolygon)
+
+Given a `k`-rational polygon `P`, return the maximal rational number 0 < ϵ ≤ 1
+such that ε*P contains only one `k`-rational point in its interior (the
+origin). For a fano polygon, this equals the maximal rational number 0 < ε ≤ 1
+such that the associated toric surface is ε-log canonical.
+
+"""
+log_canonicity(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
+minimum([log_canonicity(P,i) for i = 1 : N])

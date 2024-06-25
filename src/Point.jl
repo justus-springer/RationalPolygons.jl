@@ -142,3 +142,6 @@ function pseudo_angle_with_distance(p :: Point{T}) where {T <: Integer}
     y < 0 && return (a - 1, d)
     return (1 - a, d)
 end
+
+norm_ratio(p :: Point{T}, q :: Point{T}) where {T <: Integer} =
+q[2] == 0 ? p[1] // q[1] : p[2] // q[2]
