@@ -325,27 +325,10 @@ Compute all `k`-rational polygons with exactly one interior lattice point. The f
 
 - `primitive :: Bool`. If set to true, only primitive polygons (i.e. fano polygons) are returned.
 
-- `out_path :: Union{Missing,String}`. If set to `missing`, all polygons will
-be kept in memory and returned. If set to a path to an empty directory, the
-storage of the polygons will be delegated to the disk, where the polygons will
-be saved into text files according to their normalized area. Since the number
-of polygons grows rapidly in `k`, this is the recommended method for `k ≥ 4`.
-
 - `logging :: Bool`. Controls whether to display logging messages showing the
 current progress.
 
 """
-function classify_polygons_genus_one(
-        k :: T; 
-        primitive :: Bool = false, 
-        hdf_path :: Union{Missing, String} = missing, 
-        hdf_group :: String = "/",
-        logging = false) where {T <: Integer}
-
-    primstring = primitive ? "primitive " : ""
-    logging && @info "Beginning classification of all $(primstring)$k-rational polygons with one interior lattice point."
-
-    Ps = classify_maximal_polygons_genus_one(k; primitive, logging)
-    return subpolygons(Ps; primitive, hdf_path, hdf_group, logging)
-end
+classify_polygons_genus_one(k :: T; primitive :: Bool = false, logging = false) where {T <: Integer} =
+subpolygons(classify_maximal_polygons_genus_one(k; primitive, logging); primitive, logging)
 
