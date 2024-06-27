@@ -1,4 +1,5 @@
 export log_canonicity
+export log_canonicities
 export norm_ratio
 export export_hdf_subpolygon_storage_status 
 export restore_hdf_subpolygon_storage_status
