@@ -24,6 +24,7 @@ include("RationalPolygon/interior_points.jl")
 include("RationalPolygon/ehrhart.jl")
 include("RationalPolygon/PolygonAutomorphismGroup.jl")
 include("RationalPolygon/normal_form.jl")
+include("RationalPolygon/draw.jl")
 
 include("Subpolygons/remove_vertex.jl")
 include("Subpolygons/SubpolygonStorage.jl")

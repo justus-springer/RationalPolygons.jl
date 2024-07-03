@@ -1,3 +1,4 @@
+export plot_polygon
 export log_canonicity
 export log_canonicities
 export norm_ratio
