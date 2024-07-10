@@ -54,8 +54,13 @@ end
 Return all `k`-rational points on the boundary of `P`.
 
 """
-boundary_k_rational_points(P :: RationalPolygon{T,N}, k :: T) where {N,T <: Integer} =
-unique(vcat([k_rational_points_on_line_segment(k, P[i], P[i+1]; interior = false) for i = 1 : N]...))
+function boundary_k_rational_points(P :: RationalPolygon{T}, k :: T) where {T <: Integer}
+    res = RationalPoint{T}[]
+    for i = 1 : number_of_vertices(P)
+        append!(res, k_rational_points_on_line_segment(k, P[i], P[i+1]; interior = false))
+    end
+    return unique(res)
+end
 
 
 @doc raw"""
