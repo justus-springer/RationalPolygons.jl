@@ -172,16 +172,13 @@ function _special_vertices_align(k :: T,
     return b1 % k == 0 && b2 % k == 0
 end
 
-
 @doc raw"""
-    affine_normal_form_with_automorphism_group(P :: RationalPolygon)
+    affine_normal_form_with_special_indices(P :: RationalPolygon)
 
-Return a pair `(Q,G)` where `Q` is the affine normal form of `P` and `G` is the
-affine automorphism group of `P`.
+Return a pair `(Q,is)` where `Q` is the affine normal form of `P` and `is` is the set of special indices of `P`.
 
 """
-function affine_normal_form_with_automorphism_group(P :: RationalPolygon{T,N}) where {N,T <: Integer}
-
+function affine_normal_form_with_special_indices(P :: RationalPolygon{T,N}) where {N,T <: Integer}
     V = vertex_matrix(P)
     k = rationality(P)
 
@@ -210,10 +207,26 @@ function affine_normal_form_with_automorphism_group(P :: RationalPolygon{T,N}) w
 
     Q = RationalPolygon(At, rationality(P); is_affine_normal_form = true)
 
-    if length(unique(last.(really_special_indices))) == 1
-        return (Q, CyclicGroup(length(really_special_indices)))
+    return (Q, really_special_indices)
+
+end
+
+
+@doc raw"""
+    affine_normal_form_with_automorphism_group(P :: RationalPolygon)
+
+Return a pair `(Q,G)` where `Q` is the affine normal form of `P` and `G` is the
+affine automorphism group of `P`.
+
+"""
+function affine_normal_form_with_automorphism_group(P :: RationalPolygon{T,N}) where {N,T <: Integer}
+
+    (Q,is) = affine_normal_form_with_special_indices(P)
+
+    if length(unique(last.(is))) == 1
+        return (Q, CyclicGroup(length(is)))
     else
-        return (Q, DihedralGroup(length(really_special_indices) ÷ 2))
+        return (Q, DihedralGroup(length(is) ÷ 2))
     end
 
 end
