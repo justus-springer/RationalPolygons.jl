@@ -103,7 +103,7 @@ Return the `k`-rational polygon given by the convex hull of `p // k`, where `p
 ∈ points`.
 
 """
-convex_hull(points :: Vector{LatticePoint{T}}, k :: T) where {T <: Integer} =
+convex_hull(points :: Vector{LatticePoint{T}}, k :: T = one(T)) where {T <: Integer} =
 RationalPolygon(graham_scan(points), k)
 
 

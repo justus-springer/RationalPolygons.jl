@@ -153,7 +153,7 @@ edges by `1 // k`.
 function move_out_edges(P :: RationalPolygon{T,N}) where {N,T <: Integer}
     k = rationality(P)
     Hs = affine_halfplanes(P)
-    return intersect_halfplanes(Hs .- 1 // k)
+    return intersect_halfplanes(Hs .- one(T) // k)
 end
 
 
