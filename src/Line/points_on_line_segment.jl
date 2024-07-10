@@ -56,3 +56,32 @@ Otherwise, `p` and `q` are always excluded.
 """
 integral_points_on_line_segment(p :: Point{T}, q :: Point{T}; interior = true) where {T <: Integer} =
 k_rational_points_on_line_segment(1, p, q; interior)
+
+
+@doc raw"""
+    integral_points_on_line_segment_with_given_integral_point(p :: Point{T}, q :: Point{T}, x0 :: LatticePoint{T})
+
+Given a lattice point `x0` lying on the line segment between the points `p` and
+`q`, return all lattice points on that line segment.
+
+"""
+function integral_points_on_line_segment_with_given_integral_point(p :: Point{T}, q :: Point{T}, x0 :: LatticePoint{T}) where {T <: Integer}
+
+    if q[1] < p[1] || (p[1] == q[1] && q[2] < p[2])
+        return integral_points_on_line_segment_with_given_integral_point(q, p,x0)
+    end
+
+    p == q && return [x0]
+
+    v = primitivize(q - p)
+    if v[1] != 0
+        lower_bound = cld(p[1] - x0[1], v[1])
+        upper_bound = fld(q[1] - x0[1], v[1])
+        return [x0 + i*v for i = lower_bound : upper_bound]
+    elseif v[2] != 0
+        lower_bound = cld(p[2] - x0[2], v[2])
+        upper_bound = fld(q[2] - x0[2], v[2])
+        return [x0 + i*v for i = lower_bound : upper_bound]
+    end
+
+end
