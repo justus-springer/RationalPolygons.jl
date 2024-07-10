@@ -9,6 +9,14 @@ they are `k`-rational. Otherwise, `p` and `q` are always excluded.
 """
 function k_rational_points_on_line_segment(k :: T, p :: Point{T}, q :: Point{T}; interior = true) where {T <: Integer}
 
+    if p == q
+        if interior || !is_k_rational(k,p)
+            return RationalPoint{T}[]
+        else
+            return RationalPoint{T}[p]
+        end
+    end
+
     if q[1] < p[1] || (p[1] == q[1] && q[2] < p[2])
         return k_rational_points_on_line_segment(k, q, p; interior)
     end
@@ -19,7 +27,7 @@ function k_rational_points_on_line_segment(k :: T, p :: Point{T}, q :: Point{T};
         lower_bound = interior ? floor(T, k*p[1]+1) // k : ceil(T, k*p[1]) // k
         upper_bound = interior ? ceil(T, k*q[1]-1) // k : floor(T, k*q[1]) // k
         for t = lower_bound : 1 // k : upper_bound
-            x = intersection_point(L, vertical_line(t))
+            x = intersection_point(L, vertical_line(Rational{T}(t)))
             is_k_rational(k,x) || continue
             push!(res,x)
         end
@@ -27,7 +35,7 @@ function k_rational_points_on_line_segment(k :: T, p :: Point{T}, q :: Point{T};
         lower_bound = interior ? floor(T, k*p[2]+1) // k : ceil(T, k*p[2]) // k
         upper_bound = interior ? ceil(T, k*q[2]-1) // k : floor(T, k*q[2]) // k
         for t = lower_bound : 1 // k : upper_bound
-            x = intersection_point(L, horizontal_line(t))
+            x = intersection_point(L, horizontal_line(Rational{T}(t)))
             is_k_rational(k,x) || continue
             push!(res,x)
         end
@@ -48,5 +56,3 @@ Otherwise, `p` and `q` are always excluded.
 """
 integral_points_on_line_segment(p :: Point{T}, q :: Point{T}; interior = true) where {T <: Integer} =
 k_rational_points_on_line_segment(1, p, q; interior)
-
-
