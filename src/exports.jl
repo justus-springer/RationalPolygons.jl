@@ -1,3 +1,5 @@
+export integral_points_on_line_segment_with_given_integral_point
+export affine_normal_form_with_special_indices
 export HDFKoelmanStoragePreferences
 export initialize_koelman_storage
 export HDFKoelmanStorage

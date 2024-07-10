@@ -1,11 +1,15 @@
 function height_one_points(P :: RationalPolygon{T,N}) where {N,T <: Integer}
+    V = vertex_matrix(P)
     Hs = affine_halfplanes(P)
     lines = [line(Hs[i] - 1) for i = 1 : N]
     res = LatticePoint{T}[]
     for i = 1 : N
         p = intersection_point(lines[mod(i-1,1:N)], lines[i])
         q = intersection_point(lines[mod(i+1,1:N)], lines[i])
-        append!(res, integral_points_on_line_segment(p,q; interior=false))
+        nv = normal_vector(lines[i])
+        _, a, b = gcdx(-nv[1],-nv[2])
+        x0 = LatticePoint{T}(V[1,i] + a, V[2,i] + b)
+        append!(res, integral_points_on_line_segment_with_given_integral_point(p,q,x0))
     end
     unique!(res)
     filter!(p -> minimum([distance(p,H) for H ∈ Hs]) ≥ -1, res)
@@ -13,8 +17,14 @@ function height_one_points(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 end
 
 function single_point_extensions(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
-    out_dict = Dict{Int, Set{<:RationalPolygon{T}}}()
-    for P ∈ Ps
+
+    out_dicts = Vector{Dict{Int, Set{<:RationalPolygon{T}}}}(undef, Threads.nthreads())
+    for i = 1 : Threads.nthreads()
+        out_dicts[i] = Dict{Int, Set{<:RationalPolygon{T}}}()
+    end
+
+    Threads.@threads for P ∈ Ps
+        tid = Threads.threadid()
         N = number_of_vertices(P)
         bs = height_one_points(P)
         V = vertex_matrix(P)
@@ -38,14 +48,21 @@ function single_point_extensions(Ps :: Vector{<:RationalPolygon{T}}) where {T <:
                 push!(new_vertices, V[:,mod(i,1:N)])
             end
             Q = RationalPolygon(new_vertices, one(T))
-            Q = affine_normal_form(Q)
+            (Q,is) = affine_normal_form_with_special_indices(Q)
+            (1,0) ∈ is || (1,1) ∈ is || continue
             
             M = number_of_vertices(Q)
-            !haskey(out_dict, M) && (out_dict[M] = Set{RationalPolygon{T,M,2M}}())
-            push!(out_dict[M], Q)
+            !haskey(out_dicts[tid], M) && (out_dicts[tid][M] = Set{RationalPolygon{T,M,2M}}())
+            push!(out_dicts[tid][M], Q)
         end
     end
-    return out_dict
+
+    for i = 2 : length(out_dicts)
+        mergewith!(union!, out_dicts[1], out_dicts[i])
+        out_dicts[i] = Dict{Int,Set{<:RationalPolygon{T}}}()
+    end
+
+    return out_dicts[1]
 end
 
 
@@ -73,9 +90,9 @@ function classify_next_number_of_lattice_points(st :: InMemoryKoelmanStorage{T})
 end
 
 function classify_polygons_by_number_of_lattice_points(st :: InMemoryKoelmanStorage{T}, max_number_of_lattice_points :: Int; logging :: Bool = false) where {T <: Integer}
-    for n = length(st.polygons) + 1 : max_number_of_lattice_points
+    for l = length(st.polygons) + 1 : max_number_of_lattice_points
         new_count = classify_next_number_of_lattice_points(st)
-        @info "[n = $n]. New polygons: $new_count. Total: $(st.total_count)"
+        @info "[l = $l]. New polygons: $new_count. Total: $(st.total_count)"
     end
     return st.polygons
 end
@@ -150,21 +167,38 @@ function classify_next_number_of_lattice_points(st :: HDFKoelmanStorage{T}; logg
     l = st.last_completed_number_of_lattice_points
     last_group = g["l$l"]
     current_group = create_group(g, "l$(l+1)")
-    new_count = 0
+    block_size = st.preferences.block_size
 
     for n_string ∈ keys(last_group)
-        n = parse(Int, n_string[2:end])
-        Ps = read_polygon_dataset(one(T), last_group, n_string)
-        logging && @info "[l = $l, n = $n]. Polygons to extend: $(length(Ps))"
-        new_Ps = single_point_extensions(Ps)
-        logging && @info "[l = $l, n = $n]. Extension complete. New polygons: $(length(new_Ps))"
-        for (m, Qs) ∈ new_Ps
-            write_polygon_dataset(current_group, "n$m", collect(Qs))
-            new_count += length(Qs)
-            g["numbers_of_polygons"][l+1, m] += length(Qs)
-            st.total_count += new_count
+        N = length(dataspace(last_group[n_string]))
+        number_of_blocks = N ÷ block_size + 1
+
+        for b = 1 : number_of_blocks
+            elapsed_time = @elapsed begin
+
+                I = (b-1)*block_size + 1 : min(b*block_size, N)
+                new_count = 0
+                n = parse(Int, n_string[2:end])
+                Ps = read_polygon_dataset(one(T), last_group, n_string, I) 
+
+                logging && @info "[l = $l, n = $n, block $b/$number_of_blocks]. Polygons to extend: $(length(Ps))"
+
+                new_Ps = single_point_extensions(Ps)
+
+                logging && @info "[l = $l, n = $n, block $b/$number_of_blocks]. Extension complete. New polygons: $(sum(length.(values(new_Ps))))"
+
+                for (m, Qs) ∈ new_Ps
+                    write_polygon_dataset(current_group, "n$m", collect(Qs))
+                    new_count += length(Qs)
+                    g["numbers_of_polygons"][l+1, m] += length(Qs)
+                    st.total_count += length(Qs)
+                end
+                logging && @info "[l = $l, n = $n, block $b/$number_of_blocks]. Writeout complete. Running total: $(st.total_count)"
+            end
+            pps = round(new_count / elapsed_time, digits=2)
+            elapsed_time = round(elapsed_time, digits=2)
+            logging && @info "[l = $l, n = $n, block $b/$number_of_blocks]. Last step took $(elapsed_time) seconds. Averaging $pps polygons/s"
         end
-        logging && @info "[l = $l, n = $n]. Writeout complete. Running total: $(st.total_count)"
     end
 
     st.last_completed_number_of_lattice_points = l+1
