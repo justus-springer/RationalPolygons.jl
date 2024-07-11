@@ -9,10 +9,12 @@ function height_one_points(P :: RationalPolygon{T,N}) where {N,T <: Integer}
         nv = normal_vector(lines[i])
         _, a, b = gcdx(-nv[1],-nv[2])
         x0 = LatticePoint{T}(V[1,i] + a, V[2,i] + b)
-        append!(res, integral_points_on_line_segment_with_given_integral_point(p,q,x0))
+        for b ∈ integral_points_on_line_segment_with_given_integral_point(p,q,x0)
+            all(H -> distance(b,H) ≥ -1, Hs) || continue
+            b ∉ res || continue
+            push!(res, b)
+        end
     end
-    unique!(res)
-    filter!(p -> minimum([distance(p,H) for H ∈ Hs]) ≥ -1, res)
     return res
 end
 
@@ -48,8 +50,8 @@ function single_point_extensions(Ps :: Vector{<:RationalPolygon{T}}) where {T <:
                 push!(new_vertices, V[:,mod(i,1:N)])
             end
             Q = RationalPolygon(new_vertices, one(T))
-            (Q,is) = affine_normal_form_with_special_indices(Q)
-            (1,0) ∈ is || (1,1) ∈ is || continue
+            (Q,is_special) = lattice_affine_normal_form_with_is_first_index_special(Q)
+            is_special || continue
             
             M = number_of_vertices(Q)
             !haskey(out_dicts[tid], M) && (out_dicts[tid][M] = Set{RationalPolygon{T,M,2M}}())
@@ -92,7 +94,7 @@ end
 function classify_polygons_by_number_of_lattice_points(st :: InMemoryKoelmanStorage{T}, max_number_of_lattice_points :: Int; logging :: Bool = false) where {T <: Integer}
     for l = length(st.polygons) + 1 : max_number_of_lattice_points
         new_count = classify_next_number_of_lattice_points(st)
-        @info "[l = $l]. New polygons: $new_count. Total: $(st.total_count)"
+        logging && @info "[l = $l]. New polygons: $new_count. Total: $(st.total_count)"
     end
     return st.polygons
 end

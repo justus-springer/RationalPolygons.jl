@@ -263,3 +263,17 @@ transformations.
 """
 affine_automorphism_group(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
 affine_normal_form_with_automorphism_group(P)[2]
+
+
+function lattice_affine_normal_form_with_is_first_index_special(P :: RationalPolygon{T,N}) where {N,T <: Integer}
+    V = vertex_matrix(P)
+
+    As = SVector{2N,SMatrix{2,N,T,2N}}(hnf(_translate_columns(V,(i÷2)+1,isodd(i)).- scaled_vertex(P,(i÷2)+1)) for i = 0 : 2N-1)
+    A = argmin(vec, As)
+    Q = RationalPolygon(A, one(T); is_affine_normal_form = true)
+
+    is_first_index_special = As[1] == A || As[2] == A
+
+    return (Q, is_first_index_special)
+
+end
