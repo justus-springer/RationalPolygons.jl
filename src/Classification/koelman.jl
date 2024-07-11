@@ -130,7 +130,7 @@ mutable struct HDFKoelmanStorage{T <: Integer} <: KoelmanStorage{T}
 
     HDFKoelmanStorage{T}(file_path :: String,
                          group_path :: String = "/";
-                         swmr :: Bool = false,
+                         swmr :: Bool = true,
                          maximum_number_of_vertices :: Int = 100,
                          maximum_number_of_lattice_points :: Int = 200,
                          block_size :: Int = 10^6) where {T <: Integer} =
