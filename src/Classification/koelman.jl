@@ -161,13 +161,38 @@ function initialize_koelman_storage(st :: HDFKoelmanStorage{T}) where {T <: Inte
 
 end
 
+function restore_koelman_storage_status(st :: HDFKoelmanStorage{T}) where {T <: Integer}
+
+    f = h5open(st.file_path, "r+"; swmr = st.preferences.swmr)
+    g = f[st.group_path]
+
+    A = read_dataset(g, "numbers_of_polygons")
+
+    l = maximum(filter(l -> sum(A[l,:]) > 0, 1 : size(A,1)))
+    g["numbers_of_polygons"][l,:] = zeros(Int,size(A,2))
+
+    for n_key ∈ keys(g["l$l"])
+        HDF5.set_extent_dims(g["l$l"][n_key], (0,))
+    end
+
+    st.last_completed_number_of_lattice_points = l - 1
+
+    close(f)
+
+end
+
 function classify_next_number_of_lattice_points(st :: HDFKoelmanStorage{T}; logging :: Bool = false) where {T <: Integer}
     f = h5open(st.file_path, "r+"; swmr = st.preferences.swmr)
     g = f[st.group_path]
     l = st.last_completed_number_of_lattice_points
-    last_group = g["l$l"]
-    current_group = create_group(g, "l$(l+1)")
     block_size = st.preferences.block_size
+
+    last_group = g["l$l"]
+    if !haskey(g, "l$(l+1)")
+        current_group = create_group(g, "l$(l+1)")
+    else
+        current_group = g["l$(l+1)"]
+    end
 
     for n_string ∈ keys(last_group)
         N = length(dataspace(last_group[n_string]))
