@@ -44,3 +44,6 @@ import Plots:
     plot!,
     Shape,
     plot_color
+
+import XXhash:
+    xxh3_128
