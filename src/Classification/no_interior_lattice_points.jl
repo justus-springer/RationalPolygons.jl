@@ -14,12 +14,13 @@ function classify_maximal_lattice_free_polygons_m1p1(k :: T) where {T <: Integer
     vs = [v for v ∈ k_rational_points(A,k) if v[2] > 0]
     ws = [w for w ∈ k_rational_points(B,k) if w[2] > 0]
 
-    Pss = Vector{RationalPolygon{T}}[]
+    Pss = Set{RationalPolygon{T}}[]
     for k = 1 : Threads.nthreads()
-        push!(Pss, RationalPolygon{T}[])
+        push!(Pss, Set{RationalPolygon{T}}())
     end
 
     Threads.@threads for v ∈ vs
+        tid = Threads.threadid()
         for w ∈ ws
             H1 = affine_halfplane(v,RationalPoint{T}(-1,0))
             H2 = affine_halfplane(RationalPoint{T}(0,0),w)
@@ -30,22 +31,14 @@ function classify_maximal_lattice_free_polygons_m1p1(k :: T) where {T <: Integer
 
             P = k_rational_hull(intersect_halfplanes([H1,H2,H_upper,H_lower]), k)
             number_of_interior_lattice_points(P) == 0 || continue
-            all(Q -> !are_affine_equivalent(P,Q), Pss[Threads.threadid()]) || continue
+            P ∉ Pss[tid] || continue
             is_maximal(P) || continue
 
-            push!(Pss[Threads.threadid()], affine_normal_form(P))
+            push!(Pss[tid], affine_normal_form(P))
         end
     end
 
-    Ps = RationalPolygon{T}[]
-    for k = 1 : Threads.nthreads()
-        for P ∈ Pss[k]
-            all(Q -> !are_unimodular_equivalent(P,Q), Ps) || continue
-            push!(Ps, P)
-        end
-    end
-
-    return Ps
+    return collect(union!(Pss...))
     
 end
 
@@ -68,12 +61,13 @@ function classify_maximal_lattice_free_polygons_m1p2(k :: T) where {T <: Integer
     vs = filter(v -> v[2] > 1, k_rational_points(A, k))
     ws = filter(w -> w[2] < 0, k_rational_points(B, k))
 
-    Pss = Vector{RationalPolygon{T}}[]
+    Pss = Set{RationalPolygon{T}}[]
     for k = 1 : Threads.nthreads()
-        push!(Pss, RationalPolygon{T}[])
+        push!(Pss, Set{RationalPolygon{T}}())
     end
 
     Threads.@threads for v1 ∈ vs
+        tid = Threads.threadid()
         for v2 ∈ vs
             Ha1, Ha2 = affine_halfplane(v1,a1), affine_halfplane(a2,v2)
             v1 ∈ Ha2 && v2 ∈ Ha1 || continue
@@ -91,23 +85,16 @@ function classify_maximal_lattice_free_polygons_m1p2(k :: T) where {T <: Integer
                 P = k_rational_hull(intersect_halfplanes([Ha1,Ha2,Hb1,Hb2,H_upper,H_lower]), k)
                 number_of_vertices(P) > 2 || continue
                 number_of_interior_lattice_points(P) == 0 || continue
-                all(Q -> !are_affine_equivalent(P,Q), Pss[Threads.threadid()]) || continue
+                P ∉ Pss[tid] || continue
                 is_maximal(P) || continue
 
-                push!(Pss[Threads.threadid()], affine_normal_form(P))
+                push!(Pss[tid], affine_normal_form(P))
             end
         end
     end
 
-    Ps = RationalPolygon{T}[]
-    for k = 1 : Threads.nthreads()
-        for P ∈ Pss[k]
-            all(Q -> !are_unimodular_equivalent(P,Q), Ps) || continue
-            push!(Ps, P)
-        end
-    end
+    return collect(union!(Pss...))
 
-    return Ps
 end
 
 
