@@ -3,6 +3,7 @@ struct HDFSubpolygonsPreferences{T <: Integer}
     number_of_interior_lattice_points :: Int
     primitive :: Bool
     use_affine_normal_form :: Bool
+    only_equal_number_of_interior_lattice_points :: Bool
     block_size :: Int
     swmr :: Bool
     maximum_number_of_vertices :: Int
@@ -12,10 +13,11 @@ struct HDFSubpolygonsPreferences{T <: Integer}
         number_of_interior_lattice_points :: Int = 1,
         primitive :: Bool = false,
         use_affine_normal_form :: Bool = false,
+        only_equal_number_of_interior_lattice_points :: Bool = true,
         block_size :: Int = 10^6,
         swmr :: Bool = true,
         maximum_number_of_vertices :: Int = 100) where {T <: Integer} =
-    new{T}(rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, block_size, swmr, maximum_number_of_vertices)
+    new{T}(rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, block_size, swmr, maximum_number_of_vertices)
 
 end
 
@@ -37,16 +39,18 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
             number_of_interior_lattice_points :: Int = 1,
             primitive :: Bool = false,
             use_affine_normal_form :: Bool = false,
+            only_equal_number_of_interior_lattice_points :: Bool = true,
             block_size :: Int = 10^6,
             swmr :: Bool = true,
             maximum_number_of_vertices :: Int = 100) where {T <: Integer} = 
-    HDFSubpolygonStorage{T}(HDFSubpolygonsPreferences{T}(;rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, block_size, swmr, maximum_number_of_vertices), file_path, group_path)
+    HDFSubpolygonStorage{T}(HDFSubpolygonsPreferences{T}(;rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, block_size, swmr, maximum_number_of_vertices), file_path, group_path)
 
     function HDFSubpolygonStorage{T}(Ps :: Vector{<:RationalPolygon{T}},
             file_path :: String,
             group_path :: String = "/";
             primitive :: Bool = false,
             use_affine_normal_form :: Bool = false,
+            only_equal_number_of_interior_lattice_points :: Bool = true,
             block_size :: Int = 10^6,
             swmr :: Bool = true,
             maximum_number_of_vertices :: Int = 100) where {T <: Integer}
@@ -55,7 +59,7 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
         all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
         all(P -> number_of_interior_lattice_points(P) == n, Ps) || error("all polygons must have the same number of interior lattice points")
 
-        pref = HDFSubpolygonsPreferences{T}(;rationality = k, number_of_interior_lattice_points = n, primitive, use_affine_normal_form, block_size, swmr, maximum_number_of_vertices)
+        pref = HDFSubpolygonsPreferences{T}(;rationality = k, number_of_interior_lattice_points = n, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, block_size, swmr, maximum_number_of_vertices)
         st = HDFSubpolygonStorage{T}(pref, file_path, group_path)
         initialize_subpolygon_storage(st, Ps)
 
@@ -83,7 +87,7 @@ function initialize_subpolygon_storage(
     st.last_completed_area = maximum_area + 1
     attrs(g)["last_completed_area"] = st.last_completed_area
     
-    for a = 3 : maximum_area
+    for a = 1 : maximum_area
         st.hash_sets[a] = Set{UInt128}()
         create_group(g, "a$a")
     end
@@ -98,7 +102,7 @@ function initialize_subpolygon_storage(
 
     g["numbers_of_polygons"] = zeros(Int, maximum_area, st.preferences.maximum_number_of_vertices) 
     numbers_of_polygons = g["numbers_of_polygons"]
-    for a = 3 : maximum_area
+    for a = 1 : maximum_area
         for n = 1 : st.preferences.maximum_number_of_vertices
             haskey(g["a$a"], "n$n") || continue
             val = length(dataspace(g["a$a"]["n$n"]))
@@ -179,7 +183,9 @@ function subpolygons_single_step(
                 id = Threads.threadid()
                 for j = 1 : n
                     Q, keeps_genus = remove_vertex(P, j; st.preferences.primitive)
-                    keeps_genus || continue
+                    if st.preferences.only_equal_number_of_interior_lattice_points 
+                        keeps_genus || continue
+                    end
                     Qn = number_of_vertices(Q)
                     Qn > 2 || continue
                     Q = st.preferences.use_affine_normal_form ? affine_normal_form(Q) : unimodular_normal_form(Q)
@@ -227,7 +233,7 @@ function subpolygons_single_step(
 
 end
 
-is_finished(st :: HDFSubpolygonStorage{T}) where {T <: Integer} = st.last_completed_area <= 3
+is_finished(st :: HDFSubpolygonStorage{T}) where {T <: Integer} = st.last_completed_area <= 1
 
 function subpolygons(
         st :: HDFSubpolygonStorage{T};
