@@ -120,84 +120,53 @@ end
 
 mutable struct HDFKoelmanStorage{T <: Integer} <: KoelmanStorage{T}
     preferences :: HDFKoelmanStoragePreferences{T}
-    file_path :: String
-    group_path :: String
+    directory_path :: String
     last_completed_number_of_lattice_points :: Int
     total_count :: Int
 
     HDFKoelmanStorage{T}(preferences :: HDFKoelmanStoragePreferences{T},
-                         file_path :: String,
-                         group_path :: String = "/") where {T <: Integer} =
-    new{T}(preferences, file_path, group_path, 0, 0)
+                         directory_path :: String) where {T <: Integer} =
+    new{T}(preferences, directory_path, 0, 0)
 
-    HDFKoelmanStorage{T}(file_path :: String,
-                         group_path :: String = "/";
+    HDFKoelmanStorage{T}(directory_path :: String;
                          swmr :: Bool = true,
                          maximum_number_of_vertices :: Int = 100,
                          maximum_number_of_lattice_points :: Int = 200,
                          block_size :: Int = 10^6) where {T <: Integer} =
-    HDFKoelmanStorage{T}(HDFKoelmanStoragePreferences{T}(swmr, maximum_number_of_vertices, maximum_number_of_lattice_points, block_size), file_path, group_path)
+    HDFKoelmanStorage{T}(HDFKoelmanStoragePreferences{T}(swmr, maximum_number_of_vertices, maximum_number_of_lattice_points, block_size), directory_path)
 
 end
 
 function initialize_koelman_storage(st :: HDFKoelmanStorage{T}) where {T <: Integer}
 
-    f = h5open(st.file_path, "cw"; swmr = st.preferences.swmr)
-    if !haskey(f, st.group_path)
-        g = create_group(f, st.group_path)
-    else
-        g = f[st.group_path]
-    end
-
-    create_group(g, "l3")
+    f = h5open(joinpath(st.directory_path, "l3.h5"), "cw"; swmr = st.preferences.swmr)
 
     P = RationalPolygon(SMatrix{2,3,T,6}(0,0,1,0,0,1), 1)
-    write_polygon_dataset(g, "l3/n3", [P])
+    write_polygon_dataset(f, "n3", [P])
     st.last_completed_number_of_lattice_points = 3
 
-    g["numbers_of_polygons"] = zeros(Int, st.preferences.maximum_number_of_lattice_points, st.preferences.maximum_number_of_vertices) 
-    numbers_of_polygons = g["numbers_of_polygons"]
-    numbers_of_polygons[3,3] = 1
+    f["numbers_of_polygons"] = zeros(Int, st.preferences.maximum_number_of_vertices) 
+    numbers_of_polygons = f["numbers_of_polygons"]
+    numbers_of_polygons[3] = 1
 
     close(f)
 
 end
 
-function restore_koelman_storage_status(st :: HDFKoelmanStorage{T}) where {T <: Integer}
-
-    f = h5open(st.file_path, "r+"; swmr = st.preferences.swmr)
-    g = f[st.group_path]
-
-    A = read_dataset(g, "numbers_of_polygons")
-
-    l = maximum(filter(l -> sum(A[l,:]) > 0, 1 : size(A,1)))
-    g["numbers_of_polygons"][l,:] = zeros(Int,size(A,2))
-
-    for n_key ∈ keys(g["l$l"])
-        HDF5.set_extent_dims(g["l$l"][n_key], (0,))
-    end
-
-    st.last_completed_number_of_lattice_points = l - 1
-
-    close(f)
-
-end
 
 function classify_next_number_of_lattice_points(st :: HDFKoelmanStorage{T}; logging :: Bool = false) where {T <: Integer}
-    f = h5open(st.file_path, "r+"; swmr = st.preferences.swmr)
-    g = f[st.group_path]
+
     l = st.last_completed_number_of_lattice_points
     block_size = st.preferences.block_size
 
-    last_group = g["l$l"]
-    if !haskey(g, "l$(l+1)")
-        current_group = create_group(g, "l$(l+1)")
-    else
-        current_group = g["l$(l+1)"]
-    end
+    last_file = h5open(joinpath(st.directory_path, "l$l.h5"), "r"; swmr = st.preferences.swmr)
+    current_file = h5open(joinpath(st.directory_path, "l$(l+1).h5"), "cw"; swmr = st.preferences.swmr)
+    current_file["numbers_of_polygons"] = zeros(Int, st.preferences.maximum_number_of_vertices) 
 
-    for n_string ∈ keys(last_group)
-        N = length(dataspace(last_group[n_string]))
+    for n_string ∈ keys(last_file)
+        n_string != "numbers_of_polygons" || continue
+
+        N = length(dataspace(last_file[n_string]))
         number_of_blocks = N ÷ block_size + 1
 
         for b = 1 : number_of_blocks
@@ -206,7 +175,7 @@ function classify_next_number_of_lattice_points(st :: HDFKoelmanStorage{T}; logg
                 I = (b-1)*block_size + 1 : min(b*block_size, N)
                 new_count = 0
                 n = parse(Int, n_string[2:end])
-                Ps = read_polygon_dataset(one(T), last_group, n_string, I) 
+                Ps = read_polygon_dataset(one(T), last_file, n_string, I) 
 
                 logging && @info "[l = $l, n = $n, block $b/$number_of_blocks]. Polygons to extend: $(length(Ps))"
 
@@ -215,9 +184,9 @@ function classify_next_number_of_lattice_points(st :: HDFKoelmanStorage{T}; logg
                 logging && @info "[l = $l, n = $n, block $b/$number_of_blocks]. Extension complete. New polygons: $(sum(length.(values(new_Ps))))"
 
                 for (m, Qs) ∈ new_Ps
-                    write_polygon_dataset(current_group, "n$m", collect(Qs))
+                    write_polygon_dataset(current_file, "n$m", collect(Qs))
                     new_count += length(Qs)
-                    g["numbers_of_polygons"][l+1, m] += length(Qs)
+                    current_file["numbers_of_polygons"][m] += length(Qs)
                     st.total_count += length(Qs)
                 end
                 logging && @info "[l = $l, n = $n, block $b/$number_of_blocks]. Writeout complete. Running total: $(st.total_count)"
@@ -230,7 +199,8 @@ function classify_next_number_of_lattice_points(st :: HDFKoelmanStorage{T}; logg
 
     st.last_completed_number_of_lattice_points = l+1
 
-    close(f)
+    close(last_file)
+    close(current_file)
 
 end
 
