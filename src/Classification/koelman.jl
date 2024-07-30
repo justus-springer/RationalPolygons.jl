@@ -171,7 +171,7 @@ A struct holding preferences for Koelman's classification using the HDF5 file fo
     vertices to be expected in the classification. This has to be set since every
     HDF5 file generated will have a dataset "numbers\_of\_polygons" storing the
     number of polygons for each number of vertices and the size of this dataset
-    needs to be set beforehand. Defaults to `200`, which should be more than enough for any
+    needs to be set beforehand. Defaults to `100`, which should be more than enough for any
     feasable computation.
 - `block_size :: Int`: How many polygons should be read into memory at once
     during the extension process. Defaults to `10^6`.
@@ -184,7 +184,7 @@ struct HDFKoelmanStoragePreferences{T <: Integer}
     
     HDFKoelmanStoragePreferences{T}(
         swmr :: Bool = true,
-        maximum_number_of_vertices :: Int = 200,
+        maximum_number_of_vertices :: Int = 100,
         block_size :: Int = 10^6) where {T <: Integer} =
     new{T}(swmr, maximum_number_of_vertices, block_size)
 
@@ -228,7 +228,7 @@ mutable struct HDFKoelmanStorage{T <: Integer} <: KoelmanStorage{T}
 
     HDFKoelmanStorage{T}(directory_path :: String;
                          swmr :: Bool = true,
-                         maximum_number_of_vertices :: Int = 200,
+                         maximum_number_of_vertices :: Int = 100,
                          block_size :: Int = 10^6) where {T <: Integer} =
     HDFKoelmanStorage{T}(HDFKoelmanStoragePreferences{T}(swmr, maximum_number_of_vertices, block_size), directory_path)
 
@@ -312,8 +312,8 @@ make sure julia has access to a good number of threads for maximum performance
 # Example
 
 Reproduce Koelman's original classification in memory, see Table 4.4.3 of
-[Koe91](@cite). This should not take longer than a few minutes on modern
-hardware.
+[Koe91](@cite) or A371917 on OEIS. This should not take longer than a few
+minutes on modern hardware.
 
 ```julia
 julia> st = InMemoryKoelmanStorage{Int}();
@@ -396,7 +396,7 @@ julia> A = read_dataset(f, "numbers_of_polygons");
 julia> sum(A) # the number of lattice polygons with 42 lattice points
 1048176
 
-julia> Ps = read_polygon_dataset(1, f, "n5"); # load in all 5-gons with 42 lattice points.
+julia> Ps = read_polygon_dataset(1, f, "n5"); # Read in all pentagons with 42 lattice points.
 
 julia> all(P -> number_of_lattice_points(P) == 42, Ps)
 true

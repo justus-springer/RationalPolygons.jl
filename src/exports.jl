@@ -1,3 +1,9 @@
+export last_completed_genus
+export classify_next_genus
+export CastryckStorage
+export InMemoryCastryckStorage
+export HDFCastryckStorage
+export HDFCastryckStoragePreferences
 export last_completed_number_of_lattice_points
 export classify_maximal_lattice_free_polygons_m1p2_trapezoids
 export classify_maximal_lattice_free_polygons_m1p2_squares
