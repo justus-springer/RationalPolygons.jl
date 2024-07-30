@@ -20,7 +20,7 @@ end
 
 
 @doc raw"""
-    hirzebruch_jung(x :: T, y :: T)
+    hirzebruch_jung(x :: T, y :: T) where {T <: Integer}
 
 Return the Hirzebruch-Jung continued fraction associated to `x // y`.
 
@@ -64,7 +64,7 @@ end
 
 
 @doc raw"""
-    hilbert_basis(v1 :: Vector{T}, v2 :: Vector{T})
+    hilbert_basis(v1 :: LatticePoint{T}, v2 :: LatticePoint{T}) where {T <: Integer}
 
 Return the hilbert basis of a two-dimensional cone spanned by given integral
 primitive vectors `v1` and `v2`.

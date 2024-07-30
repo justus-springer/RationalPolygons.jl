@@ -2,7 +2,7 @@
 @doc raw"""
     Line{T <: Integer}
 
-A line in 2-dimensional rational space.
+A line in 2-dimensional rational space. It has two fields: `base_point :: RationalPoint{T}` and `direction_vector :: RationalPoint{T}`.
 
 """
 struct Line{T <: Integer}
@@ -50,6 +50,13 @@ end
 
 Check whether a point `x` lies on a line `L`.
 
+# Example
+
+```jldoctest
+julia> RationalPoint(3//2,1) ∈ line_through_points(Point(1,0),Point(2,2))
+true
+```
+
 """
 Base.in(x :: Point{T}, L :: Line{T}) where {T <: Integer} =
 iszero(det(x - base_point(L), direction_vector(L)))
@@ -58,7 +65,16 @@ iszero(det(x - base_point(L), direction_vector(L)))
 @doc raw"""
     normal_vector(L :: Line{T}) where {T <: Integer}
 
-Return a vector orthogonal to the direction vector of `L`.
+Return a primitive vector orthogonal to the direction vector of `L`.
+
+# Example
+
+```jldoctest
+julia> normal_vector(line_through_points(Point(1,0),Point(2,2)))
+2-element StaticArraysCore.SVector{2, Int64} with indices SOneTo(2):
+ -2
+  1
+```
 
 """
 function normal_vector(L :: Line{T}) where {T <: Integer}

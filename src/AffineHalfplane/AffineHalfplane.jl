@@ -2,7 +2,7 @@
 @doc raw"""
     AffineHalfplane{T <: Integer}
 
-An affine halfplane in two-dimensional rational space.
+An affine halfplane in two-dimensional rational space. It has two fields `normal_vector :: RationalPoint{T}` and `translation :: Rational{T}`.
 
 """
 struct AffineHalfplane{T <: Integer}
@@ -22,6 +22,13 @@ end
 
 Return the affine halfplane given by the equation `nv[1] * x[1] + nv[2] * x[2]
 ≥ b`.
+
+# Example
+
+```jldoctest
+julia> affine_halfplane(Point(-2,1),1)
+Affine halfplane given by -2//1 x + 1//1 y ≥ 1//1
+```
 
 """
 affine_halfplane(nv :: Point{T}, b :: Union{T, Rational{T}}) where {T <: Integer} =
@@ -90,6 +97,13 @@ end
 
 Check whether a point `x` lies in the halfplane `H`.
 
+# Example
+
+```jldoctest
+julia> Point(0,1) ∈ affine_halfplane(Point(-2,1),1)
+true
+```
+
 """
 function Base.in(x :: Point{T}, H :: AffineHalfplane{T}) where {T <: Integer}
     nv, b = normal_vector(H), translation(H)
@@ -101,6 +115,13 @@ end
     contains_in_interior(x :: Point{T}, H :: AffineHalfplane{T}) where {T <: Integer}
 
 Check whether a point `x` lies in the interior of `H`.
+
+# Example
+
+```jldoctest
+julia> contains_in_interior(Point(0,1), affine_halfplane(Point(-2,1),1))
+false
+```
 
 """
 function contains_in_interior(x :: Point{T}, H :: AffineHalfplane{T}) where {T <: Integer}

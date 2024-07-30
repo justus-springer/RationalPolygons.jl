@@ -3,10 +3,24 @@ ccw(a::Point{T}, b::Point{T}, c::Point{T}) where {T <: Integer} =
 
 
 @doc raw"""
-    graham_scan!(points :: Vector{RationalPoint{T}}) where {T <: Integer}
+    graham_scan!(points :: Vector{<:Point{T}}) where {T <: Integer}
 
 Perform a graham scan on the given points, removing all points that are not
 vertices of their convex hull.
+
+# Example
+
+```jldoctest
+julia> points = LatticePoint{Int}[(0,0),(1,0),(1,1),(0,1),(-1,1),(0,-1),(-1,-1),(0,-1)];
+
+julia> graham_scan!(points)
+5-element Vector{StaticArraysCore.SVector{2, Int64}}:
+ [-1, -1]
+ [0, -1]
+ [1, 0]
+ [1, 1]
+ [-1, 1]
+```
 
 """
 function graham_scan!(points :: Vector{<:Point{T}}) where {T <: Integer}
@@ -63,7 +77,7 @@ end
 
 
 @doc raw"""
-    graham_scan(points :: Vector{RationalPoint{T}}) where {T <: Integer}
+    graham_scan(points :: Vector{<:Point{T}}) where {T <: Integer}
 
 A non-modifying version of `graham_scan!`.
 

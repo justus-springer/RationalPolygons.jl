@@ -30,7 +30,7 @@ const Point{T<:Integer} = SVector{2, S} where S<:Union{T,Rational{T}}
 @doc raw"""
     Matrix2{T <: Integer}
 
-The type of 2x2 matrices over the integers 
+The type of 2x2 matrices over the integers.
 
 """
 const Matrix2{T <: Integer} = SMatrix{2, 2, T, 4}
@@ -45,6 +45,13 @@ det(M :: Matrix2{T}) where {T <: Integer} = M[1,1]*M[2,2] - M[1,2]*M[2,1]
 
 The smallest integer `r` such that `r*p` is integral.
 
+# Example
+
+```jldoctest
+julia> rationality(RationalPoint(1//2,1//3))
+6
+```
+
 """
 rationality(p :: Point) = lcm(denominator(p[1]), denominator(p[2]))
 
@@ -53,6 +60,13 @@ rationality(p :: Point) = lcm(denominator(p[1]), denominator(p[2]))
     multiplicity(p :: Point)
 
 The unique rational number `x` such that `x*p` is primitive and integral.
+
+# Example
+
+```jldoctest
+julia> multiplicity(RationalPoint(4//3,2//3))
+3//2
+```
 
 """
 multiplicity(p :: Point) = (denominator(p[1]) * denominator(p[2])) // gcd(numerator(p[1]) * denominator(p[2]), numerator(p[2]) * denominator(p[1]))
@@ -73,6 +87,15 @@ is_primitive(p :: Point) = multiplicity(p) == 1
 
 Return the unique primitive lattice point on the ray spanned by `p`.
 
+# Example
+
+```jldoctest
+julia> primitivize(RationalPoint(4//3,2//3))
+2-element StaticArraysCore.SVector{2, Int64} with indices SOneTo(2):
+ 2
+ 1
+```
+
 """
 primitivize(p :: Point) = numerator.(multiplicity(p) * p)
 
@@ -84,6 +107,13 @@ denominator(p :: Point) = denominator.(p)
     norm(p :: Point{T})
 
 Return the square of the euclidian norm of `p`.
+
+# Example
+
+```jldoctest
+julia> norm(RationalPoint(4//3,2//3))
+20//9
+```
 
 """
 norm(p :: Point{T}) where {T <: Integer} = p[1]^2 + p[2]^2
@@ -122,6 +152,13 @@ is_integral(p :: Point{T}) where {T <: Integer} = is_k_rational(one(T), p)
 
 A quick implementation of a pseudo_angle of two-dimensional vectors. It
 returns values in the half-open interval (-2,2].
+
+# Example
+
+```jldoctest
+julia> pseudo_angle(LatticePoint(1,1))
+1//2
+```
 
 """
 function pseudo_angle(p :: Point{T}) where {T <: Integer}
