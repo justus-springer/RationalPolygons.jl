@@ -135,12 +135,17 @@ function classify_next_genus(st :: InMemoryCastryckStorage{T}; logging :: Bool =
     i = last_completed_genus(st) + 1
 
     Ps_max = st.maximal_polygons[i]
+
     append!(Ps_max, classify_maximal_lattice_polygons_with_two_dimensional_empty_fine_interior(i,T))
     append!(Ps_max, classify_maximal_lattice_polygons_with_collinear_interior_points(i,T))
+
+    logging && @info "[i = $i]. Got $(length(Ps_max)) maximal polygons."
 
     new_polygons = subpolygons(Ps_max; use_affine_normal_form = true)
     push!(st.all_polygons, new_polygons)
     st.total_count += length(new_polygons)
+
+    logging && @info "[i = $i]. Subpolygons complete. Num of polygons: $(length(new_polygons))"
 
     moved_out_polygons = Dict{Int, Vector{RationalPolygon{T}}}[]
     for i = 1 : Threads.nthreads()
@@ -161,11 +166,13 @@ function classify_next_genus(st :: InMemoryCastryckStorage{T}; logging :: Bool =
         push!(moved_out_polygons[tid][n], Q)
     end
 
-    for i = 1 : Threads.nthreads()
-        for (n,Ps) ∈ moved_out_polygons[i]
-            append!(st.maximal_polygons[n], Ps)
-        end
+    total_moved_out_polygons = mergewith(append!, moved_out_polygons...)
+
+    for (n,Ps) ∈ total_moved_out_polygons
+        append!(st.maximal_polygons[n], Ps)
     end
+
+    logging && @info "[i = $i]. Moving out complete. New maximal polygons: $(sum(length.(values(total_moved_out_polygons))))"
 
     return length(new_polygons), length(Ps_max)
 
@@ -292,6 +299,8 @@ function classify_next_genus(st :: HDFCastryckStorage{T}; logging :: Bool = fals
     append!(Ps_max, classify_maximal_lattice_polygons_with_two_dimensional_empty_fine_interior(i,T))
     append!(Ps_max, classify_maximal_lattice_polygons_with_collinear_interior_points(i,T))
 
+    logging && @info "[i = $i]. Got $(length(Ps_max)) maximal polygons."
+
     subpolygons_storage = HDFSubpolygonStorage{T}(
         Ps_max,
         joinpath(st.directory_path, "all/i$i.h5");
@@ -299,12 +308,14 @@ function classify_next_genus(st :: HDFCastryckStorage{T}; logging :: Bool = fals
         swmr = st.preferences.swmr,
         block_size = st.preferences.block_size)
 
-    subpolygons(subpolygons_storage; logging)
+    subpolygons(subpolygons_storage)
     st.total_count += subpolygons_storage.total_count
 
-    moved_out_polygons = Dict{Int, Vector{RationalPolygon{T}}}[]
+    @info "[i = $i]. Subpolygons complete. Num of polygons: $(subpolygons_storage.total_count)"
+
+    moved_out_polygons = Dict{Tuple{Int,Int}, Vector{RationalPolygon{T}}}[]
     for i = 1 : Threads.nthreads()
-        push!(moved_out_polygons, Dict{Int, Vector{RationalPolygon{T}}}())
+        push!(moved_out_polygons, Dict{Tuple{Int,Int}, Vector{RationalPolygon{T}}}())
     end
 
     f = h5open(joinpath(st.directory_path, "all/i$i.h5"), "r"; swmr = st.preferences.swmr)
@@ -322,40 +333,37 @@ function classify_next_genus(st :: HDFCastryckStorage{T}; logging :: Bool = fals
                 n = parse(Int, n_string[2:end])
                 Ps = read_polygon_dataset(one(T), f[a_string], n_string, I) 
 
-                logging && @info "[i = $i, a = $a, n = $n, block $b/$number_of_blocks]. Polygons to move out: $(length(Ps))"
-
                 Threads.@threads for P ∈ Ps
                     _is_internal_quick(P) || continue
-                    n = number_of_lattice_points(P)
-                    n ≤ st.preferences.maximum_genus || continue
+                    iQ = number_of_lattice_points(P)
+                    iQ ≤ st.preferences.maximum_genus || continue
                     Q = move_out_edges(P)
                     rationality(Q) == 1 || continue
+                    nQ = number_of_vertices(Q)
 
                     tid = Threads.threadid()
-                    if !haskey(moved_out_polygons[tid], n)
-                        moved_out_polygons[tid][n] = RationalPolygon{T}[]
+                    if !haskey(moved_out_polygons[tid], (iQ,nQ))
+                        moved_out_polygons[tid][(iQ,nQ)] = RationalPolygon{T}[]
                     end
-                    push!(moved_out_polygons[tid][n], Q)
+                    push!(moved_out_polygons[tid][(iQ,nQ)], Q)
                 end
-
-                num_of_new_maximal_polygons = sum([length(Ps) for d ∈ moved_out_polygons for Ps ∈ values(d)])
-                logging && @info "[i = $i, a = $a, n = $n, block $b/$number_of_blocks]. Moving out complete. Number of new maximal polygons: $num_of_new_maximal_polygons"
-
             end
         end
     end
 
-    for i = 1 : Threads.nthreads()
-        for (l,Ps) ∈ moved_out_polygons[i]
-            f = h5open(joinpath(st.directory_path, "maximal/i$l.h5"), "r+"; swmr = st.preferences.swmr)
-            nums_of_vertices = sort(unique(number_of_vertices.(Ps)))
-            for N ∈ nums_of_vertices
-                Qs = RationalPolygon{T,N,2N}[]
-                append!(Qs, filter(P -> number_of_vertices(P) == N, Ps))
-                write_polygon_dataset(f, "n$N", Qs)
-            end
-            close(f)
+    total_moved_out_polygons = mergewith(append!, moved_out_polygons...)
+    new_maximal_polygons_count = sum(length.(values(total_moved_out_polygons)))
+
+    logging && @info "[i = $i]. Moving out complete. New maximal polygons: $new_maximal_polygons_count"
+
+    for iQ ∈ unique(first.(keys(total_moved_out_polygons)))
+        f = h5open(joinpath(st.directory_path, "maximal/i$iQ.h5"), "r+"; swmr = st.preferences.swmr)
+        for nQ ∈ unique([k[2] for k ∈ keys(total_moved_out_polygons) if k[1] == iQ])
+            Qs = convert(Vector{RationalPolygon{T,nQ,2nQ}}, total_moved_out_polygons[(iQ,nQ)])
+            write_polygon_dataset(f, "n$nQ", Qs)
+            f["numbers_of_polygons"][nQ] += length(Qs)
         end
+        close(f)
     end
 
     st.last_completed_genus = i
@@ -383,36 +391,96 @@ hardware.
 julia> st = InMemoryCastryckStorage{Int}();
 
 julia> classify_lattice_polygons_by_genus(st, 30; logging=true)
-[ Info: [i = 1]. Number of (maximal) polygons: 16 (3)
-[ Info: [i = 2]. Number of (maximal) polygons: 45 (4)
-[ Info: [i = 3]. Number of (maximal) polygons: 120 (6)
-[ Info: [i = 4]. Number of (maximal) polygons: 211 (9)
-[ Info: [i = 5]. Number of (maximal) polygons: 403 (11)
-[ Info: [i = 6]. Number of (maximal) polygons: 714 (13)
-[ Info: [i = 7]. Number of (maximal) polygons: 1023 (16)
-[ Info: [i = 8]. Number of (maximal) polygons: 1830 (21)
-[ Info: [i = 9]. Number of (maximal) polygons: 2700 (27)
-[ Info: [i = 10]. Number of (maximal) polygons: 3659 (33)
-[ Info: [i = 11]. Number of (maximal) polygons: 6125 (38)
-[ Info: [i = 12]. Number of (maximal) polygons: 8101 (51)
-[ Info: [i = 13]. Number of (maximal) polygons: 11027 (61)
-[ Info: [i = 14]. Number of (maximal) polygons: 17280 (76)
-[ Info: [i = 15]. Number of (maximal) polygons: 21499 (86)
-[ Info: [i = 16]. Number of (maximal) polygons: 28689 (113)
-[ Info: [i = 17]. Number of (maximal) polygons: 43012 (129)
-[ Info: [i = 18]. Number of (maximal) polygons: 52736 (166)
-[ Info: [i = 19]. Number of (maximal) polygons: 68557 (200)
-[ Info: [i = 20]. Number of (maximal) polygons: 97733 (240)
-[ Info: [i = 21]. Number of (maximal) polygons: 117776 (281)
-[ Info: [i = 22]. Number of (maximal) polygons: 152344 (352)
-[ Info: [i = 23]. Number of (maximal) polygons: 209409 (403)
-[ Info: [i = 24]. Number of (maximal) polygons: 248983 (506)
-[ Info: [i = 25]. Number of (maximal) polygons: 319957 (584)
-[ Info: [i = 26]. Number of (maximal) polygons: 420714 (708)
-[ Info: [i = 27]. Number of (maximal) polygons: 497676 (821)
-[ Info: [i = 28]. Number of (maximal) polygons: 641229 (995)
-[ Info: [i = 29]. Number of (maximal) polygons: 813814 (1121)
-[ Info: [i = 30]. Number of (maximal) polygons: 957001 (1352)
+[ Info: [i = 1]. Got 3 maximal polygons.
+[ Info: [i = 1]. Subpolygons complete. Num of polygons: 16
+[ Info: [i = 1]. Moving out complete. New maximal polygons: 16
+[ Info: [i = 2]. Got 4 maximal polygons.
+[ Info: [i = 2]. Subpolygons complete. Num of polygons: 45
+[ Info: [i = 2]. Moving out complete. New maximal polygons: 22
+[ Info: [i = 3]. Got 6 maximal polygons.
+[ Info: [i = 3]. Subpolygons complete. Num of polygons: 120
+[ Info: [i = 3]. Moving out complete. New maximal polygons: 63
+[ Info: [i = 4]. Got 9 maximal polygons.
+[ Info: [i = 4]. Subpolygons complete. Num of polygons: 211
+[ Info: [i = 4]. Moving out complete. New maximal polygons: 78
+[ Info: [i = 5]. Got 11 maximal polygons.
+[ Info: [i = 5]. Subpolygons complete. Num of polygons: 403
+[ Info: [i = 5]. Moving out complete. New maximal polygons: 122
+[ Info: [i = 6]. Got 13 maximal polygons.
+[ Info: [i = 6]. Subpolygons complete. Num of polygons: 714
+[ Info: [i = 6]. Moving out complete. New maximal polygons: 192
+[ Info: [i = 7]. Got 16 maximal polygons.
+[ Info: [i = 7]. Subpolygons complete. Num of polygons: 1023
+[ Info: [i = 7]. Moving out complete. New maximal polygons: 239
+[ Info: [i = 8]. Got 21 maximal polygons.
+[ Info: [i = 8]. Subpolygons complete. Num of polygons: 1830
+[ Info: [i = 8]. Moving out complete. New maximal polygons: 316
+[ Info: [i = 9]. Got 27 maximal polygons.
+[ Info: [i = 9]. Subpolygons complete. Num of polygons: 2700
+[ Info: [i = 9]. Moving out complete. New maximal polygons: 508
+[ Info: [i = 10]. Got 33 maximal polygons.
+[ Info: [i = 10]. Subpolygons complete. Num of polygons: 3659
+[ Info: [i = 10]. Moving out complete. New maximal polygons: 509
+[ Info: [i = 11]. Got 38 maximal polygons.
+[ Info: [i = 11]. Subpolygons complete. Num of polygons: 6125
+[ Info: [i = 11]. Moving out complete. New maximal polygons: 700
+[ Info: [i = 12]. Got 51 maximal polygons.
+[ Info: [i = 12]. Subpolygons complete. Num of polygons: 8101
+[ Info: [i = 12]. Moving out complete. New maximal polygons: 1044
+[ Info: [i = 13]. Got 61 maximal polygons.
+[ Info: [i = 13]. Subpolygons complete. Num of polygons: 11027
+[ Info: [i = 13]. Moving out complete. New maximal polygons: 1113
+[ Info: [i = 14]. Got 76 maximal polygons.
+[ Info: [i = 14]. Subpolygons complete. Num of polygons: 17280
+[ Info: [i = 14]. Moving out complete. New maximal polygons: 1429
+[ Info: [i = 15]. Got 86 maximal polygons.
+[ Info: [i = 15]. Subpolygons complete. Num of polygons: 21499
+[ Info: [i = 15]. Moving out complete. New maximal polygons: 2052
+[ Info: [i = 16]. Got 113 maximal polygons.
+[ Info: [i = 16]. Subpolygons complete. Num of polygons: 28689
+[ Info: [i = 16]. Moving out complete. New maximal polygons: 1962
+[ Info: [i = 17]. Got 129 maximal polygons.
+[ Info: [i = 17]. Subpolygons complete. Num of polygons: 43012
+[ Info: [i = 17]. Moving out complete. New maximal polygons: 2651
+[ Info: [i = 18]. Got 166 maximal polygons.
+[ Info: [i = 18]. Subpolygons complete. Num of polygons: 52736
+[ Info: [i = 18]. Moving out complete. New maximal polygons: 3543
+[ Info: [i = 19]. Got 200 maximal polygons.
+[ Info: [i = 19]. Subpolygons complete. Num of polygons: 68557
+[ Info: [i = 19]. Moving out complete. New maximal polygons: 3638
+[ Info: [i = 20]. Got 240 maximal polygons.
+[ Info: [i = 20]. Subpolygons complete. Num of polygons: 97733
+[ Info: [i = 20]. Moving out complete. New maximal polygons: 4594
+[ Info: [i = 21]. Got 281 maximal polygons.
+[ Info: [i = 21]. Subpolygons complete. Num of polygons: 117776
+[ Info: [i = 21]. Moving out complete. New maximal polygons: 5996
+[ Info: [i = 22]. Got 352 maximal polygons.
+[ Info: [i = 22]. Subpolygons complete. Num of polygons: 152344
+[ Info: [i = 22]. Moving out complete. New maximal polygons: 6364
+[ Info: [i = 23]. Got 403 maximal polygons.
+[ Info: [i = 23]. Subpolygons complete. Num of polygons: 209409
+[ Info: [i = 23]. Moving out complete. New maximal polygons: 7922
+[ Info: [i = 24]. Got 506 maximal polygons.
+[ Info: [i = 24]. Subpolygons complete. Num of polygons: 248983
+[ Info: [i = 24]. Moving out complete. New maximal polygons: 9692
+[ Info: [i = 25]. Got 584 maximal polygons.
+[ Info: [i = 25]. Subpolygons complete. Num of polygons: 319957
+[ Info: [i = 25]. Moving out complete. New maximal polygons: 10208
+[ Info: [i = 26]. Got 708 maximal polygons.
+[ Info: [i = 26]. Subpolygons complete. Num of polygons: 420714
+[ Info: [i = 26]. Moving out complete. New maximal polygons: 12727
+[ Info: [i = 27]. Got 821 maximal polygons.
+[ Info: [i = 27]. Subpolygons complete. Num of polygons: 497676
+[ Info: [i = 27]. Moving out complete. New maximal polygons: 15431
+[ Info: [i = 28]. Got 995 maximal polygons.
+[ Info: [i = 28]. Subpolygons complete. Num of polygons: 641229
+[ Info: [i = 28]. Moving out complete. New maximal polygons: 15918
+[ Info: [i = 29]. Got 1121 maximal polygons.
+[ Info: [i = 29]. Subpolygons complete. Num of polygons: 813814
+[ Info: [i = 29]. Moving out complete. New maximal polygons: 20354
+[ Info: [i = 30]. Got 1352 maximal polygons.
+[ Info: [i = 30]. Subpolygons complete. Num of polygons: 957001
+[ Info: [i = 30]. Moving out complete. New maximal polygons: 23873
 ```
 
 # Example
@@ -452,7 +520,6 @@ julia> sum(A) # The total number of lattice polygons with 30 interior lattice po
 function classify_lattice_polygons_by_genus(st :: CastryckStorage{T}, max_genus :: Int; logging :: Bool = false) where {T <: Integer}
     for i = last_completed_genus(st) + 1 : max_genus
         new_total_count, new_max_count = classify_next_genus(st; logging)
-        logging && @info "[i = $i]. Number of (maximal) polygons: $new_total_count ($new_max_count)"
     end
 end
 
