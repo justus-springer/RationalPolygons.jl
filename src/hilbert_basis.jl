@@ -2,10 +2,21 @@
 @doc raw"""
     cls_cone_normal_form(A :: Matrix2{T}) where {T <: Integer}
 
-Bring a two-dimensional cone into normal form in the sense of Cox, Little,
-Schenck Proposition 10.1.1. The result is a triple (d, k, M), where d and k are
-the parameters of the cone and M is a 2x2 integral matrix such that 
-`M * [0 d ; 1 -k] == A`
+Bring a two-dimensional cone into normal form in the sense of [CLS11](@cite).
+The result is a triple (d, k, M), where d and k are the parameters of the cone
+and M is a 2x2 integral matrix such that `M * [0 d ; 1 -k] == A`
+
+# Example
+
+```jldoctest
+julia> A = Matrix2(2, 1, -3, -5)
+2×2 SMatrix{2, 2, Int64, 4} with indices SOneTo(2)×SOneTo(2):
+ 2  -3
+ 1  -5
+
+julia> cls_cone_normal_form(A)
+(7, 5, [1 2; 0 1])
+```
 
 """
 function cls_cone_normal_form(A :: Matrix2{T}) where {T <: Integer}
@@ -24,6 +35,18 @@ end
 
 Return the Hirzebruch-Jung continued fraction associated to `x // y`.
 
+# Example
+
+See Example 10.2.4 of [CLS11](@cite).
+
+```jldoctest
+julia> hirzebruch_jung(7,5)
+3-element Vector{Int64}:
+ 2
+ 2
+ 3
+```
+
 """
 function hirzebruch_jung(x :: T, y :: T) where {T <: Integer}
     res = T[]
@@ -40,6 +63,25 @@ end
 
 Return the hilbert basis of a two-dimensional cone spanned by the columns of
 `A`, which must be primitive.
+
+# Example
+
+See Example 10.2.4 of [CLS11](@cite).
+
+```jldoctest
+julia> A = Matrix2(0,1,7,-5)
+2×2 SMatrix{2, 2, Int64, 4} with indices SOneTo(2)×SOneTo(2):
+ 0   7
+ 1  -5
+
+julia> hilbert_basis(A)
+5-element Vector{SVector{2, Int64}}:
+ [0, 1]
+ [1, 0]
+ [2, -1]
+ [3, -2]
+ [7, -5]
+```
 
 """
 function hilbert_basis(A :: Matrix2{T}) where {T <: Integer}

@@ -2,8 +2,29 @@
 @doc raw"""
     remove_vertex(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
 
-Remove the `i`-th vertex from `P`, i.e. return the convex hull of all
-`k`-rational points of `P` except the `i`-th vertex.
+Return a pair `(Q, keeps_genus)`, where `Q` is the convex hull of all
+`k`-rational points of `P` except the `i`-th vertex and `keeps_genus :: Bool`
+is true if and only if `Q` has the same number of interior lattice points as
+`P`.
+
+# Example
+
+Compare Example 10.2.7 of [CLS11](@cite).
+
+```jldoctest
+julia> P = convex_hull(LatticePoint{Int}[(0,0),(7,-5),(7,1),(0,1)])
+Rational polygon of rationality 1 with 4 vertices.
+
+julia> Q,_ = remove_vertex(P,1)
+(Rational polygon of rationality 1 with 4 vertices., false)
+
+julia> vertices(Q)
+4-element Vector{SVector{2, Rational{Int64}}}:
+ [0, 1]
+ [3, -2]
+ [7, -5]
+ [7, 1]
+```
 
 """
 function remove_vertex(P :: RationalPolygon{T,N}, i :: Int; primitive :: Bool = false) where {N,T <: Integer}

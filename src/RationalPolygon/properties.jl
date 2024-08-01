@@ -96,9 +96,9 @@ is_fano(P :: RationalPolygon) = contains_origin_in_interior(P) && is_primitive(P
 @doc raw"""
     normalized_area(P :: RationalPolygon)
 
-Return the normalized area of a `k`-rational polygon. The result is an
-integer, counting the number of standard `k`-rational triangles contained in
-`P`.
+Return the normalized area of a `k`-rational polygon, i.e. `2k^2` times its
+euclidian area. The result is always an integer, counting the number of
+standard `k`-rational triangles contained in `P`.
 
 """
 function normalized_area(P :: RationalPolygon{T,N}) where {N,T <: Integer}

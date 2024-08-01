@@ -2,8 +2,15 @@
 @doc raw"""
     RationalPolygon{T<:Integer,N,M}
 
-The type of rational polygons in two-dimensional space with `N` vertices. The
-parameter `M` is always equal to `2*N`.
+The type of rational polygons in two-dimensional space. `T` is the type of
+integers to be used. `N` is the number of vertices of the polygon and `M`
+equals `2*N`. It has the following fields:
+
+- `rationality :: T`: The rationality of the polygon, e.g. `1` for lattice polygons, `2` for half-integral polygons etc.
+- `vertex_matrix :: SMatrix{2,N,T,M}`: An integral 2xN matrix. The vertices of the polygon are understood to be the columns of this matrix divided by `rationality`.
+- `number_of_vertices :: Int`: The number of vertices of the polygon. This is redundant information, since the number of vertices is already available as the type parameter `N`. However, getting the number of vertices of a polygon through the type paremeter means lots of work for Julia's dispatch algorithm. Therefore, we found it to improve performance to put it as a variable into the struct as well.
+- `is_unimodular_normal_form :: Bool`: A flag variable to remember that the polygon is already in unimodular normal form.
+- `is_affine_normal_form :: Bool`: A flag variable to remember that the polygon is already in affine normal form.
 
 """
 struct RationalPolygon{T<:Integer,N,M}
@@ -34,7 +41,7 @@ struct RationalPolygon{T<:Integer,N,M}
     In particular, the user must be sure that the given points are truly
     vertices of the polygon and *that they are in the correct order* (both
     clockwise and counterclockwise is okay). If this is not known ahead of
-    contruction, `convex_hull` should be used instead of this constructor.
+    contruction, [`convex_hull`](@ref) should be used instead of this constructor.
 
     All constructors accept the optional arguments `is_unimodular_normal_form`
     and `is_affine_normal_form`, which are set to `false` by default. If they
@@ -42,6 +49,24 @@ struct RationalPolygon{T<:Integer,N,M}
     already in the respective normal form. This information will be used to
     prevent addional computations of the normal form and thus speed up
     equivalence checking.
+
+    # Example
+    
+    The standard lattice triangle.
+
+    ```jldoctest
+    julia> P = RationalPolygon(LatticePoint{Int}[(0,0),(1,0),(0,1)], 1)
+    Rational polygon of rationality 1 with 3 vertices.   
+    ```
+
+    # Example
+    
+    A half-integral polygon.
+    
+    ```jldoctest
+    julia> P = RationalPolygon(RationalPoint{Int}[(1,0),(0,1//2),(-1,0),(0,-1//2)])
+    Rational polygon of rationality 2 with 4 vertices.
+    ```
 
     """
     RationalPolygon(vertex_matrix :: SMatrix{2,N,T,M},
@@ -97,7 +122,7 @@ empty_polygon(one(T))
 
 
 @doc raw"""
-    convex_hull(points :: Vector{LatticePoint{T}}, k :: T) where {T <: Integer}
+    convex_hull(points :: Vector{LatticePoint{T}}, k :: T = one(T)) where {T <: Integer}
 
 Return the `k`-rational polygon given by the convex hull of `p // k`, where `p
 ∈ points`.
@@ -113,6 +138,13 @@ RationalPolygon(graham_scan(points), k)
 Return the convex hull of a given set of rational points. The rationality will
 be inferred from the input.
 
+# Example
+
+```jldoctest
+julia> convex_hull(RationalPoint{Int}[(1,0),(0,1//2),(0,-1//3)])
+Rational polygon of rationality 6 with 3 vertices.
+```
+
 """
 convex_hull(points :: Vector{RationalPoint{T}}) where {T <: Integer} =
 RationalPolygon(graham_scan(points))
@@ -123,6 +155,13 @@ RationalPolygon(graham_scan(points))
 
 Return the convex hull of a given set of rational points, viewed as a
 `k`-rational polygon.
+
+# Example
+
+```jldoctest
+julia> convex_hull(RationalPoint{Int}[(1,0),(0,1//2),(0,-1//3)], 12)
+Rational polygon of rationality 12 with 3 vertices.
+```
 
 """
 convex_hull(points :: Vector{RationalPoint{T}}, k :: T) where {T <: Integer} =
@@ -155,6 +194,18 @@ rationality(P :: RationalPolygon{T,N}) where {N,T <: Integer} = P.rationality
 
 The vertex matrix of `P` is the 2xN integral matrix containing the vertices of
 `rationality(P) * P` as its columns.
+
+# Example
+
+```jldoctest
+julia> P = convex_hull(RationalPoint{Int}[(1,0),(0,1//2),(0,-1//3)])
+Rational polygon of rationality 6 with 3 vertices.
+
+julia> vertex_matrix(P)
+2×3 StaticArraysCore.SMatrix{2, 3, Int64, 6} with indices SOneTo(2)×SOneTo(3):
+  0  6  0
+ -2  0  3
+```
 
 """
 vertex_matrix(P :: RationalPolygon{T,N}) where {N,T <: Integer} = P.vertex_matrix
@@ -233,7 +284,7 @@ RationalPoint{T}
 @doc raw"""
     vertices(P :: RationalPolygon)
 
-Return the vertices of a `P`.
+Return the vertices of `P`.
 
 """
 vertices(P :: RationalPolygon{T,N}) where {N,T <: Integer} = collect(P)

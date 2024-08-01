@@ -1,7 +1,7 @@
 @doc raw"""
     hnf(A :: SMatrix{2,N,T}) where {N,T<:Integer}
 
-An elementary implementation of the hermite normal form for 2xn integ    ral
+An elementary implementation of the hermite normal form for 2xn integral
 matrices.
 
 """
@@ -139,6 +139,16 @@ unimodular_normal_form(P) == unimodular_normal_form(Q)
 
 Return the automorphism group of `P` with respect to unimodular
 transformations.
+
+# Example
+
+```jldoctest
+julia> P = convex_hull(LatticePoint{Int}[(1,0),(0,1),(-1,1),(-1,0),(0,-1),(1,-1)])
+Rational polygon of rationality 1 with 6 vertices.
+
+julia> unimodular_automorphism_group(P)
+D6
+```
 
 """
 unimodular_automorphism_group(P :: RationalPolygon) =

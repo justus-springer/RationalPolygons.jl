@@ -1,3 +1,4 @@
+export generic_lattice_points
 export last_completed_genus
 export classify_next_genus
 export CastryckStorage

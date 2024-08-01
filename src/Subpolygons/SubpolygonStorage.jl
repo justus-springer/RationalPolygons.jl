@@ -2,7 +2,7 @@
     SubpolygonStorage{T <: Integer}
 
 An abstract supertype of storage options for computing subpolygons. There are
-two subtypes `InMemorySubpolygonStorage` and `OnDiskSubpolygonStorage`. The
+two subtypes `InMemorySubpolygonStorage` and `HDFSubpolygonStorage`. The
 former keeps all subpolygons in memory, the latter delegeates their storage to
 the disk.
 

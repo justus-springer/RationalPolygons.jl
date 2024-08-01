@@ -4,6 +4,19 @@
 
 Return the lattice width of `P` in direction `w`.
 
+# Example
+
+```jldoctest
+julia> P = convex_hull(LatticePoint{Int}[(1,1),(1,-2),(-4,2),(-2,2)],2)
+Rational polygon of rationality 2 with 4 vertices.
+
+julia> width(P, Point(0,1))
+2//1
+
+julia> width(P, Point(1,0))
+5//2
+```
+
 """
 function width(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
     values_on_vertices = [dot(v,w) for v ∈ vertices(P)]
@@ -16,6 +29,7 @@ end
 
 Return the lattice width of `P` together with the list of direction vectors
 that realize this width.
+
 
 """
 function width_with_direction_vectors(P :: RationalPolygon{T}) where {T <: Integer}
@@ -33,6 +47,16 @@ end
     width(P :: RationalPolygon)
 
 Return the lattice width of `P`.
+
+# Example
+
+```jldoctest
+julia> P = convex_hull(LatticePoint{Int}[(1,1),(1,-2),(-4,2),(-2,2)],2)
+Rational polygon of rationality 2 with 4 vertices.
+
+julia> width(P)
+2//1
+```
 
 """
 width(P :: RationalPolygon) = width_with_direction_vectors(P)[1]
@@ -53,6 +77,18 @@ scaled_width(P :: RationalPolygon) = numerator(rationality(P) * width(P))
 
 Return the lattice width direction vectors of `P`, i.e. those directions that
 realize the lattice width of `P`.
+
+# Example
+
+```jldoctest
+julia> P = convex_hull(LatticePoint{Int}[(1,1),(1,-2),(-4,2),(-2,2)],2)
+Rational polygon of rationality 2 with 4 vertices.
+
+julia> width_direction_vectors(P)
+2-element Vector{StaticArraysCore.SVector{2, Int64}}:
+ [0, 1]
+ [1, 1]
+```
 
 """
 width_direction_vectors(P :: RationalPolygon) = width_with_direction_vectors(P)[2]
@@ -82,7 +118,10 @@ end
 
 A struct capturing information about the lattice width of a rational polygon
 with respect to a some width direction vector, see Definition 2.11 of
-[Boh23](@cite).
+[Boh23](@cite). It has two fields:
+
+- `interval_of_nonzero_vertical_slice_length :: Tuple{Rational{T},Rational{T}}`,
+- `interval_of_longest_vertical_slice_length :: Tuple{Rational{T},Rational{T}}`.
 
 """
 struct LatticeWidthData{T <: Integer}
@@ -104,6 +143,24 @@ position_of_longest_vertical_slice_length(lwd :: LatticeWidthData) =
 
 Compute the lattice width data of a rational polygon with respect to a given
 width direction vector, see Definition 2.11 of [Boh23](@cite). This function returns a value of type `LatticeWidthData`.
+
+# Example
+
+```jldoctest
+julia> P = convex_hull(LatticePoint{Int}[(1,1),(1,-2),(-4,2),(-2,2)],2)
+Rational polygon of rationality 2 with 4 vertices.
+
+julia> ws = width_direction_vectors(P)
+2-element Vector{StaticArraysCore.SVector{2, Int64}}:
+ [0, 1]
+ [1, 1]
+
+julia> lattice_width_data(P,ws[1])
+LatticeWidthData{Int64}((0//1, 2//1), (3//2, 3//2))
+
+julia> lattice_width_data(P,ws[2])
+LatticeWidthData{Int64}((0//1, 2//1), (1//2, 1//2))
+```
 
 """
 function lattice_width_data(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
