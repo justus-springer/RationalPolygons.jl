@@ -1,48 +1,65 @@
-struct InMemorySubpolygonsPreferences{T <: Integer}
-    rationality :: T
-    number_of_interior_lattice_points :: Int
+@doc raw"""
+    struct InMemorySubpolygonStoragePreferences{T <: Integer}
+
+A struct holding preferences for `InMemorySubpolygonStorage`. There are the following fields:
+
+- `primitive :: Bool`: Whether only subpolygons with primitive vertices should
+   be computed. The default is `false`.
+- `use_affine_normal_form :: Bool`: Whether to use [`affine_normal_form`](@ref)
+    or [`unimodular_normal_form`](@ref). The default is `true`, i.e. affine normal
+    form.
+- `only_equal_number_of_interior_lattice_points :: Bool`: Whether only
+    subpolygons having the same number of interior lattice points as the starting
+    polygons should be computed. The default is `false`.
+
+"""
+struct InMemorySubpolygonStoragePreferences{T <: Integer} 
     primitive :: Bool
     use_affine_normal_form :: Bool
     only_equal_number_of_interior_lattice_points :: Bool
 
-    InMemorySubpolygonsPreferences{T}(;
-        rationality :: T = one(T),
-        number_of_interior_lattice_points :: Int = 1,
+    InMemorySubpolygonStoragePreferences{T}(;
         primitive :: Bool = false,
-        use_affine_normal_form :: Bool = false,
-        only_equal_number_of_interior_lattice_points :: Bool = true) where {T <: Integer} =
-    new{T}(rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points)
+        use_affine_normal_form :: Bool = true,
+        only_equal_number_of_interior_lattice_points :: Bool = false) where {T <: Integer} =
+    new{T}(primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points)
 
 end
 
+
+@doc raw"""
+    mutable struct InMemorySubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}   
+
+A struct holding results of a subpolygon computation. It has the following fields:
+
+- `preferences :: InMemorySubpolygonStoragePreferences{T}`
+- `polygons :: Dict{T,Set{RationalPolygon{T}}}`
+- `last_completed_area :: T`
+- `total_count :: Int`
+
+"""
 mutable struct InMemorySubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
-    preferences :: InMemorySubpolygonsPreferences{T}
-    polygons_dict :: Dict{T,Set{RationalPolygon{T}}}
+    preferences :: InMemorySubpolygonStoragePreferences{T}
+    polygons :: Dict{T,Set{RationalPolygon{T}}}
     last_completed_area :: T
     total_count :: Int
 
-    InMemorySubpolygonStorage{T}(preferences :: InMemorySubpolygonsPreferences{T}) where {T <: Integer} =
+    InMemorySubpolygonStorage{T}(preferences :: InMemorySubpolygonStoragePreferences{T}) where {T <: Integer} =
     new{T}(preferences, Dict{T,Set{RationalPolygon{T}}}(), 0, 0)
 
     InMemorySubpolygonStorage{T}(;
-            rationality :: T = one(T),
-            number_of_interior_lattice_points :: Int = 1,
             primitive :: Bool = false,
-            use_affine_normal_form :: Bool = false,
-            only_equal_number_of_interior_lattice_points  :: Bool = true) where {T <: Integer} = 
-    InMemorySubpolygonStorage{T}(InMemorySubpolygonsPreferences{T}(;rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points))
+            use_affine_normal_form :: Bool = true,
+            only_equal_number_of_interior_lattice_points  :: Bool = false) where {T <: Integer} = 
+    InMemorySubpolygonStorage{T}(InMemorySubpolygonStoragePreferences{T}(;primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points))
 
     function InMemorySubpolygonStorage{T}(
             Ps :: Vector{<:RationalPolygon{T}};
             primitive :: Bool = false,
-            use_affine_normal_form :: Bool = false,
-            only_equal_number_of_interior_lattice_points :: Bool = true) where {T <: Integer}
-        k = rationality(first(Ps))
-        n = number_of_interior_lattice_points(first(Ps))
-        all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
-        all(P -> number_of_interior_lattice_points(P) == n, Ps) || error("all polygons must have the same number of interior lattice points")
+            use_affine_normal_form :: Bool = true,
+            only_equal_number_of_interior_lattice_points :: Bool = false) where {T <: Integer}
 
-        pref = InMemorySubpolygonsPreferences{T}(;rationality = k, number_of_interior_lattice_points = n, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points)
+        pref = InMemorySubpolygonStoragePreferences{T}(;primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points)
         st = InMemorySubpolygonStorage{T}(pref)
         initialize_subpolygon_storage(st, Ps)
 
@@ -50,13 +67,19 @@ mutable struct InMemorySubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
 
 end
 
+last_completed_area(st :: InMemorySubpolygonStorage) = st.last_completed_area
+
 function initialize_subpolygon_storage(st :: InMemorySubpolygonStorage{T}, Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
+
+    k = rationality(first(Ps))
+    all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
+
     maximum_area = maximum(normalized_area.(Ps))
     for a = 1 : maximum_area
-        st.polygons_dict[a] = Set{RationalPolygon{T}}()
+        st.polygons[a] = Set{RationalPolygon{T}}()
     end
     for P ∈ Ps
-        push!(st.polygons_dict[normalized_area(P)], P)
+        push!(st.polygons[normalized_area(P)], P)
     end
     st.last_completed_area = maximum_area + 1
     st.total_count = length(Ps)
@@ -65,15 +88,17 @@ function initialize_subpolygon_storage(st :: InMemorySubpolygonStorage{T}, Ps ::
 
 end
 
-is_finished(st :: InMemorySubpolygonStorage{T}) where {T <: Integer} = st.last_completed_area <= 1
 
+@doc raw"""
+    subpolygons_single_step(st :: InMemorySubpolygonStorage{T}; logging :: Bool = false) where {T <: Integer}
 
-function subpolygons_single_step(
-        st :: InMemorySubpolygonStorage{T};
-        logging :: Bool = false) where {T <: Integer}
+Perform a single step of a subpolygon computation in memory.
 
-    current_area = maximum(filter(b -> b < st.last_completed_area, keys(st.polygons_dict)))
-    Ps = collect(st.polygons_dict[current_area])
+"""
+function subpolygons_single_step(st :: InMemorySubpolygonStorage{T}; logging :: Bool = false) where {T <: Integer}
+
+    current_area = st.last_completed_area - 1
+    Ps = collect(st.polygons[current_area])
 
     logging && @info "[a = $current_area]. Polygons to peel: $(length(Ps))."
 
@@ -84,7 +109,7 @@ function subpolygons_single_step(
 
     Threads.@threads for P ∈ Ps
         for j = 1 : number_of_vertices(P)
-            Q, keeps_genus = remove_vertex(P, j; st.preferences.primitive)
+            Q, keeps_genus = remove_vertex(P, j; primitive =  st.preferences.primitive)
             if st.preferences.only_equal_number_of_interior_lattice_points 
                 keeps_genus || continue
             end
@@ -94,48 +119,76 @@ function subpolygons_single_step(
             else
                 Q = unimodular_normal_form(Q)
             end
-            Q ∉ st.polygons_dict[normalized_area(Q)] || continue
+            Q ∉ st.polygons[normalized_area(Q)] || continue
             push!(out_array[Threads.threadid()], Q)
         end
     end
 
     new_polygons = union!(out_array...)
-    logging && @info "[a = $current_area]. Peeling complete. New polygons: $(length(new_polygons))"
 
     for P ∈ new_polygons
         a = normalized_area(P)
-        push!(st.polygons_dict[a], P)
+        push!(st.polygons[a], P)
         st.total_count += 1
     end
 
     st.last_completed_area = current_area
 
-    logging && @info "[a = $current_area]. Writeout complete. Running total: $(st.total_count)"
+    logging && @info "[a = $current_area]. Peeling complete. New polygons: $(length(new_polygons)). Running total: $(st.total_count)"
 
 end
 
-function subpolygons(
-        st :: InMemorySubpolygonStorage{T};
-        logging :: Bool = false) where {T <: Integer}
 
-    while !is_finished(st)
-        subpolygons_single_step(st; logging)
-    end
+@doc raw"""
+    subpolygons(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
+    subpolygons(P :: RationalPolygon{T}) where {T <: Integer}
 
-    return collect(union(values(st.polygons_dict)...))
+Compute all subpolygons of a rational polygon or list of rational polygons. The
+computation is done in memory, for storage on disk see also
+[`HDFSubpolygonStorage`](@ref). This function takes the following keyword
+arguments:
 
-end
+- `primitive :: Bool`: Whether only subpolygons with primitive vertices should
+    be returned. The default is `false`.
+- `use_affine_normal_form :: Bool`: Whether to use affine or unimodular normal
+    form. The default is `true`, so affine normal form.
+- `only_equal_number_of_interior_lattice_points :: Bool`: Whether only
+    subpolygons that share the same number of interior lattice points with the
+    starting polygons should be returned.
+- `logging :: Bool`: Whether to display logging messages about the computation
+    progress.
 
-subpolygons(Ps :: Vector{<:RationalPolygon{T}}; 
+# Example
+
+There are 148 subpolygons of the square of side length 3, up to affine
+equivalence. The maximal number of vertices of those is 8, attained by exactly
+one polygon.
+
+```jldoctest
+julia> Ps = subpolygons(convex_hull(LatticePoint{Int}[(0,0),(3,0),(0,3),(3,3)]));
+
+julia> length(Ps)
+148
+
+julia> maximum(number_of_vertices.(Ps))
+8
+```
+
+"""
+function subpolygons(Ps :: Vector{<:RationalPolygon{T}}; 
     primitive :: Bool = false, 
-    use_affine_normal_form :: Bool = false,
-    only_equal_number_of_interior_lattice_points :: Bool = true,
-    logging :: Bool = false) where {T <: Integer} =
-subpolygons(InMemorySubpolygonStorage{T}(Ps; primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points); logging)
+    use_affine_normal_form :: Bool = true,
+    only_equal_number_of_interior_lattice_points :: Bool = false,
+    logging :: Bool = false) where {T <: Integer}
+
+    st = InMemorySubpolygonStorage{T}(Ps; primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points)
+    subpolygons(st; logging)
+    return collect(union(values(st.polygons)...))
+end
 
 subpolygons(P :: RationalPolygon{T}; 
     primitive :: Bool = false, 
-    use_affine_normal_form :: Bool = false,
-    only_equal_number_of_interior_lattice_points :: Bool = true,
+    use_affine_normal_form :: Bool = true,
+    only_equal_number_of_interior_lattice_points :: Bool = false,
     logging :: Bool = false) where {T <: Integer} =
 subpolygons([P]; primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, logging)

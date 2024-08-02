@@ -5,7 +5,8 @@
 Return a pair `(Q, keeps_genus)`, where `Q` is the convex hull of all
 `k`-rational points of `P` except the `i`-th vertex and `keeps_genus :: Bool`
 is true if and only if `Q` has the same number of interior lattice points as
-`P`.
+`P`. If the argument `primitive = true` is passed, the convex hull is taken of
+all _primitive_ `k`-rational points of `P` except the `i`-th vertex.
 
 # Example
 

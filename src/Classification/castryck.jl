@@ -141,7 +141,10 @@ function classify_next_genus(st :: InMemoryCastryckStorage{T}; logging :: Bool =
 
     logging && @info "[i = $i]. Got $(length(Ps_max)) maximal polygons."
 
-    new_polygons = subpolygons(Ps_max; use_affine_normal_form = true)
+    new_polygons = subpolygons(Ps_max;
+        only_equal_number_of_interior_lattice_points = true,
+        use_affine_normal_form = true)
+
     push!(st.all_polygons, new_polygons)
     st.total_count += length(new_polygons)
 
@@ -305,6 +308,7 @@ function classify_next_genus(st :: HDFCastryckStorage{T}; logging :: Bool = fals
         Ps_max,
         joinpath(st.directory_path, "all/i$i.h5");
         use_affine_normal_form = true,
+        only_equal_number_of_interior_lattice_points = true,
         swmr = st.preferences.swmr,
         block_size = st.preferences.block_size)
 

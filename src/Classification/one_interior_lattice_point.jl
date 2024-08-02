@@ -330,5 +330,9 @@ current progress.
 
 """
 classify_polygons_genus_one(k :: T; primitive :: Bool = false, logging = false) where {T <: Integer} =
-subpolygons(classify_maximal_polygons_genus_one(k; primitive, logging); primitive, logging)
+subpolygons(classify_maximal_polygons_genus_one(k; primitive, logging);
+    use_affine_normal_form = false,
+    only_equal_number_of_interior_lattice_points = true,
+    primitive,
+    logging)
 

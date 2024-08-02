@@ -1,6 +1,32 @@
-struct HDFSubpolygonsPreferences{T <: Integer}
+@doc raw"""
+    struct HDFSubpolygonStoragePreferences{T <: Integer}
+
+A struct holding preferences for `HDFSubpolygonStorage`. There are the
+following fields:
+
+- `rationality :: T`: The rationality of the polygons. The default is `one(T)`.
+- `primitive :: Bool`: Whether only subpolygons with primitive vertices should
+   be computed. The default is `false`.
+- `use_affine_normal_form :: Bool`: Whether to use [`affine_normal_form`](@ref)
+    or [`unimodular_normal_form`](@ref). The default is `true`, i.e. affine normal
+    form.
+- `only_equal_number_of_interior_lattice_points :: Bool`: Whether only
+    subpolygons having the same number of interior lattice points as the starting
+    polygons should be computed. The default is `false`.
+- `block_size :: Int`: How many polygons should be read into memory at once
+    during the shaving process. Defaults to `10^6`.
+- `maximum_number_of_vertices :: Int`: An upper bound for the maximal number of
+    vertices to be expected in the computation. This has to be set since every
+    HDF5 file generated will have a dataset "numbers\_of\_polygons" storing the
+    number of polygons for each number of vertices and the size of this dataset
+    needs to be set beforehand. Defaults to `100`, which should be more than enough for any
+    feasable computation.
+- `swmr :: Bool`: Whether to use single-reader-multiple-writer mode for HDF5.
+    Defaults to `true`.
+
+"""
+struct HDFSubpolygonStoragePreferences{T <: Integer}
     rationality :: T
-    number_of_interior_lattice_points :: Int
     primitive :: Bool
     use_affine_normal_form :: Bool
     only_equal_number_of_interior_lattice_points :: Bool
@@ -8,21 +34,41 @@ struct HDFSubpolygonsPreferences{T <: Integer}
     swmr :: Bool
     maximum_number_of_vertices :: Int
 
-    HDFSubpolygonsPreferences{T}(;
+    HDFSubpolygonStoragePreferences{T}(;
         rationality :: T = one(T),
-        number_of_interior_lattice_points :: Int = 1,
         primitive :: Bool = false,
-        use_affine_normal_form :: Bool = false,
-        only_equal_number_of_interior_lattice_points :: Bool = true,
+        use_affine_normal_form :: Bool = true,
+        only_equal_number_of_interior_lattice_points :: Bool = false,
         block_size :: Int = 10^6,
         swmr :: Bool = true,
         maximum_number_of_vertices :: Int = 100) where {T <: Integer} =
-    new{T}(rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, block_size, swmr, maximum_number_of_vertices)
+    new{T}(rationality, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, block_size, swmr, maximum_number_of_vertices)
 
 end
 
+
+@doc raw"""
+    mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}   
+
+A struct for managing the result of a subpolygon computation using the HDF5
+file format. It has the following fields:
+
+- `preferences :: HDFSubpolygonStoragePreferences{T}`
+- `file_path :: String`: The file path of the HDF5 file to be created.
+- `group_path :: String`: Path to a group within the HDF5 file, if it already
+   exists. Defaults to "/", i.e. the root group.
+- `hash_sets :: Dict{T,Set{UInt128}}`: A dictionary of hashes of polygons
+   already encountered. This is used for comparison with new polygons to ensure
+   the result contains each polygon exactly once. We hold these hashes in memory
+   to avoid needing to read in polygons that have been written out in the past,
+   which saves a lot of time.
+- `last_completed_area :: T`: The last area that has been completed. This
+   counts down from the maximum area of the starting polygons to 1.
+- `total_count :: Int`
+
+"""
 mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
-    preferences :: HDFSubpolygonsPreferences{T}
+    preferences :: HDFSubpolygonStoragePreferences{T}
     file_path :: String
     group_path :: String
     hash_sets :: Dict{T,Set{UInt128}}
@@ -30,20 +76,19 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
     total_count :: Int
 
 
-    HDFSubpolygonStorage{T}(preferences :: HDFSubpolygonsPreferences{T}, file_path :: String, group_path :: String = "/") where {T <: Integer} =
+    HDFSubpolygonStorage{T}(preferences :: HDFSubpolygonStoragePreferences{T}, file_path :: String, group_path :: String = "/") where {T <: Integer} =
     new{T}(preferences, file_path, group_path, Dict{T,Set{UInt128}}(), 0, 0)
 
     HDFSubpolygonStorage{T}(file_path :: String, 
             group_path :: String = "/";
             rationality :: T = one(T),
-            number_of_interior_lattice_points :: Int = 1,
             primitive :: Bool = false,
-            use_affine_normal_form :: Bool = false,
-            only_equal_number_of_interior_lattice_points :: Bool = true,
+            use_affine_normal_form :: Bool = true,
+            only_equal_number_of_interior_lattice_points :: Bool = false,
             block_size :: Int = 10^6,
             swmr :: Bool = true,
             maximum_number_of_vertices :: Int = 100) where {T <: Integer} = 
-    HDFSubpolygonStorage{T}(HDFSubpolygonsPreferences{T}(;rationality, number_of_interior_lattice_points, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, block_size, swmr, maximum_number_of_vertices), file_path, group_path)
+    HDFSubpolygonStorage{T}(HDFSubpolygonStoragePreferences{T}(;rationality, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, block_size, swmr, maximum_number_of_vertices), file_path, group_path)
 
     function HDFSubpolygonStorage{T}(Ps :: Vector{<:RationalPolygon{T}},
             file_path :: String,
@@ -54,12 +99,11 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
             block_size :: Int = 10^6,
             swmr :: Bool = true,
             maximum_number_of_vertices :: Int = 100) where {T <: Integer}
-        k = rationality(first(Ps))
-        n = number_of_interior_lattice_points(first(Ps))
-        all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
-        all(P -> number_of_interior_lattice_points(P) == n, Ps) || error("all polygons must have the same number of interior lattice points")
 
-        pref = HDFSubpolygonsPreferences{T}(;rationality = k, number_of_interior_lattice_points = n, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, block_size, swmr, maximum_number_of_vertices)
+        k = rationality(first(Ps))
+        all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
+
+        pref = HDFSubpolygonStoragePreferences{T}(;rationality = k, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, block_size, swmr, maximum_number_of_vertices)
         st = HDFSubpolygonStorage{T}(pref, file_path, group_path)
         initialize_subpolygon_storage(st, Ps)
 
@@ -67,14 +111,20 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
 
 end
 
-function initialize_subpolygon_storage(
-        st :: HDFSubpolygonStorage{T},
-        Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
+last_completed_area(st :: HDFSubpolygonStorage) = st.last_completed_area
+
+@doc raw"""
+    initialize_subpolygon_storage(st :: HDFSubpolygonStorage{T}, Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
+
+Initialize a newly created `HDFSubpolygonStorage` with a given set of starting
+polygons. To restart an interrupted computation, see also
+[`restore_hdf_subpolygon_storage_status`](@ref).
+
+"""
+function initialize_subpolygon_storage(st :: HDFSubpolygonStorage{T}, Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
 
     k = rationality(first(Ps))
-    n = number_of_interior_lattice_points(first(Ps))
     all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
-    all(P -> number_of_interior_lattice_points(P) == n, Ps) || error("all polygons must have the same number of interior lattice points")
 
     f = h5open(st.file_path, "cw"; swmr = st.preferences.swmr)
     if !haskey(f, st.group_path)
@@ -116,6 +166,17 @@ function initialize_subpolygon_storage(
 
 end
 
+
+@doc raw"""
+    restore_hdf_subpolygon_storage_status(st :: HDFSubpolygonStorage{T}) where {T <: Integer}
+
+Restore a subpolygons computation's status that was interrupted from an HDF5
+file. All polygons will be read in, hashed and saved into `st.hash_sets`.
+Moreover, `st.last_completed_area` and `st.total_count` will be properly set.
+After calling this function, the computation can be resumed by calling
+`subpolygons(st)` again.
+
+"""
 function restore_hdf_subpolygon_storage_status(st :: HDFSubpolygonStorage{T}) where {T <: Integer}
 
     f = h5open(st.file_path, "r+"; swmr = st.preferences.swmr)
@@ -148,9 +209,13 @@ function restore_hdf_subpolygon_storage_status(st :: HDFSubpolygonStorage{T}) wh
 end
 
 
-function subpolygons_single_step(
-        st :: HDFSubpolygonStorage{T};
-        logging :: Bool = false) where {T <: Integer}
+@doc raw"""
+    subpolygons_single_step(st :: HDFSubpolygonStorage{T}; logging :: Bool = false) where {T <: Integer}
+
+Perform a single step in a subpolygon computation using the HDF5 file format.
+
+"""
+function subpolygons_single_step(st :: HDFSubpolygonStorage{T}; logging :: Bool = false) where {T <: Integer}
 
     f = h5open(st.file_path, "r+"; swmr = st.preferences.swmr)
     g = f[st.group_path]
@@ -182,7 +247,7 @@ function subpolygons_single_step(
             Threads.@threads for P ∈ Ps
                 id = Threads.threadid()
                 for j = 1 : n
-                    Q, keeps_genus = remove_vertex(P, j; st.preferences.primitive)
+                    Q, keeps_genus = remove_vertex(P, j; primitive = st.preferences.primitive)
                     if st.preferences.only_equal_number_of_interior_lattice_points 
                         keeps_genus || continue
                     end
@@ -230,19 +295,5 @@ function subpolygons_single_step(
     attrs(g)["last_completed_area"] = current_area
 
     close(f)
-
-end
-
-is_finished(st :: HDFSubpolygonStorage{T}) where {T <: Integer} = st.last_completed_area <= 1
-
-function subpolygons(
-        st :: HDFSubpolygonStorage{T};
-        logging :: Bool = false) where {T <: Integer}
-
-    while !is_finished(st)
-        subpolygons_single_step(st; logging)
-    end
-
-    return st
 
 end

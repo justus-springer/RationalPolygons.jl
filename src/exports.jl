@@ -1,3 +1,4 @@
+export last_completed_area
 export generic_lattice_points
 export last_completed_genus
 export classify_next_genus
@@ -27,10 +28,8 @@ export export_hdf_subpolygon_storage_status
 export restore_hdf_subpolygon_storage_status
 export export_text_files_subpolygon_storage_status 
 export restore_text_files_subpolygon_storage_status
-export TextFilesSubpolygonStorage 
-export InMemorySubpolygonsPreferences
-export HDFSubpolygonsPreferences
-export TextFilesSubpolygonsPreferences
+export InMemorySubpolygonStoragePreferences
+export HDFSubpolygonStoragePreferences
 export initialize_subpolygon_storage
 export write_polygon_dataset
 export read_polygon_dataset

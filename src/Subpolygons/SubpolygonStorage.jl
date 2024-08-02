@@ -4,13 +4,24 @@
 An abstract supertype of storage options for computing subpolygons. There are
 two subtypes `InMemorySubpolygonStorage` and `HDFSubpolygonStorage`. The
 former keeps all subpolygons in memory, the latter delegeates their storage to
-the disk.
+the disk using the HDF5 format. Both implement `subpolygons_single_step`.
 
 """
 abstract type SubpolygonStorage{T <: Integer} end
 
-rationality(st :: SubpolygonStorage{T}) where {T <: Integer} = st.rationality
 
-number_of_interior_lattice_points(st :: SubpolygonStorage{T}) where {T <: Integer} = st.number_of_interior_lattice_points
+@doc raw"""
+    subpolygons(st :: SubpolygonStorage{T}; logging :: Bool = false) where {T <: Integer}
 
-total_count(st :: SubpolygonStorage{T}) where {T <: Integer} = st.total_count
+Compute all subpolygons with the given storage option.
+
+"""
+function subpolygons(st :: SubpolygonStorage{T}; logging :: Bool = false) where {T <: Integer}
+
+    while last_completed_area(st) > 1
+        subpolygons_single_step(st; logging)
+    end
+
+    return st
+
+end
