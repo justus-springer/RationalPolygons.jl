@@ -298,6 +298,7 @@ function classify_next_genus(st :: HDFCastryckStorage{T}; logging :: Bool = fals
         n != "numbers_of_polygons" || continue
         append!(Ps_max, read_polygon_dataset(one(T), f, n))
     end
+    close(f)
 
     append!(Ps_max, classify_maximal_lattice_polygons_with_two_dimensional_empty_fine_interior(i,T))
     append!(Ps_max, classify_maximal_lattice_polygons_with_collinear_interior_points(i,T))
