@@ -140,6 +140,21 @@ union(classify_maximal_lattice_free_polygons_m1p2_squares(k),
 
 Return all `k`-rational polygons with no interior lattice points.
 
+# Example
+
+Compute the numbers of polygons for `1 ≤ k ≤ 6`:
+
+```jldoctest
+julia> length.(classify_maximal_lattice_free_polygons.(1:6))
+6-element Vector{Int64}:
+   1
+   4
+  14
+  39
+ 134
+ 299
+```
+
 """
 function classify_maximal_lattice_free_polygons(k :: T ; logging = false) where {T <: Integer}
     Ps = RationalPolygon{T}[]
