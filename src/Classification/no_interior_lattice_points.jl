@@ -1,48 +1,14 @@
 
-@doc raw"""
-    classify_maximal_lattice_free_polygons_m1p1(k :: T) where {T <: Integer}
 
-Return all maximal `k`-rational polygons with no interior lattice points that
-can be realized in $\mathbb{Q} \times [-1,1]$.
+@doc raw"""
+    classify_maximal_lattice_free_polygons_m1p2_squares(k :: T) where {T <: Integer}
+
+Return all `k`-maximal polygons with no interior lattice points that are
+contained in ``A \cup \mathbb{R} \times [-1,2] \cup B`` where ``A`` is the
+square with vertices (0,1),(1,1),(1,2),(0,2) and B is the square with vertices
+(0,0),(0,-1),(1,-1),(1,0).
 
 """
-function classify_maximal_lattice_free_polygons_m1p1(k :: T) where {T <: Integer}
-
-    A = convex_hull(RationalPoint{T}.([(-1,0),(0,1),(-1,1)]), k)
-    B = convex_hull(RationalPoint{T}.([(-1,0),(0,0),(1,1),(-1,1)]), k)
-
-    vs = [v for v ∈ k_rational_points(A,k) if v[2] > 0]
-    ws = [w for w ∈ k_rational_points(B,k) if w[2] > 0]
-
-    Pss = Set{RationalPolygon{T}}[]
-    for k = 1 : Threads.nthreads()
-        push!(Pss, Set{RationalPolygon{T}}())
-    end
-
-    Threads.@threads for v ∈ vs
-        tid = Threads.threadid()
-        for w ∈ ws
-            H1 = affine_halfplane(v,RationalPoint{T}(-1,0))
-            H2 = affine_halfplane(RationalPoint{T}(0,0),w)
-            w ∈ H1 && v ∈ H2 || continue
-
-            H_upper = affine_halfplane(RationalPoint{T}(0,-1),-T(1))
-            H_lower = affine_halfplane(RationalPoint{T}(0,1),-T(1))
-
-            P = k_rational_hull(intersect_halfplanes([H1,H2,H_upper,H_lower]), k)
-            number_of_interior_lattice_points(P) == 0 || continue
-            P ∉ Pss[tid] || continue
-            is_maximal(P) || continue
-
-            push!(Pss[tid], affine_normal_form(P))
-        end
-    end
-
-    return union!(Pss...)
-    
-end
-
-
 function classify_maximal_lattice_free_polygons_m1p2_squares(k :: T) where {T <: Integer}
 
     A = RationalPolygon(SMatrix{2,4,T}(0,k,k,k,k,2k,0,2k), k)
@@ -96,6 +62,16 @@ function classify_maximal_lattice_free_polygons_m1p2_squares(k :: T) where {T <:
 end
 
 
+@doc raw"""
+    classify_maximal_lattice_free_polygons_m1p2_trapezoids(k :: T) where {T <: Integer}
+
+Return all `k`-maximal polygons with no interior lattice points that are
+contained in ``A \cup \mathbb{R} \times [-1,2] \cup B`` where ``A`` is the
+trapezoid with vertices (-1,2),(0,1),(1,1),(1,2) and ``B`` is the trapezoid
+with vertices (0,0),(0,-1),(2,-1),(1,0), excluding the polygons from
+`classify_maximal_lattice_free_polygons_m1p2_squares`.
+
+"""
 function classify_maximal_lattice_free_polygons_m1p2_trapezoids(k :: T) where {T <: Integer}
 
     A1 = RationalPolygon(SMatrix{2,3,T}(-k,2k,0,k,0,2k), k)
@@ -148,6 +124,18 @@ end
 
 
 @doc raw"""
+    classify_maximal_lattice_free_polygons_m1p2(k :: T) where {T <: Integer}
+
+Return all `k`-maximal polygons with no interior lattice points contained in
+``\mathbb{R} \times [-1,2]``.
+
+"""
+classify_maximal_lattice_free_polygons_m1p2(k :: T) where {T <: Integer} =
+union(classify_maximal_lattice_free_polygons_m1p2_squares(k),
+      classify_maximal_lattice_free_polygons_m1p2_trapezoids(k))
+
+
+@doc raw"""
     classify_maximal_lattice_free_polygons(k :: T ; logging = false) where {T <: Integer}
 
 Return all `k`-rational polygons with no interior lattice points.
@@ -157,7 +145,7 @@ function classify_maximal_lattice_free_polygons(k :: T ; logging = false) where 
     Ps = RationalPolygon{T}[]
     count, total_count = 0, 0
     
-    new_Ps = classify_maximal_lattice_free_polygons_m1p1(k)
+    new_Ps = classify_maximal_polygons_m1p1(k,0)
     count = length(new_Ps)
     union!(Ps, new_Ps)
     new_count = length(Ps) - total_count
