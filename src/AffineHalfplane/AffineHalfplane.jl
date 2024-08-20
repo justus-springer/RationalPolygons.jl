@@ -129,6 +129,10 @@ function contains_in_interior(x :: Point{T}, H :: AffineHalfplane{T}) where {T <
     return nv[1] * x[1] + nv[2] * x[2] > b
 end
 
+contains_origin_in_interior(H :: AffineHalfplane{T}) where {T <: Integer} =
+contains_in_interior(LatticePoint{T}(0,0), H)
+
+
 function distance(x :: Point{T}, H :: AffineHalfplane{T}) where {T <: Integer}
     nv, b = normal_vector(H), translation(H)
     return nv[1] * x[1] + nv[2] * x[2] - b
