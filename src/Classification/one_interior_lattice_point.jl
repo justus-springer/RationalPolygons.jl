@@ -93,8 +93,6 @@ function classify_maximal_polygons_genus_one_m1p2(k :: T; primitive :: Bool = fa
                 w1_is_nothing = w1 == zero(RationalPoint{T})
                 w2_is_nothing = w2 == zero(RationalPoint{T})
 
-                !w1_is_nothing || !w2_is_nothing || continue
-
                 w1_is_nothing || (w1 ∈ Ha1 && w1 ∈ Ha2 || continue)
                 w2_is_nothing || (w2 ∈ Ha1 && w2 ∈ Ha2 || continue)
 
@@ -203,8 +201,6 @@ function classify_maximal_polygons_genus_one_m2p2(k :: T, q :: Int; primitive ::
                 w1_is_nothing = w1 == zero(RationalPoint{T})
                 w2_is_nothing = w2 == zero(RationalPoint{T})
 
-                !w1_is_nothing || !w2_is_nothing || continue
-
                 w1_is_nothing || (w1 ∈ Ha1 && w1 ∈ Ha2 || continue)
                 w2_is_nothing || (w2 ∈ Ha1 && w2 ∈ Ha2 || continue)
 
@@ -239,8 +235,6 @@ function classify_maximal_polygons_genus_one_m2p2(k :: T, q :: Int; primitive ::
 
                     u1_is_nothing = u1 == zero(RationalPoint{T})
                     u2_is_nothing = u2 == zero(RationalPoint{T})
-
-                    !u1_is_nothing || !u2_is_nothing || continue
 
                     u1_is_nothing || (u1 ∈ Ha1 && u1 ∈ Ha2 || continue)
                     u2_is_nothing || (u2 ∈ Ha1 && u2 ∈ Ha2 || continue)
