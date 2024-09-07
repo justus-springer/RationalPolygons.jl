@@ -9,7 +9,7 @@ function plot_polygon(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
 
     lattice_points = [(x,y) for x = ceil(xmin) : floor(xmax) for y = ceil(ymin) : floor(ymax)]
 
-    plot(lattice_points,
+    plt = plot(lattice_points,
          seriestype = :scatter,
          markercolor = :black,
          xlims = (xmin,xmax),
@@ -26,8 +26,10 @@ function plot_polygon(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
         vs = vertices(P)
         k = rationality(P)
         shape = Shape([(v[1],v[2]) for v ∈ vs])
-        plot!(shape, label = false, fillcolor = plot_color(:gray, 0.3), show = true)
+        plt = plot!(shape, label = false, fillcolor = plot_color(:gray, 0.3))
     end
+
+    return plt
 
 end
 
