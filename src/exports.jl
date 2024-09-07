@@ -1,3 +1,4 @@
+export tikz
 export last_completed_area
 export generic_lattice_points
 export last_completed_genus
