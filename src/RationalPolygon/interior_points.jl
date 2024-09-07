@@ -34,6 +34,10 @@ function generic_lattice_points(
         outgoing_point = intersection_point(horizontal_line(y), outgoing_line)
         xmax = outgoing_point[1]
 
+        if xmax < xmin
+            xmax,xmin = xmin,xmax
+        end
+
         lbx = interior ? floor(T,xmin+1) : ceil(T,xmin)
         ubx = interior ? ceil(T,xmax-1) : floor(T,xmax)
         count += ubx - lbx + 1
