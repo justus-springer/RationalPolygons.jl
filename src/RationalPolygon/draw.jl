@@ -1,4 +1,4 @@
-function plot_polygon(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
+function plot_polygon(Ps :: Vector{<:RationalPolygon{T}}; kwargs...) where {T <: Integer}
     k = rationality(first(Ps))
     all(P -> rationality(P) == k, Ps) || error("Polygons must have the same rationality")
 
@@ -26,7 +26,7 @@ function plot_polygon(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
         vs = vertices(P)
         k = rationality(P)
         shape = Shape([(v[1],v[2]) for v ∈ vs])
-        plt = plot!(shape, label = false, fillcolor = plot_color(:gray, 0.3))
+        plt = plot!(shape; label = false, fillcolor = plot_color(:gray, 0.3), kwargs...)
     end
 
     return plt
