@@ -1,7 +1,7 @@
 # RationalPolygons.jl
 
-[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://justus-springer.github.io/CStarSurfaces.jl/stable)
-[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://justus-springer.github.io/CStarSurfaces.jl/dev)
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://justus-springer.github.io/RationalPolygons.jl/stable)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://justus-springer.github.io/RationalPolygons.jl/dev)
 
 RationalPolygons.jl is a pure Julia package for computations with rational convex polygons. It implements
 
@@ -23,4 +23,4 @@ billions of polygons being feasable on a personal computer.
 
 # Documentation
 
-[The full documentation can be found here.](https://justus-springer.github.io/CStarSurfaces.jl/dev)
+[The full documentation can be found here.](https://justus-springer.github.io/RationalPolygons.jl/dev)
