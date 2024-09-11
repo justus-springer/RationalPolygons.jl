@@ -10,8 +10,8 @@ RationalPolygons.jl is a pure Julia package for computations with rational conve
 - various classification algorithms] for integral and rational polygons.
 
 I have written RationalPolygons.jl in the span of about six months while
-working on a (joint
-project)[https://justus-springer.github.io/RationalPolygons.jl/dev/#BS24] with
+working on a [joint
+project](https://justus-springer.github.io/RationalPolygons.jl/dev/#BS24) with
 Martin Bohnert. Its main purpose is to provide reference implementations of the
 classification algorithms developed in our paper. However, it also implements
 many more basic algorithms for computations with rational polygons that I
