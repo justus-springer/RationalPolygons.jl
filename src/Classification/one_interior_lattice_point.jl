@@ -3,8 +3,8 @@
     classify_maximal_polygons_genus_one_m1p1(k :: T) where {T <: Integer}
 
 Return all maximal `k`-rational polygons with exactly one interior lattice
-point that can be realized in $\mathbb{R} \times [-1,1]$. If `primtive = true`
-is passed, then only primitive polygons (i.e. fano polygons) are returned.
+point that can be realized in $\mathbb{R} \times [-1,1]$. If `primitive = true`
+is passed, then only primitive polygons (i.e. ldp polygons) are returned.
 
 """
 function classify_maximal_polygons_genus_one_m1p1(k :: T; primitive :: Bool = false) where {T <: Integer}
@@ -54,8 +54,8 @@ end
     classify_maximal_polygons_genus_one_m1p2(k :: T) where {T <: Integer}
 
 Return all maximal `k`-rational polygons with exactly one interior lattice
-point that can be realized in $\mathbb{R} \times [-1,2]$. If `primtive = true`
-is passed, then only primitive polygons (i.e. fano polygons) are returned.
+point that can be realized in $\mathbb{R} \times [-1,2]$. If `primitive = true`
+is passed, then only primitive polygons (i.e. ldp polygons) are returned.
 
 """
 function classify_maximal_polygons_genus_one_m1p2(k :: T; primitive :: Bool = false) where {T <: Integer}
@@ -135,7 +135,7 @@ end
 Return all maximal `k`-rational polygons with exactly one interior lattice
 point that can be realized in $\mathbb{R} \times [-2,2]$ that have non-empty
 intersection with the `q`-th classification box, where `1 ≤ q ≤ 3`. If
-`primtive = true` is passed, then only primitive polygons (i.e. fano polygons)
+`primitive = true` is passed, then only primitive polygons (i.e. ldp polygons)
 are returned.
 
 """
@@ -280,8 +280,20 @@ end
     classify_maximal_polygons_genus_one(k :: T) where {T <: Integer}
 
 Return all maximal `k`-rational polygons with exactly one interior lattice
-point. If `primtive = true` is passed, then only primitive polygons (i.e. fano
+point. If `primitive = true` is passed, then only primitive polygons (i.e. ldp
 polygons) are returned.
+
+# Example
+
+Compute the numbers of polygons for ``k ≤ 3``.
+
+```jldoctest
+julia> length.(classify_maximal_polygons_genus_one.(1:3))
+4-element Vector{Int64}:
+   3
+  10
+  39
+```
 
 """
 function classify_maximal_polygons_genus_one(k :: T ; primitive :: Bool = false, logging :: Bool = false) where {T <: Integer}
@@ -328,10 +340,96 @@ end
 
 Compute all `k`-rational polygons with exactly one interior lattice point. The following keyword arguments are supported:
 
-- `primitive :: Bool`. If set to true, only primitive polygons (i.e. fano polygons) are returned.
-
+- `primitive :: Bool`. If set to true, only primitive polygons (i.e. ldp polygons) are returned.
 - `logging :: Bool`. Controls whether to display logging messages showing the
 current progress.
+
+# Example
+
+Reproduce the classifcation of all 5145 half-integral polygons with exactly one
+interior lattice point. It first computes all maximal polygons with
+`classify_maximal_polygons_genus_one` and then generates all their subpolygons.
+
+```jldoctest
+julia> classify_polygons_genus_one(2; logging=true);
+[ Info: Found 9 maximal polygons in QQ x [-1,1]. New: 9, total: 9
+[ Info: Found 2 maximal polygons in QQ x [-1,2]. New: 1, total: 10
+[ Info: Found 0 maximal polygons in QQ x [-2,2], box 1. New: 0, total: 10
+[ Info: Found 3 maximal polygons in QQ x [-2,2], box 2. New: 0, total: 10
+[ Info: Found 3 maximal polygons in QQ x [-2,2], box 3. New: 0, total: 10
+[ Info: [a = 36]. Polygons to peel: 2.
+[ Info: [a = 36]. Peeling complete. New polygons: 2. Running total: 12
+[ Info: [a = 35]. Polygons to peel: 2.
+[ Info: [a = 35]. Peeling complete. New polygons: 5. Running total: 17
+[ Info: [a = 34]. Polygons to peel: 5.
+[ Info: [a = 34]. Peeling complete. New polygons: 10. Running total: 27
+[ Info: [a = 33]. Polygons to peel: 9.
+[ Info: [a = 33]. Peeling complete. New polygons: 19. Running total: 46
+[ Info: [a = 32]. Polygons to peel: 23.
+[ Info: [a = 32]. Peeling complete. New polygons: 45. Running total: 91
+[ Info: [a = 31]. Polygons to peel: 31.
+[ Info: [a = 31]. Peeling complete. New polygons: 69. Running total: 160
+[ Info: [a = 30]. Polygons to peel: 60.
+[ Info: [a = 30]. Peeling complete. New polygons: 115. Running total: 275
+[ Info: [a = 29]. Polygons to peel: 84.
+[ Info: [a = 29]. Peeling complete. New polygons: 170. Running total: 445
+[ Info: [a = 28]. Polygons to peel: 137.
+[ Info: [a = 28]. Peeling complete. New polygons: 239. Running total: 684
+[ Info: [a = 27]. Polygons to peel: 171.
+[ Info: [a = 27]. Peeling complete. New polygons: 285. Running total: 969
+[ Info: [a = 26]. Polygons to peel: 240.
+[ Info: [a = 26]. Peeling complete. New polygons: 364. Running total: 1333
+[ Info: [a = 25]. Polygons to peel: 286.
+[ Info: [a = 25]. Peeling complete. New polygons: 440. Running total: 1773
+[ Info: [a = 24]. Polygons to peel: 356.
+[ Info: [a = 24]. Peeling complete. New polygons: 466. Running total: 2239
+[ Info: [a = 23]. Polygons to peel: 351.
+[ Info: [a = 23]. Peeling complete. New polygons: 433. Running total: 2672
+[ Info: [a = 22]. Polygons to peel: 396.
+[ Info: [a = 22]. Peeling complete. New polygons: 439. Running total: 3111
+[ Info: [a = 21]. Polygons to peel: 391.
+[ Info: [a = 21]. Peeling complete. New polygons: 394. Running total: 3505
+[ Info: [a = 20]. Polygons to peel: 390.
+[ Info: [a = 20]. Peeling complete. New polygons: 338. Running total: 3843
+[ Info: [a = 19]. Polygons to peel: 349.
+[ Info: [a = 19]. Peeling complete. New polygons: 269. Running total: 4112
+[ Info: [a = 18]. Polygons to peel: 357.
+[ Info: [a = 18]. Peeling complete. New polygons: 249. Running total: 4361
+[ Info: [a = 17]. Polygons to peel: 301.
+[ Info: [a = 17]. Peeling complete. New polygons: 215. Running total: 4576
+[ Info: [a = 16]. Polygons to peel: 292.
+[ Info: [a = 16]. Peeling complete. New polygons: 178. Running total: 4754
+[ Info: [a = 15]. Polygons to peel: 233.
+[ Info: [a = 15]. Peeling complete. New polygons: 121. Running total: 4875
+[ Info: [a = 14]. Polygons to peel: 191.
+[ Info: [a = 14]. Peeling complete. New polygons: 91. Running total: 4966
+[ Info: [a = 13]. Polygons to peel: 140.
+[ Info: [a = 13]. Peeling complete. New polygons: 71. Running total: 5037
+[ Info: [a = 12]. Polygons to peel: 121.
+[ Info: [a = 12]. Peeling complete. New polygons: 40. Running total: 5077
+[ Info: [a = 11]. Polygons to peel: 67.
+[ Info: [a = 11]. Peeling complete. New polygons: 21. Running total: 5098
+[ Info: [a = 10]. Polygons to peel: 56.
+[ Info: [a = 10]. Peeling complete. New polygons: 14. Running total: 5112
+[ Info: [a = 9]. Polygons to peel: 38.
+[ Info: [a = 9]. Peeling complete. New polygons: 13. Running total: 5125
+[ Info: [a = 8]. Polygons to peel: 31.
+[ Info: [a = 8]. Peeling complete. New polygons: 13. Running total: 5138
+[ Info: [a = 7]. Polygons to peel: 14.
+[ Info: [a = 7]. Peeling complete. New polygons: 3. Running total: 5141
+[ Info: [a = 6]. Polygons to peel: 13.
+[ Info: [a = 6]. Peeling complete. New polygons: 3. Running total: 5144
+[ Info: [a = 5]. Polygons to peel: 4.
+[ Info: [a = 5]. Peeling complete. New polygons: 1. Running total: 5145
+[ Info: [a = 4]. Polygons to peel: 3.
+[ Info: [a = 4]. Peeling complete. New polygons: 0. Running total: 5145
+[ Info: [a = 3]. Polygons to peel: 1.
+[ Info: [a = 3]. Peeling complete. New polygons: 0. Running total: 5145
+[ Info: [a = 2]. Polygons to peel: 0.
+[ Info: [a = 2]. Peeling complete. New polygons: 0. Running total: 5145
+[ Info: [a = 1]. Polygons to peel: 0.
+[ Info: [a = 1]. Peeling complete. New polygons: 0. Running total: 5145
+```
 
 """
 classify_polygons_genus_one(k :: T; primitive :: Bool = false, logging = false) where {T <: Integer} =
