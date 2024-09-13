@@ -11,18 +11,21 @@ A struct holding preferences for `InMemorySubpolygonStorage`. There are the foll
 - `only_equal_number_of_interior_lattice_points :: Bool`: Whether only
     subpolygons having the same number of interior lattice points as the starting
     polygons should be computed. The default is `false`.
+- `exclude_very_thin_polygons`: Whether polygons that can be realized in ``\mathbb{R} \times [0,1]`` should be excluded. This is only relevant for polygons with no interior lattice points. The default is `false`.
 
 """
 struct InMemorySubpolygonStoragePreferences{T <: Integer} 
     primitive :: Bool
     use_affine_normal_form :: Bool
     only_equal_number_of_interior_lattice_points :: Bool
+    exclude_very_thin_polygons :: Bool
 
     InMemorySubpolygonStoragePreferences{T}(;
         primitive :: Bool = false,
         use_affine_normal_form :: Bool = true,
-        only_equal_number_of_interior_lattice_points :: Bool = false) where {T <: Integer} =
-    new{T}(primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points)
+        only_equal_number_of_interior_lattice_points :: Bool = false,
+        exclude_very_thin_polygons :: Bool = false) where {T <: Integer} =
+    new{T}(primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, exclude_very_thin_polygons)
 
 end
 
@@ -50,16 +53,18 @@ mutable struct InMemorySubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
     InMemorySubpolygonStorage{T}(;
             primitive :: Bool = false,
             use_affine_normal_form :: Bool = true,
-            only_equal_number_of_interior_lattice_points  :: Bool = false) where {T <: Integer} = 
-    InMemorySubpolygonStorage{T}(InMemorySubpolygonStoragePreferences{T}(;primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points))
+            only_equal_number_of_interior_lattice_points  :: Bool = false,
+            exclude_very_thin_polygons :: Bool = false) where {T <: Integer} =
+    InMemorySubpolygonStorage{T}(InMemorySubpolygonStoragePreferences{T}(;primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, exclude_very_thin_polygons))
 
     function InMemorySubpolygonStorage{T}(
             Ps :: Vector{<:RationalPolygon{T}};
             primitive :: Bool = false,
             use_affine_normal_form :: Bool = true,
-            only_equal_number_of_interior_lattice_points :: Bool = false) where {T <: Integer}
+            only_equal_number_of_interior_lattice_points :: Bool = false,
+            exclude_very_thin_polygons :: Bool = false) where {T <: Integer}
 
-        pref = InMemorySubpolygonStoragePreferences{T}(;primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points)
+        pref = InMemorySubpolygonStoragePreferences{T}(;primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, exclude_very_thin_polygons)
         st = InMemorySubpolygonStorage{T}(pref)
         initialize_subpolygon_storage(st, Ps)
 
@@ -113,7 +118,13 @@ function subpolygons_single_step(st :: InMemorySubpolygonStorage{T}; logging :: 
             if st.preferences.only_equal_number_of_interior_lattice_points 
                 keeps_genus || continue
             end
+
             number_of_vertices(Q) > 2 || continue
+
+            if st.preferences.exclude_very_thin_polygons
+                minimal_number_of_interior_integral_lines(Q) > 0 || continue
+            end
+
             if st.preferences.use_affine_normal_form
                 Q = affine_normal_form(Q)
             else
@@ -179,9 +190,10 @@ function subpolygons(Ps :: Vector{<:RationalPolygon{T}};
     primitive :: Bool = false, 
     use_affine_normal_form :: Bool = true,
     only_equal_number_of_interior_lattice_points :: Bool = false,
+    exclude_very_thin_polygons :: Bool = false,
     logging :: Bool = false) where {T <: Integer}
 
-    st = InMemorySubpolygonStorage{T}(Ps; primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points)
+    st = InMemorySubpolygonStorage{T}(Ps; primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, exclude_very_thin_polygons)
     subpolygons(st; logging)
     return collect(union(values(st.polygons)...))
 end
@@ -190,5 +202,6 @@ subpolygons(P :: RationalPolygon{T};
     primitive :: Bool = false, 
     use_affine_normal_form :: Bool = true,
     only_equal_number_of_interior_lattice_points :: Bool = false,
+    exclude_very_thin_polygons :: Bool = false,
     logging :: Bool = false) where {T <: Integer} =
-subpolygons([P]; primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, logging)
+subpolygons([P]; primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, exclude_very_thin_polygons, logging)

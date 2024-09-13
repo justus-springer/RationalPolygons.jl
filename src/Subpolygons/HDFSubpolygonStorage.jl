@@ -13,6 +13,7 @@ following fields:
 - `only_equal_number_of_interior_lattice_points :: Bool`: Whether only
     subpolygons having the same number of interior lattice points as the starting
     polygons should be computed. The default is `false`.
+- `exclude_very_thin_polygons`: Whether polygons that can be realized in ``\mathbb{R} \times [0,1]`` should be excluded. This is only relevant for polygons with no interior lattice points. The default is `false`.
 - `block_size :: Int`: How many polygons should be read into memory at once
     during the shaving process. Defaults to `10^6`.
 - `maximum_number_of_vertices :: Int`: An upper bound for the maximal number of
@@ -30,6 +31,7 @@ struct HDFSubpolygonStoragePreferences{T <: Integer}
     primitive :: Bool
     use_affine_normal_form :: Bool
     only_equal_number_of_interior_lattice_points :: Bool
+    exclude_very_thin_polygons :: Bool
     block_size :: Int
     swmr :: Bool
     maximum_number_of_vertices :: Int
@@ -39,10 +41,11 @@ struct HDFSubpolygonStoragePreferences{T <: Integer}
         primitive :: Bool = false,
         use_affine_normal_form :: Bool = true,
         only_equal_number_of_interior_lattice_points :: Bool = false,
+        exclude_very_thin_polygons :: Bool = false,
         block_size :: Int = 10^6,
         swmr :: Bool = true,
         maximum_number_of_vertices :: Int = 100) where {T <: Integer} =
-    new{T}(rationality, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, block_size, swmr, maximum_number_of_vertices)
+    new{T}(rationality, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, exclude_very_thin_polygons, block_size, swmr, maximum_number_of_vertices)
 
 end
 
@@ -85,10 +88,11 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
             primitive :: Bool = false,
             use_affine_normal_form :: Bool = true,
             only_equal_number_of_interior_lattice_points :: Bool = false,
+            exclude_very_thin_polygons :: Bool = false,
             block_size :: Int = 10^6,
             swmr :: Bool = true,
             maximum_number_of_vertices :: Int = 100) where {T <: Integer} = 
-    HDFSubpolygonStorage{T}(HDFSubpolygonStoragePreferences{T}(;rationality, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, block_size, swmr, maximum_number_of_vertices), file_path, group_path)
+    HDFSubpolygonStorage{T}(HDFSubpolygonStoragePreferences{T}(;rationality, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, exclude_very_thin_polygons, block_size, swmr, maximum_number_of_vertices), file_path, group_path)
 
     function HDFSubpolygonStorage{T}(Ps :: Vector{<:RationalPolygon{T}},
             file_path :: String,
@@ -96,6 +100,7 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
             primitive :: Bool = false,
             use_affine_normal_form :: Bool = false,
             only_equal_number_of_interior_lattice_points :: Bool = true,
+            exclude_very_thin_polygons :: Bool = false,
             block_size :: Int = 10^6,
             swmr :: Bool = true,
             maximum_number_of_vertices :: Int = 100) where {T <: Integer}
@@ -103,7 +108,7 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
         k = rationality(first(Ps))
         all(P -> rationality(P) == k, Ps) || error("all polygons must have the same rationality")
 
-        pref = HDFSubpolygonStoragePreferences{T}(;rationality = k, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, block_size, swmr, maximum_number_of_vertices)
+        pref = HDFSubpolygonStoragePreferences{T}(;rationality = k, primitive, use_affine_normal_form, only_equal_number_of_interior_lattice_points, exclude_very_thin_polygons, block_size, swmr, maximum_number_of_vertices)
         st = HDFSubpolygonStorage{T}(pref, file_path, group_path)
         initialize_subpolygon_storage(st, Ps)
 
@@ -253,6 +258,11 @@ function subpolygons_single_step(st :: HDFSubpolygonStorage{T}; logging :: Bool 
                     end
                     Qn = number_of_vertices(Q)
                     Qn > 2 || continue
+
+                    if st.preferences.exclude_very_thin_polygons
+                        minimal_number_of_interior_integral_lines(Q) > 0 || continue
+                    end
+
                     Q = st.preferences.use_affine_normal_form ? affine_normal_form(Q) : unimodular_normal_form(Q)
                     Qa = normalized_area(Q)
                     if !haskey(out_dicts[id], (Qa,Qn))
