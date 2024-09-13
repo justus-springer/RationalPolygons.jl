@@ -1,3 +1,7 @@
+export is_realizable_in_interval
+export minimal_number_of_interior_integral_lines
+export number_of_interior_integral_lines
+export all_direction_vectors_with_width_less_than
 export tikz
 export last_completed_area
 export generic_lattice_points

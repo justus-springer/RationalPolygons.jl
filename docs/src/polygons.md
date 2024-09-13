@@ -181,8 +181,12 @@ given direction vectors. RationalPolygons.jl implements this concept, following 
 
 ```@docs
 width
+all_direction_vectors_with_width_less_than
 width_direction_vectors
 adjust_to_width_direction
+number_of_interior_integral_lines
+minimal_number_of_interior_integral_lines
+is_realizable_in_interval
 LatticeWidthData
 lattice_width_data
 number_of_interior_integral_vertical_lines

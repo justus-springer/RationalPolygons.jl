@@ -25,6 +25,33 @@ end
 
 
 @doc raw"""
+    all_direction_vectors_with_width_less_than(P :: RationalPolygon{T}, c :: Rational{T}) where {T <: Integer}
+
+Return all direction vectors in which the width of `P` is less than or equal to a given constant.
+
+# Example
+
+```jldoctest
+julia> P = convex_hull(LatticePoint{Int}[(1,1),(1,-2),(-4,2),(-2,2)],2)
+Rational polygon of rationality 2 with 4 vertices.
+
+julia> all_direction_vectors_with_width_less_than(P, 3//1)
+4-element Vector{StaticArraysCore.SVector{2, Int64}}:
+ [1, 0]
+ [0, 1]
+ [1, 1]
+ [1, 2]
+```
+
+"""
+function all_direction_vectors_with_width_less_than(P :: RationalPolygon{T}, c :: Rational{T}) where {T <: Integer}
+    vs = lattice_points(c * dual(P - P))
+    filter!(v -> v[1] > 0 || (v[1] == 0 && v[2] > 0), vs)
+    return vs
+end
+
+
+@doc raw"""
     width_with_direction_vectors(P :: RationalPolygon{T}) where {T <: Integer}
 
 Return the lattice width of `P` together with the list of direction vectors
@@ -34,8 +61,7 @@ that realize this width.
 """
 function width_with_direction_vectors(P :: RationalPolygon{T}) where {T <: Integer}
     c = min(width(P, RationalPoint{T}(0,1)), width(P, RationalPoint{T}(1,0)))
-    vs = lattice_points(c * dual(P - P))
-    filter!(v -> v[1] > 0 || (v[1] == 0 && v[2] > 0), vs)
+    vs = all_direction_vectors_with_width_less_than(P, c)
     widths = [width(P, v) for v ∈ vs]
     w = minimum(widths)
     direction_vectors = [vs[i] for i = 1 : length(vs) if widths[i] == w]
@@ -111,6 +137,83 @@ function adjust_to_width_direction(P :: RationalPolygon{T}, w :: Point{T}) where
     b = LatticePoint(-k * fld(xmin,k), 0)
     return Q + b
 end
+
+
+@doc raw"""
+    number_of_interior_integral_lines(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
+
+Return the number of interior integral lines of `P` with respect to a given
+direction vector `w`.
+
+# Example
+
+```jldoctest
+julia> P = convex_hull(RationalPoint{Int}[(1//3,-1),(4//3,2),(2//3,2),(-4//3,-1)])
+Rational polygon of rationality 3 with 4 vertices.
+
+julia> number_of_interior_integral_lines(P, LatticePoint(1,0))
+3
+
+julia> number_of_interior_integral_lines(P, LatticePoint(0,1))
+2
+```
+
+"""
+function number_of_interior_integral_lines(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
+    k = rationality(P)
+    Q = adjust_to_width_direction(P, w)
+    xmin = minimum(vertex_matrix(Q)[1,:]) // k
+    xmax = maximum(vertex_matrix(Q)[1,:]) // k
+    return ceil(T,xmax) - floor(T,xmin) - 1
+end
+
+
+@doc raw"""
+    minimal_number_of_interior_integral_lines(P :: RationalPolygon{T}) where {T <: Integer}
+
+Return the minimal number of interior integral lines of `P`.
+
+# Example
+
+```jldoctest
+julia> P = convex_hull(RationalPoint{Int}[(1//3,-1),(4//3,2),(2//3,2),(-4//3,-1)])
+Rational polygon of rationality 3 with 4 vertices.
+
+julia> minimal_number_of_interior_integral_lines(P)
+2
+```
+
+"""
+function minimal_number_of_interior_integral_lines(P :: RationalPolygon{T}) where {T <: Integer}
+    h = ceil(Rational{T}, width(P))
+    vs = all_direction_vectors_with_width_less_than(P, h)
+    return minimum([number_of_interior_integral_lines(P, v) for v ∈ vs])
+end
+
+
+@doc raw"""
+    is_realizable_in_interval(P :: RationalPolygon{T}, h :: T) where {T <: Integer}
+
+Check whether `P` is realizable in ``\mathbb{R} \times [0,h]``. This is true
+if and only if `minimal_number_of_interior_integral_lines` is less than or
+equal to ``h-1``.
+
+# Example
+
+```jldoctest
+julia> P = convex_hull(RationalPoint{Int}[(1//3,-1),(4//3,2),(2//3,2),(-4//3,-1)])
+Rational polygon of rationality 3 with 4 vertices.
+
+julia> is_realizable_in_interval(P,2)
+false
+
+julia> is_realizable_in_interval(P,3)
+true
+```
+
+"""
+is_realizable_in_interval(P :: RationalPolygon{T}, h :: T) where {T <: Integer} =
+minimal_number_of_interior_integral_lines(P) <= h - 1
 
 
 @doc raw"""
