@@ -98,8 +98,8 @@ mutable struct HDFSubpolygonStorage{T <: Integer} <: SubpolygonStorage{T}
             file_path :: String,
             group_path :: String = "/";
             primitive :: Bool = false,
-            use_affine_normal_form :: Bool = false,
-            only_equal_number_of_interior_lattice_points :: Bool = true,
+            use_affine_normal_form :: Bool = true,
+            only_equal_number_of_interior_lattice_points :: Bool = false,
             exclude_very_thin_polygons :: Bool = false,
             block_size :: Int = 10^6,
             swmr :: Bool = true,
