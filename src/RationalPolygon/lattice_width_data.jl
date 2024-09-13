@@ -47,6 +47,7 @@ julia> all_direction_vectors_with_width_less_than(P, 3//1)
 function all_direction_vectors_with_width_less_than(P :: RationalPolygon{T}, c :: Rational{T}) where {T <: Integer}
     vs = lattice_points(c * dual(P - P))
     filter!(v -> v[1] > 0 || (v[1] == 0 && v[2] > 0), vs)
+    filter!(is_primitive, vs)
     return vs
 end
 
