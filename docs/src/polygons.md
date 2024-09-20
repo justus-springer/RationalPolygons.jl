@@ -86,15 +86,27 @@ quasipolynomial, called its _Ehrhart quasipolynomial_:
 ```
 
 Here, ``A`` is the euclidian area of ``P`` and ``a, b\colon \mathbb{Z} \to
-\mathbb{Q}`` are ``k``-periodic functions. We can encode the Ehrhart quasipolynomial of a ``k``-rational polygon by a ``3\times k`` integral matrix:
+\mathbb{Q}`` are ``k``-periodic functions. These can be computed by
+
+```math
+a(t) = -(2t+k)\cdot A + \frac{\mathrm{ehr}_P(t+k)-\mathrm{ehr}_P(t)}{k},
+```
+```math
+b(t) = (t^2+tk)\cdot A + \frac{(t+k)\mathrm{ehr}_P(t)-t\mathrm{ehr}_P(t+k)}{k}.
+```
+
+Setting ``\tilde{A} := 2k^2A,\ \tilde{a} := 2k^2 a`` and ``\tilde{b} := 2k^2b``, we get
+integer valued functions ``\tilde a`` and ``\tilde b`` which we call the
+_normalized Ehrhart coefficients_. We then encode the Ehrhart quasipolynomial
+by the ``3\times k`` integral matrix of its normalized Ehrhart coefficients:
 
 ```math
 \begin{bmatrix}
-A & a(1) & b(1) \\
-A & a(2) & b(2) \\
+\tilde{A} & \tilde{a}(1) & \tilde{b}(1) \\
+\tilde{A} & \tilde{a}(2) & \tilde{b}(2) \\
 \vdots & \vdots & \vdots \\
-A & a(k) & b(k)
-\end{bmatrix}.
+\tilde{A} & \tilde{a}(k) & \tilde{b}(k)
+\end{bmatrix} \in \mathbb{Z}^{3\times k}.
 ```
 
 If ``P`` is integral, we have ``k=1`` and its Ehrhart quasipolynomial is a

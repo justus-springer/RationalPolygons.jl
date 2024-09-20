@@ -29,20 +29,21 @@ end
 @doc raw"""
     ehrhart_quasipolynomial_with_periods(P :: RationalPolygon{T}) where {T <: Integer}
 
-Return a k x 3-matrix of coefficients of the Ehrhart quasipolynomial of a
-`k`-rational polygon `P`, together with a vector of it's three periods.
+Return a k x 3-matrix of normalized coefficients of the Ehrhart
+quasipolynomial of a `k`-rational polygon `P`, together with a vector of it's
+three periods.
 
 """
 function ehrhart_quasipolynomial_with_periods(P :: RationalPolygon{T}) where {T <: Integer}
     k = rationality(P)
-    M = Matrix{Rational{T}}(undef, k, 3)
-    A = euclidian_area(P)
+    M = Matrix{T}(undef, k, 3)
+    A = normalized_area(P)
     ehrhart_values = [number_of_k_rational_points(P,t) for t = 1 : 2k]
     
     for t = 1 : k
         M[t,1] = A
-        M[t,2] = -(2t+k)*A + (ehrhart_values[t+k] - ehrhart_values[t]) // k
-        M[t,3] = (t^2+t*k)*A + ((t+k)*ehrhart_values[t] - t*ehrhart_values[t+k]) // k
+        M[t,2] = -(2t+k)*A + 2k*(ehrhart_values[t+k] - ehrhart_values[t])
+        M[t,3] = (t^2+t*k)*A + 2k*((t+k)*ehrhart_values[t] - t*ehrhart_values[t+k])
     end
     periods = [period(M[:,i]) for i = 1 : 3]
 
@@ -53,7 +54,7 @@ end
 @doc raw"""
     ehrhart_quasipolynomial(P :: RationalPolygon)
 
-Return a k x 3-matrix of coefficients of the Ehrhart quasipolynomial of a
+Return a k x 3-matrix of normalized coefficients of the Ehrhart quasipolynomial of a
 `k`-rational polygon `P`.
 
 """
