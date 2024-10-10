@@ -182,29 +182,43 @@ After calling this function, the computation can be resumed by calling
 `subpolygons(st)` again.
 
 """
-function restore_hdf_subpolygon_storage_status(st :: HDFSubpolygonStorage{T}) where {T <: Integer}
+function restore_hdf_subpolygon_storage_status(st :: HDFSubpolygonStorage{T}; logging :: Bool = false) where {T <: Integer}
 
     f = h5open(st.file_path, "r+"; swmr = st.preferences.swmr)
     g = f[st.group_path]
     k = st.preferences.rationality
+    block_size = st.preferences.block_size
 
     st.last_completed_area = read_attribute(g, "last_completed_area")
 
     A = read_dataset(g, "numbers_of_polygons")
     st.total_count = sum(A)
+
     for a_key ∈ keys(g)
         startswith(a_key, "a") || continue
         a = parse(Int, a_key[2:end])
+        a < st.last_completed_area || continue
+
         st.hash_sets[a] = Set{UInt128}()
         for n_key ∈ keys(g[a_key])
             startswith(n_key, "n") || continue
             n = parse(Int, n_key[2:end])
-            HDF5.set_extent_dims(g[a_key][n_key], (A[a,n],))
+            
+            N = A[a,n]
+            HDF5.set_extent_dims(g[a_key][n_key], (N,))
 
-            Ps = read_polygon_dataset(k, g[a_key], n_key)
-            a < st.last_completed_area || continue
-            for P ∈ Ps
-                push!(st.hash_sets[a], xxh3_128(vertex_matrix(P)))
+            number_of_blocks = N ÷ block_size + 1
+
+            for b = 1 : number_of_blocks
+
+                I = (b-1)*block_size + 1 : min(b*block_size, N)
+                Ps = read_polygon_dataset(k, g[a_key], n_key, I)
+
+                @info "[a = $a/$(st.last_completed_area), n = $n, block $b/$number_of_blocks]. Read in $(length(Ps)) polygons."
+
+                for P ∈ Ps
+                    push!(st.hash_sets[a], xxh3_128(vertex_matrix(P)))
+                end
             end
         end
     end
