@@ -1,3 +1,9 @@
+export gorenstein_coefficient_matrix
+export degree_matrix
+export picard_index
+export local_class_group_order
+export class_group_torsion_order
+export local_gorenstein_index
 export is_realizable_in_interval
 export minimal_number_of_interior_integral_lines
 export number_of_interior_integral_lines

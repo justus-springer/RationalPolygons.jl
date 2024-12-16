@@ -16,6 +16,7 @@ include("AffineHalfplane/intersect.jl")
 
 include("RationalPolygon/RationalPolygon.jl")
 include("RationalPolygon/properties.jl")
+include("RationalPolygon/ldp.jl")
 include("RationalPolygon/io.jl")
 include("RationalPolygon/h5.jl")
 include("RationalPolygon/slice.jl")

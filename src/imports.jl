@@ -26,6 +26,9 @@ import LinearAlgebra:
     mul!,
     dot
 
+import NormalForms:
+    snf
+
 import HDF5:
     HDF5,
     attrs,
@@ -47,3 +50,4 @@ import Plots:
 
 import XXhash:
     xxh3_128
+
