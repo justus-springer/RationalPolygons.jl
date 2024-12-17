@@ -1,3 +1,10 @@
+export toric_prime_divisor_self_intersection
+export toric_prime_divisor_adjacent_intersection
+export degree
+export InMemoryBaeuerleStorage
+export BaeuerleStorage
+export unit_fraction_partitions_length_three
+export classify_lattice_triangles_by_gorenstein_index
 export gorenstein_coefficient_matrix
 export degree_matrix
 export picard_index

@@ -37,5 +37,6 @@ include("Classification/one_interior_lattice_point.jl")
 include("Classification/no_interior_lattice_points.jl")
 include("Classification/castryck.jl")
 include("Classification/koelman.jl")
+include("Classification/baeuerle.jl")
 
 end # module RationalPolygons
