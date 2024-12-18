@@ -39,11 +39,9 @@ import HDF5:
     open_dataset,
     read_dataset
 
-import Plots:
-    plot,
-    plot!,
-    Shape,
-    plot_color
+import RecipesBase:
+    @recipe,
+    @series
 
 import XXhash:
     xxh3_128

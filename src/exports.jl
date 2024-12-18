@@ -37,7 +37,6 @@ export classify_polygons_by_number_of_lattice_points
 export classify_next_number_of_lattice_points
 export KoelmanStorage
 export InMemoryKoelmanStorage
-export plot_polygon
 export log_canonicity
 export log_canonicities
 export norm_ratio
