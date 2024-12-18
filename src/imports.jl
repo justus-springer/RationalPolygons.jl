@@ -26,9 +26,6 @@ import LinearAlgebra:
     mul!,
     dot
 
-import NormalForms:
-    snf
-
 import HDF5:
     HDF5,
     attrs,

@@ -8,7 +8,6 @@ export BaeuerleStorage
 export unit_fraction_partitions_length_three
 export classify_lattice_triangles_by_gorenstein_index
 export gorenstein_coefficient_matrix
-export degree_matrix
 export picard_index
 export local_class_group_order
 export class_group_torsion_order

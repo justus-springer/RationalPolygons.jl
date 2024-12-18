@@ -108,11 +108,6 @@ such that the associated toric surface is ε-log canonical.
 log_canonicity(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
 minimum([log_canonicity(P,i) for i = 1 : N])
 
-
-degree_matrix(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
-snf(transpose(vertex_matrix(P))).U[3:end,:]
-
-
 function toric_prime_divisor_self_intersection(P :: RationalPolygon{T,N}, i :: Int) where {N, T <: Integer}
     u, v, w = scaled_vertex(P,i-1), scaled_vertex(P,i), scaled_vertex(P,i+1)
     return det(w,u) // (det(u,v) * det(v,w))
