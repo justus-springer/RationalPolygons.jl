@@ -94,7 +94,7 @@ export ehrhart_quasipolynomial_periods
 export ehrhart_quasipolynomial_with_periods
 export empty_polygon
 export euclidian_area
-export filter_fano_polygons
+export filter_ldp_polygons
 export gorenstein_index
 export graham_scan
 export graham_scan!
@@ -116,7 +116,7 @@ export intersection_point
 export is_affine_normal_form
 export is_bounded
 export is_cyclic
-export is_fano
+export is_ldp
 export is_finished
 export is_integral
 export is_k_rational

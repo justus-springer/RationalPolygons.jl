@@ -20,13 +20,13 @@ all(i -> is_primitive(scaled_vertex(P,i)), 1 : N)
 
 
 @doc raw"""
-    is_fano(P :: RationalPolygon)
+    is_ldp(P :: RationalPolygon)
 
-Check whether `P` is a fano polygon, i.e. is primitive and contains the origin
+Check whether `P` is a ldp polygon, i.e. is primitive and contains the origin
 in its interior.
 
 """
-is_fano(P :: RationalPolygon) = contains_origin_in_interior(P) && is_primitive(P)
+is_ldp(P :: RationalPolygon) = contains_origin_in_interior(P) && is_primitive(P)
 
 
 @doc raw"""

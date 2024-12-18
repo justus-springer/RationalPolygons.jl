@@ -66,7 +66,7 @@ Base.in(x :: Point{T}, P :: RationalPolygon{T}) where {T <: Integer}
 contains_in_interior(x :: Point{T}, P :: RationalPolygon{T,N}) where {N,T <: Integer}
 dim
 is_primitive(P :: RationalPolygon{T,N}) where {N,T <: Integer}
-is_fano(P :: RationalPolygon)
+is_ldp(P :: RationalPolygon)
 normalized_area
 euclidian_area
 is_maximal
