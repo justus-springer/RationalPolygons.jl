@@ -49,7 +49,7 @@ intersect_halfplanes
 empty_polygon
 ```
 
-### Properties
+### Basic Properties
 
 ```@docs
 number_of_vertices
@@ -65,14 +65,33 @@ affine_halfplanes(P :: RationalPolygon)
 Base.in(x :: Point{T}, P :: RationalPolygon{T}) where {T <: Integer}
 contains_in_interior(x :: Point{T}, P :: RationalPolygon{T,N}) where {N,T <: Integer}
 dim
-is_primitive(P :: RationalPolygon{T,N}) where {N,T <: Integer}
-is_ldp(P :: RationalPolygon)
 normalized_area
 euclidian_area
 is_maximal
 dual
+```
+
+### LDP polygons
+
+An LDP polygon is a lattice polygon with primitive vertices containing the
+origin in its interior. LDP polygons correspond to toric log del Pezzo
+surfaces. In this package, we call more generally a `k`-rational polygon LDP,
+if it contains the origin in its interior and its `k`-fold dilation has
+primitive vertices. Here, we list some properties of polygons that are
+primarily meant to be used for LDP polygons, where they correspond to some
+invariant of the associated toric del Pezzo surface.
+
+```@docs
+contains_origin_in_interior
+is_primitive
+is_ldp
+multiplicity
+picard_index
 gorenstein_index
 log_canonicity
+toric_prime_divisor_self_intersection
+toric_prime_divisor_adjacent_intersection
+degree
 ```
 
 ## Ehrhart Theory
