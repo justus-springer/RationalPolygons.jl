@@ -39,6 +39,20 @@ end
 
 Return all lattice triangles with gorenstein index `ι`.
 
+# Example
+
+There are five lattice triangles with gorenstein index one:
+
+```jldoctest
+julia> classify_lattice_triangles_by_gorenstein_index(1)
+Set{RationalPolygon{Int64, 3}} with 5 elements:
+  Rational polygon of rationality 1 with 3 vertices.
+  Rational polygon of rationality 1 with 3 vertices.
+  Rational polygon of rationality 1 with 3 vertices.
+  Rational polygon of rationality 1 with 3 vertices.
+  Rational polygon of rationality 1 with 3 vertices.
+```
+
 """
 function classify_lattice_triangles_by_gorenstein_index(ι :: T) where {T <: Integer}
     res = Set{RationalPolygon{T,3}}()
@@ -99,6 +113,28 @@ mutable struct InMemoryBaeuerleStorage{T <: Integer} <: BaeuerleStorage{T}
 end
 
 
+@doc raw"""
+    classify_lattice_triangles_by_gorenstein_index(st :: InMemoryBaeuerleStorage{T}, max_gorenstein_index :: T) where {T <: Integer}
+
+Perform Bäuerle's classification of lattice triangles up go
+`max_gorenstein_index`, storing the results in memory.
+
+# Example
+
+Reproduce Bäuerle's original classification up to gorenstein index 1000, see
+Theorem 1.4 of [Bae23](@cite).
+
+```jldoctest
+julia> st = InMemoryBaeuerleStorage{Int}()
+InMemoryBaeuerleStorage{Int64}(Vector{RationalPolygon{Int64, 3, 6}}[], 0)
+
+julia> classify_lattice_triangles_by_gorenstein_index(st, 1000);
+
+julia> sum(length.(st.polygons))
+2992229
+```
+
+"""
 function classify_lattice_triangles_by_gorenstein_index(st :: InMemoryBaeuerleStorage{T}, max_gorenstein_index :: T) where {T <: Integer}
     dicts = Dict{T, Set{RationalPolygon{T,3,6}}}[]
     for t = 1 : Threads.nthreads()
@@ -189,6 +225,13 @@ mutable struct HDFBaeuerleStorage{T <: Integer} <: BaeuerleStorage{T}
 end
 
 
+@doc raw"""
+    classify_lattice_triangles_by_gorenstein_index(st :: HDFBaeuerleStorage{T}, max_gorenstein_index :: T; logging :: Bool = false) where {T <: Integer}
+
+Perform Bäuerle's classification of lattice triangles up go
+`max_gorenstein_index`, storing the results in an HDF5 file
+
+"""
 function classify_lattice_triangles_by_gorenstein_index(st :: HDFBaeuerleStorage{T}, max_gorenstein_index :: T; logging :: Bool = false) where {T <: Integer}
 
 

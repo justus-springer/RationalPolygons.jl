@@ -5,6 +5,7 @@ RationalPolygons.jl implements the following classification algorithms:
 - [Lattice polygons by number of lattice points](#Lattice-polygons-by-number-of-lattice-points) from R.J. Koelman [Koe91](@cite),
 - [Lattice polygons by number of interior lattice points](#Lattice-polygons-by-number-of-interior-lattice-points) from Castryck [Cas12](@cite),
 - [Lattice polygons contained in a square](#Lattice-polygons-contained-in-a-square) from Brown and Kasprzyk [BK13](@cite),
+- [Lattice triangles by gorenstein index](#Lattice-triangles-by-gorenstein-index) from Andreas Bäuerle [Bae23](@cite).
 
 Moreover, the classifications from [BS24](@cite) are implemented:
 
@@ -89,6 +90,22 @@ julia> [length(filter(P -> number_of_vertices(P) == max_vertices[m], Pss[m])) fo
  15
   2
   3
+```
+
+## Lattice triangles by gorenstein index
+
+In [Bae23](@cite), Bäuerle classified Fano simplices by dimension and
+gorenstein index. RationalPolygons.jl implements a version of his algorithm
+(specialized to the two-dimensional case), which reproduces his numbers
+sucessfully (see Theorem 1.4 of [Bae23](@cite) and
+[A145582](https://oeis.org/A145582)).
+
+```@docs
+unit_fraction_partitions_length_three
+BaeuerleStorage
+InMemoryBaeuerleStorage
+HDFBaeuerleStorage
+classify_lattice_triangles_by_gorenstein_index
 ```
 
 ## Maximal rational polygons contained in ``\mathbb{R}\times[-1,1]``

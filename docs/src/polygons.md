@@ -49,6 +49,8 @@ intersect_halfplanes
 empty_polygon
 ```
 
+## Properties
+
 ### Basic Properties
 
 ```@docs

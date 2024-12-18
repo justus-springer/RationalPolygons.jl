@@ -14,7 +14,6 @@ Point
 is_k_rational(k :: T, p :: Point{T}) where {T <: Integer}
 is_integral
 rationality(p :: Point)
-multiplicity
 is_primitive(p :: Point)
 norm
 distance
