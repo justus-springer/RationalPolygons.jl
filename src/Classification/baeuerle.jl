@@ -120,3 +120,117 @@ function classify_lattice_triangles_by_gorenstein_index(st :: InMemoryBaeuerleSt
 
     return st
 end
+
+
+@doc raw"""
+    struct HDFBaeuerleStoragePreferences{T <: Integer}   
+
+A struct holding preferences for Baeuerle's classification using the HDF5 file format. It has four fields:
+
+- `swmr :: Bool`: Whether to use single-reader-multiple-writer mode for HDF5.
+    Defaults to `true`.
+- `step_size :: Int`: The step size for multithreaded classification in
+    terms of the gorenstein index. Defaults to `100`.
+- `maximum_gorenstein_index :: Int`: The maximum gorenstein index to be
+    classified. Defaults to `10^5`.
+
+"""
+struct HDFBaeuerleStoragePreferences{T <: Integer}
+    swmr :: Bool
+    step_size :: Int
+    maximum_gorenstein_index :: Int
+    
+    HDFBaeuerleStoragePreferences{T}(
+        swmr :: Bool = true,
+        step_size :: Int = 100,
+        maximum_gorenstein_index :: Int = 10^5) where {T <: Integer} =
+    new{T}(swmr, step_size, maximum_gorenstein_index)
+
+end
+
+
+@doc raw"""
+    mutable struct HDFBaeuerleStorage{T <: Integer} <: BaeuerleStorage{T}
+
+A struct for managing classification results of Baeuerle's classification of
+lattice triangles using the HDF5 file format. It has the following fields:
+
+- `preferences :: HDFBaeuerleStoragePreferences{T}`
+- `file_path :: String`: The path of the HDF file to be generated.
+- `last_completed_gorenstein_index :: Int`: The last completed step of the classification. Initially, this will be `3`.
+- `total_count :: Int`
+
+"""
+mutable struct HDFBaeuerleStorage{T <: Integer} <: BaeuerleStorage{T}
+    preferences :: HDFBaeuerleStoragePreferences{T}
+    file_path :: String
+    last_completed_gorenstein_index :: Int
+    total_count :: Int
+
+    function HDFBaeuerleStorage{T}(
+        preferences :: HDFBaeuerleStoragePreferences{T},
+        file_path :: String) where {T <: Integer}
+
+        f = h5open(file_path, "cw"; swmr = preferences.swmr)
+        f["numbers_of_polygons"] = zeros(Int, preferences.maximum_gorenstein_index) 
+
+        close(f)
+
+        new{T}(preferences, file_path, 0, 0)
+
+    end
+
+    HDFBaeuerleStorage{T}(file_path :: String;
+                         swmr :: Bool = true,
+                         step_size :: Int = 100,
+                         maximum_gorenstein_index :: Int = 10^5) where {T <: Integer} =
+    HDFBaeuerleStorage{T}(HDFBaeuerleStoragePreferences{T}(swmr, step_size, maximum_gorenstein_index), file_path)
+
+end
+
+
+function classify_lattice_triangles_by_gorenstein_index(st :: HDFBaeuerleStorage{T}, max_gorenstein_index :: T; logging :: Bool = false) where {T <: Integer}
+
+
+    step_size = st.preferences.step_size
+    ι0 = st.last_completed_gorenstein_index
+    N = max_gorenstein_index - ι0
+    number_of_steps = N ÷ step_size + 1
+
+    for b = 1 : number_of_steps
+
+        ι_min, ι_max = ι0 + (b-1)*step_size + 1, ι0 + min(b*step_size, N)
+        logging && @info "[ι = $ι_min : $ι_max]: Beginning classification"
+
+        dicts = Dict{T, Set{RationalPolygon{T,3,6}}}[]
+        for t = 1 : Threads.nthreads()
+            push!(dicts, Dict{T, Set{RationalPolygon{T,3,6}}}())
+        end
+
+        # Perform the classification
+        Threads.@threads for ι = ι_min : ι_max
+            t = Threads.threadid()
+            dicts[t][ι] = classify_lattice_triangles_by_gorenstein_index(ι)
+        end
+        merged_dict = merge!(dicts...)
+
+        new_count = sum([length(v) for (k,v) in merged_dict])
+        logging && @info "[ι = $ι_min : $ι_max]: Classfication complete. Found $new_count"
+
+        # Write triangles to the HDF5 file
+        f = h5open(st.file_path, "r+"; swmr = st.preferences.swmr)
+        for ι = ι_min : ι_max
+            write_polygon_dataset(f, "gi$ι", collect(merged_dict[ι]))
+            f["numbers_of_polygons"][ι] = length(merged_dict[ι])
+            st.total_count += length(merged_dict[ι])
+        end
+        close(f)
+
+        logging && @info "[ι = $ι_min : $ι_max]: Writeout complete. Running total: $(st.total_count)"
+
+        st.last_completed_gorenstein_index = ι_max
+
+    end
+
+    return st
+end
