@@ -29,6 +29,17 @@ in its interior.
 is_ldp(P :: RationalPolygon) = contains_origin_in_interior(P) && is_primitive(P)
 
 
+function is_special_facet(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
+    H1 = affine_halfplane(LatticePoint{T}(0,0), scaled_vertex(P,i))
+    H2 = affine_halfplane(scaled_vertex(P,i+1), LatticePoint{T}(0,0))
+    v = sum(vertices(P))
+    return v ∈ H1 && v ∈ H2
+end
+
+special_facets(P :: RationalPolygon{T,N}) where {N, T <: Integer} =
+filter(i -> is_special_facet(P,i), 1 : N)
+
+
 @doc raw"""
     dual(P :: RationalPolygon{T}) where {T <: Integer}
 
@@ -89,7 +100,7 @@ associated to the `i`-th and `i+1`-th ray of `P`, see e.g. Lemma 3.9
 of [HHHS22](@cite).
 
 """
-function local_gorenstein_index(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
+function gorenstein_index(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
     v1, v2 = scaled_vertex(P,i), scaled_vertex(P,i+1)
     return det(v1,v2) ÷ gcd(v2[2] - v1[2], v1[1] - v2[1])
 end
@@ -105,7 +116,7 @@ polygons, this equals the gorenstein index of the associated toric surface.
 function gorenstein_index(P :: RationalPolygon{T,N}) where {N,T <: Integer}
     g = 1
     for i = 1 : N
-        g = lcm(g, local_gorenstein_index(P,i))
+        g = lcm(g, gorenstein_index(P,i))
     end
     return g
 end
