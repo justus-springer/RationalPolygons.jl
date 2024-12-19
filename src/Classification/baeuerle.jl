@@ -193,7 +193,7 @@ lattice triangles using the HDF5 file format. It has the following fields:
 
 - `preferences :: HDFBaeuerleStoragePreferences{T}`
 - `file_path :: String`: The path of the HDF file to be generated.
-- `last_completed_gorenstein_index :: Int`: The last completed step of the classification. Initially, this will be `3`.
+- `last_completed_gorenstein_index :: Int`: The last completed step of the classification. Initially, this will be `0`.
 - `total_count :: Int`
 
 """

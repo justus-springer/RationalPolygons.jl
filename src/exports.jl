@@ -1,3 +1,8 @@
+export PicardIndexStorage
+export InMemoryPicardIndexStorage
+export HDFPicardIndexStorage
+export classify_lattice_triangles_by_picard_index
+export quadruple_decompositions
 export HDFBaeuerleStoragePreferences
 export HDFBaeuerleStorage
 export toric_prime_divisor_self_intersection
