@@ -40,5 +40,6 @@ include("Classification/castryck.jl")
 include("Classification/koelman.jl")
 include("Classification/baeuerle.jl")
 include("Classification/picard_index_triangles.jl")
+include("Classification/kasprzyk_kreuzer_nill.jl")
 
 end # module RationalPolygons

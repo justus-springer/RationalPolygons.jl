@@ -1,3 +1,6 @@
+export PartialLDP
+export special_facets
+export is_special_facet
 export PicardIndexStorage
 export InMemoryPicardIndexStorage
 export HDFPicardIndexStorage
