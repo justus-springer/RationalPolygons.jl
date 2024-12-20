@@ -39,9 +39,9 @@ struct RationalPolygon{T<:Integer,N,M}
 
     When using this constructor, no consistency checks are done on the input.
     In particular, the user must be sure that the given points are truly
-    vertices of the polygon and *that they are in the correct order* (both
-    clockwise and counterclockwise is okay). If this is not known ahead of
-    contruction, [`convex_hull`](@ref) should be used instead of this constructor.
+    vertices of the polygon and *that they are ordered counterclockwise*. If
+    this is not known ahead of contruction, [`convex_hull`](@ref) should be
+    used instead of this constructor.
 
     All constructors accept the optional arguments `is_unimodular_normal_form`
     and `is_affine_normal_form`, which are set to `false` by default. If they
