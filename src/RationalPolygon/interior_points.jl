@@ -3,9 +3,9 @@
     generic_lattice_points(P :: RationalPolygon{T,N}, k :: T)
 
 Return the lattice points in the `k`-fold of the rational polygon `P`. If the
-keyword argument `interior = true` is passed, only the interior lattice points
-are computed. If `only_count = true` is passed, only the total number of
-lattice points is returned.
+keyword argument `interior = true` is passed, only the lattice points in the
+relative interior are computed. If `only_count = true` is passed, only the total
+number of lattice points is returned.
         
 """
 function generic_lattice_points(
@@ -14,35 +14,64 @@ function generic_lattice_points(
         interior :: Bool = false,
         only_count :: Bool = false) where {N,T <: Integer}
 
-    vs = k .* vertices(P)
-    ymin, ymax = minimum([v[2] for v ∈ vs]), maximum([v[2] for v ∈ vs])
-
-    lby = interior ? floor(T,ymin+1) : ceil(T,ymin)
-    uby = interior ? ceil(T,ymax-1) : floor(T,ymax)
-
-    count = 0
-    points = LatticePoint{T}[]
-    for y = lby : uby
-        i0 = first(filter(i -> vs[i][2] ≥ y ≥ vs[mod(i+1,1:N)][2] && 
-                               vs[i][2] > vs[mod(i+1,1:N)][2], 1 : N))
-        incoming_line = line_through_points(vs[i0], vs[mod(i0+1,1:N)])
-        incoming_point = intersection_point(horizontal_line(y), incoming_line)
-        xmin = incoming_point[1]
-
-        i1 = first(filter(i -> vs[i][2] ≤ y ≤ vs[mod(i+1,1:N)][2] && vs[i][2] < vs[mod(i+1,1:N)][2], 1 : N))
-        outgoing_line = line_through_points(vs[i1], vs[mod(i1+1,1:N)])
-        outgoing_point = intersection_point(horizontal_line(y), outgoing_line)
-        xmax = outgoing_point[1]
-
-        if xmax < xmin
-            xmax,xmin = xmin,xmax
+    # handle degenerate cases seperately
+    d = dim(P)
+    if d == -1
+        # empty polygon
+        points = LatticePoint{T}[]
+        count = 0
+    elseif d == 0
+        # polygon is a single point
+        if interior
+            points = LatticePoint{T}[]
+            count = 0
+        else
+            v = k * vertex(P,1)
+            if is_integral(v)
+                points = LatticePoint{T}[v]
+                count = 1
+            else
+                points = LatticePoint{T}[]
+                count = 0
+            end
         end
+    elseif d == 1
+        # polygon is a line segment
+        points = numerator.(k .* k_rational_points_on_line_segment(k, vertex(P,1), vertex(P,2); interior))
+        count = length(points)
+    elseif d == 2
+        # polygon is two-dimensional
+        vs = k .* vertices(P)
+        ymin, ymax = minimum([v[2] for v ∈ vs]), maximum([v[2] for v ∈ vs])
 
-        lbx = interior ? floor(T,xmin+1) : ceil(T,xmin)
-        ubx = interior ? ceil(T,xmax-1) : floor(T,xmax)
-        count += ubx - lbx + 1
-        if !only_count
-            append!(points, [LatticePoint{T}(x,y) for x = lbx : ubx])
+        lby = interior ? floor(T,ymin+1) : ceil(T,ymin)
+        uby = interior ? ceil(T,ymax-1) : floor(T,ymax)
+
+        count = 0
+        points = LatticePoint{T}[]
+        for y = lby : uby
+            i0 = first(filter(i -> vs[i][2] ≥ y ≥ vs[mod(i+1,1:N)][2] && 
+                                   vs[i][2] > vs[mod(i+1,1:N)][2], 1 : N))
+            incoming_line = line_through_points(vs[i0], vs[mod(i0+1,1:N)])
+            incoming_point = intersection_point(horizontal_line(y), incoming_line)
+            xmin = incoming_point[1]
+
+            i1 = first(filter(i -> vs[i][2] ≤ y ≤ vs[mod(i+1,1:N)][2] && vs[i][2] < vs[mod(i+1,1:N)][2], 1 : N))
+            outgoing_line = line_through_points(vs[i1], vs[mod(i1+1,1:N)])
+            outgoing_point = intersection_point(horizontal_line(y), outgoing_line)
+            xmax = outgoing_point[1]
+
+            if xmax < xmin
+                xmax,xmin = xmin,xmax
+            end
+
+            lbx = interior ? floor(T,xmin+1) : ceil(T,xmin)
+            ubx = interior ? ceil(T,xmax-1) : floor(T,xmax)
+            count += ubx - lbx + 1
+            if !only_count
+                append!(points, [LatticePoint{T}(x,y) for x = lbx : ubx])
+            end
+
         end
 
     end
