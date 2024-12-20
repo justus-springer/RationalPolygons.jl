@@ -37,31 +37,33 @@ function choose_next_vertex(ldps :: Vector{<:PartialLDP{T,N}}, index :: T) where
 
         H1 = affine_halfplane(v1, LatticePoint{T}(0,0))
         H2 = affine_halfplane(P,1)
-        HN = -affine_halfplane(P,N)
+        H3 = -affine_halfplane(P,N)
 
-        for y = ymin : local_index-1
-            xmin = cld((index - a) * y - index * local_index, local_index)
-            xmax = fld(index * local_index - (index - b) * y, local_index)
-            for x = xmin : xmax
-                gcd(x,y) == 1 || continue
+        Hbot = affine_halfplane(RationalPoint{T}(0,1), ymin)
+        Htop = affine_halfplane(RationalPoint{T}(0,-1), 1 - local_index)
 
-                # The proposed new vertex
-                v = LatticePoint{T}(x,y)
+        # Halfplanes from Cor. 6.2
+        H4 = affine_halfplane(RationalPoint{T}(local_index, a - index), - index * local_index)
+        H5 = affine_halfplane(RationalPoint{T}(-local_index, b - index), -index * local_index)
 
-                contains_in_interior(v, H1) || continue
-                contains_in_interior(v, H2) || continue
-                contains_in_interior(v, HN) || continue
+        search_space = intersect_halfplanes([Hbot, Htop, H1, H2, H3, H4, H5])
 
-                # The new local index must divide the given index
-                new_local_index = det(v1,v) ÷ gcd(v[2] - v1[2], v1[1] - v[1])
-                index % new_local_index == 0 || continue
+        for v ∈ lattice_points(search_space)
+            is_primitive(v) || continue
 
-                new_polygon = RationalPolygon([v V], 1)
-                new_ymin = ymin - min(y, 0) + sum([j for j = max(min(y, v1[2]),0) + 1 : max(y, v1[2]) -1])
-                new_ldp = PartialLDP{T,N+1,2*(N+1)}(new_polygon, local_index, new_ymin)
+            contains_in_interior(v, H1) || continue
+            contains_in_interior(v, H2) || continue
+            contains_in_interior(v, H3) || continue
 
-                push!(res, new_ldp)
-            end
+            # The new local index must divide the given index
+            new_local_index = det(v1,v) ÷ gcd(v[2] - v1[2], v1[1] - v[1])
+            index % new_local_index == 0 || continue
+
+            new_polygon = RationalPolygon([v V], 1)
+            new_ymin = ymin - min(v[2], 0) + sum([j for j = max(min(v[2], v1[2]),0) + 1 : max(v[2], v1[2]) -1])
+            new_ldp = PartialLDP{T,N+1,2*(N+1)}(new_polygon, local_index, new_ymin)
+
+            push!(res, new_ldp)
         end
     end
 
@@ -79,7 +81,7 @@ function classify_lattice_polygons_by_gorenstein_index(index :: T) where {T <: I
         ldps = choose_next_vertex(initial_facets, index)
         N = 3
         while !isempty(ldps)
-            @info N,length(ldps)
+            @info local_index, N, length(ldps)
             length(Pss) < N-2 && push!(Pss, Set{RationalPolygon{T,N,2*N}}())
 
             # Save LDP polygons from previous interation
