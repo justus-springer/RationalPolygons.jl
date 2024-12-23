@@ -106,6 +106,25 @@ end
 Return all lattice polygons with given gorenstein index, using the Algorithm
 described in [KKN10](@cite).
 
+# Example
+
+There are 91 LDP polygons of Gorenstein index 4: 13 triangles, 48
+quadrilaterals, 29 pentagons and one hexagon.
+
+```jldoctest
+julia> Pss = classify_lattice_polygons_by_gorenstein_index(4);
+
+julia> length.(Pss)
+4-element Vector{Int64}:
+ 13
+ 48
+ 29
+  1
+
+julia> sum(ans)
+91
+```
+
 """
 function classify_lattice_polygons_by_gorenstein_index(index :: T; logging :: Bool = false) where {T <: Integer}
     Pss = Set{<:RationalPolygon{T}}[]
