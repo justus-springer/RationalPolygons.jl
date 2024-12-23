@@ -5,6 +5,7 @@ RationalPolygons.jl implements the following classification algorithms:
 - [Lattice polygons by number of lattice points](#Lattice-polygons-by-number-of-lattice-points) from R.J. Koelman [Koe91](@cite),
 - [Lattice polygons by number of interior lattice points](#Lattice-polygons-by-number-of-interior-lattice-points) from Castryck [Cas12](@cite),
 - [Lattice polygons contained in a square](#Lattice-polygons-contained-in-a-square) from Brown and Kasprzyk [BK13](@cite),
+- [Lattice polygons by Gorenstein index](#Lattice-polygons-by-Gorenstein-index) from Kasprzyk, Kreuzer and Nill [KKN10](@cite),
 - [Lattice triangles by Gorenstein index](#Lattice-triangles-by-Gorenstein-index) from Andreas Bäuerle [Bae23](@cite).
 - [Lattice triangles by Picard index](#Lattice-triangles-by-Picard-index) from Justus Springer [Spr24](@cite).
 
@@ -91,6 +92,17 @@ julia> [length(filter(P -> number_of_vertices(P) == max_vertices[m], Pss[m])) fo
  15
   2
   3
+```
+
+## Lattice polygons by Gorenstein index
+
+In [KKN10](@cite), the authors describe an algorithm to classify LDP polygons by Gorenstein index. RationalPolygons.jl implements a version of their algorithm, which successfully reproduces their numbers (see Theorem 1.2 of [KKN10](@cite)).
+
+```@docs
+PartialLDP
+initial_special_facets
+choose_next_vertex
+classify_lattice_polygons_by_gorenstein_index
 ```
 
 ## Lattice triangles by Gorenstein index
