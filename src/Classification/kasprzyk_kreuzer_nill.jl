@@ -1,14 +1,29 @@
-export classify_lattice_polygons_by_gorenstein_index
-export choose_next_vertex
-export initial_special_facets
+@doc raw"""
+    PartialLDP{T<:Integer,N,M}
 
+A struct used in the classification of polygons by gorenstein index. It
+contains three fields:
 
+- `P :: RationalPolygon{T,N,M}`: The polygon constructed so far.
+- `initial_local_index : T`: The local index of the special facet.
+- `ymin : T`: Lower bound for the y-value of the next vertex to be chosen, see
+   Algorithm 6.3 of [KKN10](@cite).
+
+"""
 struct PartialLDP{T<:Integer,N,M}
     P :: RationalPolygon{T,N,M}
     initial_local_index :: T
     ymin :: T
 end
 
+
+@doc raw"""
+    initial_special_facets(index :: T, initial_local_index :: T) where {T <: Integer}
+
+Return all possible initial special facet to start the classification as in
+step (1) of Algorithm 6.3 of [KKN10](@cite).
+
+"""
 function initial_special_facets(index :: T, initial_local_index :: T) where {T <: Integer}
     res = PartialLDP{T,2,4}[]
     for a = 0 : initial_local_index - 1
@@ -24,10 +39,23 @@ function initial_special_facets(index :: T, initial_local_index :: T) where {T <
     return res
 end
 
+
+@doc raw"""
+    choose_next_vertex(ldps :: Vector{<:PartialLDP{T,N}}, index :: T) where {N, T <: Integer}
+
+Perform a single step in the classification of lattice polygons by gorenstein
+index as in step (2) of Algorithm 6.3 of [KKN10](@cite).
+
+"""
 function choose_next_vertex(ldps :: Vector{<:PartialLDP{T,N}}, index :: T) where {N, T <: Integer}
 
-    res = PartialLDP{T,N+1,2*(N+1)}[]
-    for ldp ∈ ldps
+    out_vects = Vector{PartialLDP{T,N+1,2*(N+1)}}[]
+    for tid = 1 : Threads.nthreads()
+        push!(out_vects, PartialLDP{T,N+1,2*(N+1)}[])
+    end
+
+    Threads.@threads for ldp ∈ ldps
+        tid = Threads.threadid()
 
         P, local_index, ymin = ldp.P, ldp.initial_local_index, ldp.ymin
 
@@ -63,41 +91,60 @@ function choose_next_vertex(ldps :: Vector{<:PartialLDP{T,N}}, index :: T) where
             new_ymin = ymin - min(v[2], 0) + sum([j for j = max(min(v[2], v1[2]),0) + 1 : max(v[2], v1[2]) -1])
             new_ldp = PartialLDP{T,N+1,2*(N+1)}(new_polygon, local_index, new_ymin)
 
-            push!(res, new_ldp)
+            push!(out_vects[tid], new_ldp)
         end
     end
 
-    return res
+    return append!(out_vects...)
 
 end
 
-function classify_lattice_polygons_by_gorenstein_index(index :: T) where {T <: Integer}
+
+@doc raw"""
+    classify_lattice_polygons_by_gorenstein_index(index :: T; logging :: Bool = false) where {T <: Integer}
+
+Return all lattice polygons with given gorenstein index, using the Algorithm
+described in [KKN10](@cite).
+
+"""
+function classify_lattice_polygons_by_gorenstein_index(index :: T; logging :: Bool = false) where {T <: Integer}
     Pss = Set{<:RationalPolygon{T}}[]
 
     for local_index = 1 : index
         index % local_index == 0 || continue
 
+        logging && @info "[local_index = $local_index]: Beginning classification"
+
         initial_facets = initial_special_facets(index, local_index)
+
+        logging && @info "[local_index = $local_index]: Found $(length(initial_facets)) initial facets."
+
         ldps = choose_next_vertex(initial_facets, index)
         N = 3
+        count = 0
         while !isempty(ldps)
-            @info local_index, N, length(ldps)
+
             length(Pss) < N-2 && push!(Pss, Set{RationalPolygon{T,N,2*N}}())
 
             # Save LDP polygons from previous interation
             new_ldps = [unimodular_normal_form(ldp.P) for ldp ∈ ldps if is_ldp(ldp.P) && gorenstein_index(ldp.P) == index]
+
             union!(Pss[N-2], new_ldps)
+
+            new_count = sum(length.(Pss))
+
+            logging && @info "[local_index = $local_index, N = $N]: Found $(length(ldps)) partial LDPs, $(new_count - count) are valid LDP polygons"
 
             # Choose next vertices
             ldps = choose_next_vertex(ldps, index)
             N += 1
+            count = new_count
         end
 
     end
 
+    logging && @info "Found $(sum(length.(Pss))) LDP polygons in total."
+
     return Pss
 
 end
-
-
-
