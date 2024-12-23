@@ -104,6 +104,15 @@ end
     end
 end
 
+@testset "Kasprzyk, Kreuzer & Nill's classification" begin
+    a145581 = [16, 30, 99, 91, 250, 379, 429, 307]
+    for gi = 1 : 8
+        Ps = union(classify_lattice_polygons_by_gorenstein_index(gi)...)
+        @test length(Ps) == a145581[gi]
+        @test all(P -> gorenstein_index(P) == gi, Ps)
+    end
+end
+
 @testset "Bäuerle's classification" begin
 
     a145582 = [5, 7, 18, 13, 33, 26, 45, 27, 51, 51, 67, 53, 69, 74, 133, 48,
