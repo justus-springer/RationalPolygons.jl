@@ -1,7 +1,7 @@
 name = "RationalPolygons"
 uuid = "d26dedfb-ad13-44bd-90c7-a2710fa2c005"
 authors = ["Justus Springer <justusspringer@gmx.de>"]
-version = "1.0.0"
+version = "1.1.0"
 
 [deps]
 HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
