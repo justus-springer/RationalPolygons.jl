@@ -126,7 +126,7 @@ julia> sum(ans)
 ```
 
 """
-function classify_lattice_polygons_by_gorenstein_index(index :: T; logging :: Bool = false) where {T <: Integer}
+function classify_lattice_polygons_by_gorenstein_index(index :: T; max_number_of_vertices = nothing, logging :: Bool = false) where {T <: Integer}
     Pss = Set{<:RationalPolygon{T}}[]
 
     for local_index = 1 : index
@@ -153,6 +153,10 @@ function classify_lattice_polygons_by_gorenstein_index(index :: T; logging :: Bo
             new_count = sum(length.(Pss))
 
             logging && @info "[local_index = $local_index, N = $N]: Found $(length(ldps)) partial LDPs, $(new_count - count) are valid LDP polygons"
+
+            if N == max_number_of_vertices
+                break
+            end
 
             # Choose next vertices
             ldps = choose_next_vertex(ldps, index)
