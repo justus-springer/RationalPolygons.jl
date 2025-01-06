@@ -90,6 +90,8 @@ picard_index(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
 prod([multiplicity(P,i) for i = 1 : N]) ÷ multiplicity(P)
 
 
+gorenstein_index(v :: LatticePoint{T}, w :: LatticePoint{T}) where {T <: Integer} = det(v,w) ÷ gcd(w[2] - v[2], v[1] - w[1])
+
 @doc raw"""
     gorenstein_index(P :: RationalPolygon{T}, i :: Int)
 
@@ -100,10 +102,8 @@ associated to the `i`-th and `i+1`-th ray of `P`, see e.g. Lemma 3.9
 of [HHHS22](@cite).
 
 """
-function gorenstein_index(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
-    v1, v2 = scaled_vertex(P,i), scaled_vertex(P,i+1)
-    return det(v1,v2) ÷ gcd(v2[2] - v1[2], v1[1] - v2[1])
-end
+gorenstein_index(P :: RationalPolygon{T}, i :: Int) where {T <: Integer} =
+gorenstein_index(scaled_vertex(P,i), scaled_vertex(P,i+1))
 
 
 @doc raw"""
