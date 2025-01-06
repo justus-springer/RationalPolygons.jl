@@ -46,3 +46,8 @@ import RecipesBase:
 import XXhash:
     xxh3_128
 
+import AbstractAlgebra:
+    kernel,
+    matrix,
+    ZZ
+
