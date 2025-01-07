@@ -124,16 +124,8 @@ end
 function log_canonicities(P :: RationalPolygon{T,N}, i :: Int) where {N,T <: Integer}
     V = vertex_matrix(P)
     v1, v2 = V[:,mod(i,1:N)], V[:,mod(i+1,1:N)]
-    L = line_through_points(v1,v2)
-    res = Rational{T}[]
-    for p ∈ hilbert_basis(primitivize(v1),primitivize(v2))
-        push!(res, norm_ratio(primitivize(p), intersection_point(L, line_through_points(zero(RationalPoint{T}), p))))
-    end
-    return res
+    return discrepancies(primitivize(v1), primitivize(v2))
 end
-
-log_canonicities(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
-[log_canonicities(P,i) for i = 1 : N]
 
 log_canonicity(P :: RationalPolygon{T,N}, i :: Int) where {N,T <: Integer} =
 minimum(log_canonicities(P,i))

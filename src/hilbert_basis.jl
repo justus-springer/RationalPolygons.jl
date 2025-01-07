@@ -116,3 +116,30 @@ hilbert_basis(v1 :: LatticePoint{T}, v2 :: LatticePoint{T}) where {T <: Integer}
 hilbert_basis(Matrix2{T}(v1[1],v1[2],v2[1],v2[2]))
 
 
+function discrepancies(d :: T, k :: T) where {T <: Integer}
+    a0, a1 = 1, (k+1) // d
+    res = Rational{T}[]
+    push!(res, a0)
+    for b ∈ hirzebruch_jung(d, k)
+        push!(res, a1)
+        a0, a1 = a1, b * a1 - a0
+    end
+    push!(res, a1)
+    return res
+end
+
+function discrepancies(A :: Matrix2{T}) where {T <: Integer}
+    d, k, _ = cls_cone_normal_form(A)
+    return discrepancies(d, k)
+end
+
+
+@doc raw"""
+    discrepancies(v1 :: LatticePoint{T}, v2 :: LatticePoint{T}) where {T <: Integer}
+
+The discrepancies of the two-dimensional cone spanned by two given integral
+primitive vectors.
+
+"""
+discrepancies(v1 :: LatticePoint{T}, v2 :: LatticePoint{T}) where {T <: Integer} =
+discrepancies(Matrix2{T}(v1[1],v1[2],v2[1],v2[2]))
