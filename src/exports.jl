@@ -1,3 +1,4 @@
+export is_smooth
 export discrepancies
 export classify_lattice_polygons_by_gorenstein_index
 export choose_next_vertex
