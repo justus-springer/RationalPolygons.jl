@@ -121,6 +121,37 @@ function gorenstein_index(P :: RationalPolygon{T,N}) where {N,T <: Integer}
     return g
 end
 
+function degree_matrix(P :: RationalPolygon{T,N}) where {N, T <: Integer}
+    S, U, _ = snf_with_transform(transpose(vertex_matrix(P)))
+    d = S[2,2] # equals multiplicity(P)
+    Q_free = SMatrix{N-2,N,T}(U[3:end,:])
+    Q_torsion = SVector{N,T}(U[2,:] .% d)
+    return Q_free, Q_torsion
+end
+
+degree_matrix_free_part(P :: RationalPolygon) = degree_matrix(P)[1]
+
+degree_matrix_torsion_part(P :: RationalPolygon) = degree_matrix(P)[2]
+
+function gorenstein_coefficients(P :: RationalPolygon{T,N}) where {T <: Integer, N}
+    Q = degree_matrix_free_part(P)
+    g = gorenstein_index(P)
+    w = g * sum([Q[:, i] for i = 1 : N])
+    As = SVector{N-2,T}[]
+    for i = 1 : N
+        js = map(j -> mod(j, 1:N), i:i+N-3)
+        M = SMatrix{N-2,N-2,T}(Q[:, js])
+        push!(As, solve_unique_integer_solution(M, w))
+    end
+    return transpose(hcat(As...))
+end
+
+function gorenstein_matrix(P :: RationalPolygon{T,N}) where {T <: Integer, N}
+    A = gorenstein_coefficients(P)
+    g = gorenstein_index(P)
+    return SMatrix{N,N,T}([g - (mod(j-i+1,1:N) ≤ N-2 ? A[i,mod(j-i+1,1:N)] : 0) for i = 1:N, j = 1:N])
+end
+
 function log_canonicities(P :: RationalPolygon{T,N}, i :: Int) where {N,T <: Integer}
     V = vertex_matrix(P)
     v1, v2 = V[:,mod(i,1:N)], V[:,mod(i+1,1:N)]

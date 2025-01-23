@@ -10,7 +10,8 @@ import Base:
     issubset,
     rand,
     hash,
-    getindex
+    getindex,
+    swaprows!
 
 import StaticArrays:
     SVector,
@@ -24,7 +25,8 @@ import StaticArrays:
 
 import LinearAlgebra:
     mul!,
-    dot
+    dot,
+    UniformScaling
 
 import HDF5:
     HDF5,
@@ -46,8 +48,6 @@ import RecipesBase:
 import XXhash:
     xxh3_128
 
-import AbstractAlgebra:
-    kernel,
-    matrix,
-    ZZ
+import NormalForms:
+    hnfc
 

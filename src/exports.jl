@@ -1,3 +1,12 @@
+export gorenstein_matrix
+export gorenstein_coefficients
+export degree_matrix
+export degree_matrix_free_part
+export degree_matrix_torsion_part
+export snf
+export snf!
+export snf_with_transform
+export snf_with_transform!
 export classify_lattice_polygons_by_gorenstein_index
 export choose_next_vertex
 export initial_special_facets

@@ -6,6 +6,8 @@ include("exports.jl")
 include("Point.jl")
 include("graham.jl")
 include("hilbert_basis.jl")
+include("snf.jl")
+include("hnf.jl")
 
 include("Line/Line.jl")
 include("Line/intersect.jl")
