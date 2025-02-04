@@ -7,6 +7,8 @@ export snf
 export snf!
 export snf_with_transform
 export snf_with_transform!
+export is_smooth
+export discrepancies
 export classify_lattice_polygons_by_gorenstein_index
 export choose_next_vertex
 export initial_special_facets

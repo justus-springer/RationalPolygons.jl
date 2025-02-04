@@ -88,6 +88,7 @@ contains_origin_in_interior
 is_primitive
 is_ldp
 multiplicity
+is_smooth
 picard_index
 gorenstein_index
 log_canonicity

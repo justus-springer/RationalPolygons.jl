@@ -79,6 +79,29 @@ gcd([multiplicity(P,i) for i = 1 : N])
 
 
 @doc raw"""
+    is_smooth(P :: RationalPolygon, i :: Int)
+
+Check whether the cone spanned by the `i`-th and `i+1`-th vertex of `P` is
+regular, i.e. generates the entire lattice. For ldp polygons, this means that
+the toric fixed point associated to the `i`-th and `i+1`-th ray is smooth.
+
+"""
+is_smooth(P :: RationalPolygon, i :: Int) =
+multiplicity(P, i) == 1
+
+
+@doc raw"""
+    is_smooth(P :: RationalPolygon)
+
+Check whether all cones of the face fan of `P` are regular. For ldp polygons,
+this means that the associated toric surface is smooth.
+
+"""
+is_smooth(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
+all(i -> is_smooth(P, i), 1 : N)
+
+
+@doc raw"""
     picard_index(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 
 The product of all local multiplicities of `P` divided by the global
@@ -155,16 +178,8 @@ end
 function log_canonicities(P :: RationalPolygon{T,N}, i :: Int) where {N,T <: Integer}
     V = vertex_matrix(P)
     v1, v2 = V[:,mod(i,1:N)], V[:,mod(i+1,1:N)]
-    L = line_through_points(v1,v2)
-    res = Rational{T}[]
-    for p ∈ hilbert_basis(primitivize(v1),primitivize(v2))
-        push!(res, norm_ratio(primitivize(p), intersection_point(L, line_through_points(zero(RationalPoint{T}), p))))
-    end
-    return res
+    return discrepancies(primitivize(v1), primitivize(v2))
 end
-
-log_canonicities(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
-[log_canonicities(P,i) for i = 1 : N]
 
 log_canonicity(P :: RationalPolygon{T,N}, i :: Int) where {N,T <: Integer} =
 minimum(log_canonicities(P,i))
