@@ -1,3 +1,6 @@
+export minors
+export is_almost_free
+export get_gorenstein_coefficient_solutions
 export modified_unit_fraction_solutions
 export classify_quadrilaterals_by_gorenstein_index
 export get_degree_matrix_solutions
@@ -48,9 +51,9 @@ function is_almost_free_grading_matrix(Q :: SMatrix{2,4,T}) where {T <: Integer}
     return true
 end
 
-function get_degree_matrix_solutions(ι :: T) where {T <: Integer}
+function get_gorenstein_coefficient_solutions(ι :: T) where {T <: Integer}
 
-    res = SMatrix{2,4,T}[]
+    res = SMatrix{4,2,T}[]
 
     for a11 = ι+1 : 3ι, 
         a12 = 1 : a11-1,
@@ -70,10 +73,7 @@ function get_degree_matrix_solutions(ι :: T) where {T <: Integer}
         a42 = (ι*a22*a41+ι*a11*a41+ι*a11*a22-a11*a22*a41) ÷ (ι*a22)
         a41 > 0 || continue
 
-        G = [ι-a11 ι-a12 ι ι ; ι ι-a21 ι-a22 ι ; ι ι ι-a31 ι-a32 ; ι-a42 ι ι ι-a41]
-        Q = SMatrix{2,4,T}(Matrix(kernel(matrix(ZZ, G))))
-        is_almost_free_grading_matrix(Q) || continue
-        push!(res, Q)
+        push!(res, [a11 a12 ; a21 a22 ; a31 a32 ; a41 a42])
 
     end
 
@@ -94,12 +94,24 @@ function get_degree_matrix_solutions(ι :: T) where {T <: Integer}
             a22 = (ι*a11*a41) ÷ (a11*a41+ι*a42-ι*a11-ι*a41)
             a22 > 0 || continue
 
-            G = [ι-a11 ι-a12 ι ι ; ι ι-a21 ι-a22 ι ; ι ι ι-a31 ι-a32 ; ι-a42 ι ι ι-a41]
-            Q = SMatrix{2,4,T}(Matrix(kernel(matrix(ZZ, G))))
-            is_almost_free_grading_matrix(Q) || continue
-            push!(res, Q)
+            push!(res, [a11 a12 ; a21 a22 ; a31 a32 ; a41 a42])
 
         end
+    end
+
+    return res
+
+end
+
+function get_degree_matrix_solutions(ι :: T) where {T <: Integer}
+
+    res = SMatrix{2,4,T}[]
+
+    for A ∈ get_gorenstein_coefficient_solutions(ι)
+        G = SMatrix{4,4,T}([ι-A[1,1] ι-A[1,2] ι ι ; ι ι-A[2,1] ι-A[2,2] ι ; ι ι ι-A[3,1] ι-A[3,2] ; ι-A[4,2] ι ι ι-A[4,1]])
+        Q = SMatrix{2,4,T}(Matrix(kernel(matrix(ZZ, G))))
+        is_almost_free_grading_matrix(Q) || continue
+        push!(res, Q)
     end
 
     return res
