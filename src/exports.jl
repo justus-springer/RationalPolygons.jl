@@ -1,3 +1,10 @@
+export classify_triangles_integral_degree
+export fake_weight_vectors_to_triangles
+export adjust_triple
+export classify_squared_markov_type_equation_solutions
+export initial_triple
+export n_step_mutations
+export fake_weight_vector
 export is_smooth
 export discrepancies
 export classify_lattice_polygons_by_gorenstein_index
