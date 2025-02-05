@@ -182,7 +182,7 @@ end
 
 
 @doc raw"""
-    fake_weight_vector_to_triangles(us:: SVector{3,T}, μ :: T) where {T <: Integer}
+    fake_weight_vectors_to_triangles(us :: Set{SVector{3,T}}, μ :: T) where {T <: Integer}
 
 Given a set of triples `us` sharing the same integral degree `A` and an integer
 `μ`, return all LDP triangles having fake weight vector `μ * u`. Allowed values
