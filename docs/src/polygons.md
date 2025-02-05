@@ -94,7 +94,7 @@ gorenstein_index
 log_canonicity
 toric_prime_divisor_self_intersection
 toric_prime_divisor_adjacent_intersection
-degree
+degree(P :: RationalPolygon)
 ```
 
 ## Ehrhart Theory

@@ -253,7 +253,7 @@ end
 
 Return all LDP triangles (= fake weighted projective planes) with integral
 degree `K`, up to a given depth in the Markov tree. Essentially, this returns
-the triangles of the series (K-*-*) according to the notation of Theorem 1.1 of
+the triangles of the series (K - * - *) according to the notation of Theorem 1.1 of
 [HaKi24](@cite). Allowed values of `K` are 1, 2, 3, 4, 5, 6, 8 and 9.
 
 # Example

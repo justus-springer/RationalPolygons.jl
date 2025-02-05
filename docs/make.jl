@@ -1,4 +1,4 @@
-using Documenter, DocumenterCitations, RationalPolygons
+using Documenter, DocumenterCitations, RationalPolygons, StaticArrays
 
 bib = CitationBibliography(joinpath(@__DIR__, "src", "refs.bib"))
 
