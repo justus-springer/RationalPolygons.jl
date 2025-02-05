@@ -1,4 +1,4 @@
-export classify_triangles_integral_degree
+export classify_lattice_triangles_integral_degree
 export fake_weight_vectors_to_triangles
 export adjust_triple
 export classify_squared_markov_type_equation_solutions

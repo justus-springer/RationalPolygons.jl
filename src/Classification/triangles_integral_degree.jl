@@ -208,7 +208,7 @@ end
 
 
 @doc raw"""
-    classify_triangles_integral_degree(::Val{K}, ::Val{μ}, depth :: Int, T :: Type{<:Integer} = BigInt) where {K, μ}
+    classify_lattice_triangles_integral_degree(::Val{K}, ::Val{μ}, depth :: Int, T :: Type{<:Integer} = BigInt) where {K, μ}
 
 Return all LDP triangles (= fake weighted projective planes) with integral
 degree `K` and class group torsion order `μ`, up to a given depth in the Markov
@@ -228,7 +228,7 @@ which is also mentioned in the Theorem. After that, the number of triangles
 doubles with each additional step.
 
 ```jldoctest
-julia> Pss = classify_triangles_integral_degree(Val(1), Val(9), 5);
+julia> Pss = classify_lattice_triangles_integral_degree(Val(1), Val(9), 5);
 
 julia> length.(Pss)
 6-element Vector{Int64}:
@@ -241,7 +241,7 @@ julia> length.(Pss)
 ```
 
 """
-function classify_triangles_integral_degree(::Val{K}, ::Val{μ}, depth :: Int, T :: Type{<:Integer} = BigInt) where {K, μ}
+function classify_lattice_triangles_integral_degree(::Val{K}, ::Val{μ}, depth :: Int, T :: Type{<:Integer} = BigInt) where {K, μ}
     A = K * μ
     wss = classify_squared_markov_type_equation_solutions(Val(A), depth, T)
     return [fake_weight_vectors_to_triangles(ws, T(μ)) for ws ∈ wss]
@@ -249,7 +249,7 @@ end
 
 
 @doc raw"""
-    classify_triangles_integral_degree(::Val{K}, depth :: Int, T :: Type{<:Integer} = BigInt) where {K}
+    classify_lattice_triangles_integral_degree(::Val{K}, depth :: Int, T :: Type{<:Integer} = BigInt) where {K}
 
 Return all LDP triangles (= fake weighted projective planes) with integral
 degree `K`, up to a given depth in the Markov tree. Essentially, this returns
@@ -262,7 +262,7 @@ Print the numbers of LDP triangles with integral degree `K`, for all possible
 values of `K`, up to depth 10.
 
 ```jldoctest
-julia> [length.(classify_triangles_integral_degree(Val(K), 10)) for K in [1,2,3,4,5,6,8,9]]
+julia> [length.(classify_lattice_triangles_integral_degree(Val(K), 10)) for K in [1,2,3,4,5,6,8,9]]
 8-element Vector{Vector{Int64}}:
  [10, 18, 35, 70, 140, 280, 560, 1120, 2240, 4480, 8960]
  [4, 6, 12, 24, 48, 96, 192, 384, 768, 1536, 3072]
@@ -275,44 +275,44 @@ julia> [length.(classify_triangles_integral_degree(Val(K), 10)) for K in [1,2,3,
 ```
 
 """
-classify_triangles_integral_degree(::Val{9}, depth :: Int, T :: Type{<:Integer} = BigInt) =
-classify_triangles_integral_degree(Val(9), Val(1), depth, T)
+classify_lattice_triangles_integral_degree(::Val{9}, depth :: Int, T :: Type{<:Integer} = BigInt) =
+classify_lattice_triangles_integral_degree(Val(9), Val(1), depth, T)
 
-classify_triangles_integral_degree(::Val{8}, depth :: Int, T :: Type{<:Integer} = BigInt) =
-classify_triangles_integral_degree(Val(8), Val(1), depth, T)
+classify_lattice_triangles_integral_degree(::Val{8}, depth :: Int, T :: Type{<:Integer} = BigInt) =
+classify_lattice_triangles_integral_degree(Val(8), Val(1), depth, T)
 
-classify_triangles_integral_degree(::Val{6}, depth :: Int, T :: Type{<:Integer} = BigInt) =
-classify_triangles_integral_degree(Val(6), Val(1), depth, T)
+classify_lattice_triangles_integral_degree(::Val{6}, depth :: Int, T :: Type{<:Integer} = BigInt) =
+classify_lattice_triangles_integral_degree(Val(6), Val(1), depth, T)
 
-classify_triangles_integral_degree(::Val{5}, depth :: Int, T :: Type{<:Integer} = BigInt) =
-classify_triangles_integral_degree(Val(5), Val(1), depth, T)
+classify_lattice_triangles_integral_degree(::Val{5}, depth :: Int, T :: Type{<:Integer} = BigInt) =
+classify_lattice_triangles_integral_degree(Val(5), Val(1), depth, T)
 
-classify_triangles_integral_degree(::Val{4}, depth :: Int, T :: Type{<:Integer} = BigInt) =
-classify_triangles_integral_degree(Val(4), Val(2), depth, T)
+classify_lattice_triangles_integral_degree(::Val{4}, depth :: Int, T :: Type{<:Integer} = BigInt) =
+classify_lattice_triangles_integral_degree(Val(4), Val(2), depth, T)
 
-function classify_triangles_integral_degree(::Val{3}, depth :: Int, T :: Type{<:Integer} = BigInt)
-    Ps2 = classify_triangles_integral_degree(Val(3), Val(2), depth, T)
-    Ps3 = classify_triangles_integral_degree(Val(3), Val(3), depth, T)
+function classify_lattice_triangles_integral_degree(::Val{3}, depth :: Int, T :: Type{<:Integer} = BigInt)
+    Ps2 = classify_lattice_triangles_integral_degree(Val(3), Val(2), depth, T)
+    Ps3 = classify_lattice_triangles_integral_degree(Val(3), Val(3), depth, T)
     for i = 1 : length(Ps2)
         union!(Ps2[i], Ps3[i])
     end
     return Ps2
 end
 
-function classify_triangles_integral_degree(::Val{2}, depth :: Int, T :: Type{<:Integer} = BigInt)
-    Ps3 = classify_triangles_integral_degree(Val(2), Val(3), depth, T)
-    Ps4 = classify_triangles_integral_degree(Val(2), Val(4), depth, T)
+function classify_lattice_triangles_integral_degree(::Val{2}, depth :: Int, T :: Type{<:Integer} = BigInt)
+    Ps3 = classify_lattice_triangles_integral_degree(Val(2), Val(3), depth, T)
+    Ps4 = classify_lattice_triangles_integral_degree(Val(2), Val(4), depth, T)
     for i = 1 : length(Ps3)
         union!(Ps3[i], Ps4[i])
     end
     return Ps3
 end
 
-function classify_triangles_integral_degree(::Val{1}, depth :: Int, T :: Type{<:Integer} = BigInt)
-    Ps5 = classify_triangles_integral_degree(Val(1), Val(5), depth, T)
-    Ps6 = classify_triangles_integral_degree(Val(1), Val(6), depth, T)
-    Ps8 = classify_triangles_integral_degree(Val(1), Val(8), depth, T)
-    Ps9 = classify_triangles_integral_degree(Val(1), Val(9), depth, T)
+function classify_lattice_triangles_integral_degree(::Val{1}, depth :: Int, T :: Type{<:Integer} = BigInt)
+    Ps5 = classify_lattice_triangles_integral_degree(Val(1), Val(5), depth, T)
+    Ps6 = classify_lattice_triangles_integral_degree(Val(1), Val(6), depth, T)
+    Ps8 = classify_lattice_triangles_integral_degree(Val(1), Val(8), depth, T)
+    Ps9 = classify_lattice_triangles_integral_degree(Val(1), Val(9), depth, T)
     for i = 1 : length(Ps5)
         union!(Ps5[i], Ps6[i], Ps8[i], Ps9[i])
     end
@@ -321,14 +321,14 @@ end
 
 
 @doc raw"""
-    classify_triangles_integral_degree(depth :: Int, T :: Type{<:Integer} = BigInt)
+    classify_lattice_triangles_integral_degree(depth :: Int, T :: Type{<:Integer} = BigInt)
 
 Return all LDP triangles (= fake weighted projective planes) with integral
 degree, up to a given depth in the Markov tree. This returns the union of all
 24 series classified in Theorem 1.1 of [HaKi24](@cite).
 
 """
-function classify_triangles_integral_degree(depth :: Int, T :: Type{<:Integer} = BigInt)
-    Pss = [classify_triangles_integral_degree(Val(K), depth, T) for K in [1,2,3,4,5,6,8,9]]
+function classify_lattice_triangles_integral_degree(depth :: Int, T :: Type{<:Integer} = BigInt)
+    Pss = [classify_lattice_triangles_integral_degree(Val(K), depth, T) for K in [1,2,3,4,5,6,8,9]]
     return [union!([Pss[K][i] for K = 1 : 8]...) for i = 1 : depth+1]
 end
