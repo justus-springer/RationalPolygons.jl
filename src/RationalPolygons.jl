@@ -43,6 +43,7 @@ include("Classification/koelman.jl")
 include("Classification/baeuerle.jl")
 include("Classification/picard_index_triangles.jl")
 include("Classification/kasprzyk_kreuzer_nill.jl")
+include("Classification/triangles_integral_degree.jl")
 include("Classification/quadrilaterals.jl")
 
 end # module RationalPolygons

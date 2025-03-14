@@ -5,9 +5,10 @@ RationalPolygons.jl implements the following classification algorithms:
 - [Lattice polygons by number of lattice points](#Lattice-polygons-by-number-of-lattice-points) from R.J. Koelman [Koe91](@cite),
 - [Lattice polygons by number of interior lattice points](#Lattice-polygons-by-number-of-interior-lattice-points) from Castryck [Cas12](@cite),
 - [Lattice polygons contained in a square](#Lattice-polygons-contained-in-a-square) from Brown and Kasprzyk [BK13](@cite),
-- [Lattice polygons by Gorenstein index](#Lattice-polygons-by-Gorenstein-index) from Kasprzyk, Kreuzer and Nill [KKN10](@cite),
-- [Lattice triangles by Gorenstein index](#Lattice-triangles-by-Gorenstein-index) from Andreas Bäuerle [Bae23](@cite).
-- [Lattice triangles by Picard index](#Lattice-triangles-by-Picard-index) from Justus Springer [Spr24](@cite).
+- [LDP polygons by Gorenstein index](#LDP-polygons-by-Gorenstein-index) from Kasprzyk, Kreuzer and Nill [KKN10](@cite),
+- [LDP triangles by Gorenstein index](#LDP-triangles-by-Gorenstein-index) from Andreas Bäuerle [Bae23](@cite),
+- [LDP triangles by Picard index](#LDP-triangles-by-Picard-index) from Justus Springer [Spr24](@cite),
+- [LDP triangles with integral degree](#LDP-triangles-with-integral-degree) from Hausen and Király [HaKi24](@cite).
 
 Moreover, the classifications from [BS24](@cite) are implemented:
 
@@ -94,7 +95,7 @@ julia> [length(filter(P -> number_of_vertices(P) == max_vertices[m], Pss[m])) fo
   3
 ```
 
-## Lattice polygons by Gorenstein index
+## LDP polygons by Gorenstein index
 
 In [KKN10](@cite), the authors describe an algorithm to classify LDP polygons by Gorenstein index. RationalPolygons.jl implements a version of their algorithm, which successfully reproduces their numbers (see Theorem 1.2 of [KKN10](@cite)).
 
@@ -105,7 +106,7 @@ choose_next_vertex
 classify_lattice_polygons_by_gorenstein_index
 ```
 
-## Lattice triangles by Gorenstein index
+## LDP triangles by Gorenstein index
 
 In [Bae23](@cite), Bäuerle classified Fano simplices by dimension and
 gorenstein index. RationalPolygons.jl implements a version of his algorithm
@@ -121,7 +122,7 @@ HDFBaeuerleStorage
 classify_lattice_triangles_by_gorenstein_index
 ```
 
-## Lattice triangles by Picard index
+## LDP triangles by Picard index
 
 [Spr24](@cite) contains a classification of ldp triangles (toric log del Pezzo
 surfaces of rank one) by Picard index. RationalPolygons.jl implements a version
@@ -135,6 +136,40 @@ InMemoryPicardIndexStorage
 HDFPicardIndexStorage
 classify_lattice_triangles_by_picard_index
 ```
+
+## LDP triangles with integral degree
+
+In [HaKi24](@cite), Hausen and Király classified fake weighted projective
+planes having integral degree (=canonical self intersection). In terms of
+polygons, these can be described as LDP triangles such that twice the
+euclidian area of its dual is an integer. The attained values of this integer
+(which is the degree of the associated fake weighted projective plane) are 1,
+2, 3, 4, 5, 6, 8 and 9. In total, there are 24 infinite series of these
+triangles, where each of them is parameterized by the solution set of a squared
+Markov type equation (see Theorem 1.1 of [HaKi24](@cite)). These solution sets
+can be described as infinite binary trees with a unique root.
+RationalPolygons.jl uses this description to implement a classification
+algorithm for LDP triangles with integral degree. To make this classification
+finite, one has to provide a maximal depth to which the solution trees are
+traversed.
+
+All methods used for this classification come with a parameter `T <: Integer`,
+which is the integer type to be used. Since the entries of the solution triples
+of squared Markov type equations grow very quickly with increasing depth, it is
+recommended to use `BigInt` here instead of fixed-size integer types (`Int64`
+overflows already for `depth = 4`).
+
+```@docs
+degree(w :: SVector{3})
+fake_weight_vector
+n_step_mutations
+initial_triple
+adjust_triple
+classify_squared_markov_type_equation_solutions
+fake_weight_vectors_to_triangles
+classify_lattice_triangles_integral_degree
+```
+
 ## Maximal rational polygons contained in ``\mathbb{R}\times[-1,1]``
 
 Here we provide an implementation for Algorithm 3.4 of [BS24](@cite).
