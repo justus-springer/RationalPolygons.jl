@@ -1,5 +1,4 @@
-export minors
-export is_almost_free
+export is_almost_free_grading_matrix
 export get_gorenstein_coefficient_solutions
 export modified_unit_fraction_solutions
 export classify_quadrilaterals_by_gorenstein_index
@@ -73,7 +72,7 @@ function get_gorenstein_coefficient_solutions(ι :: T) where {T <: Integer}
         a42 = (ι*a22*a41+ι*a11*a41+ι*a11*a22-a11*a22*a41) ÷ (ι*a22)
         a41 > 0 || continue
 
-        push!(res, [a11 a12 ; a21 a22 ; a31 a32 ; a41 a42])
+        push!(res, SMatrix{4,2,T}(a11,a21,a31,a41,a12,a22,a32,a42))
 
     end
 
@@ -94,7 +93,7 @@ function get_gorenstein_coefficient_solutions(ι :: T) where {T <: Integer}
             a22 = (ι*a11*a41) ÷ (a11*a41+ι*a42-ι*a11-ι*a41)
             a22 > 0 || continue
 
-            push!(res, [a11 a12 ; a21 a22 ; a31 a32 ; a41 a42])
+            push!(res, SMatrix{4,2,T}(a11,a21,a31,a41,a12,a22,a32,a42))
 
         end
     end
@@ -109,7 +108,8 @@ function get_degree_matrix_solutions(ι :: T) where {T <: Integer}
 
     for A ∈ get_gorenstein_coefficient_solutions(ι)
         G = SMatrix{4,4,T}([ι-A[1,1] ι-A[1,2] ι ι ; ι ι-A[2,1] ι-A[2,2] ι ; ι ι ι-A[3,1] ι-A[3,2] ; ι-A[4,2] ι ι ι-A[4,1]])
-        Q = SMatrix{2,4,T}(Matrix(kernel(matrix(ZZ, G))))
+        U = hnfr(G).U
+        Q = SMatrix{2,4,T}(U[3:4,:])
         is_almost_free_grading_matrix(Q) || continue
         push!(res, Q)
     end
@@ -127,43 +127,55 @@ function classify_quadrilaterals_by_gorenstein_index(ι :: T) where {T <: Intege
     result = Set{RationalPolygon{T,4,8}}()
 
     for Q in get_degree_matrix_solutions(ι)
+        w11,w12,w21,w22,w31,w32,w41,w42 = Q
 
-        mu12 = det(Q[:,3],Q[:,4])
-        mu23 = det(Q[:,1],Q[:,4])
-        mu34 = det(Q[:,1],Q[:,2])
-        mu14 = det(Q[:,2],Q[:,3])
-        mu13 = det(Q[:,2],Q[:,4])
-        mu24 = det(Q[:,1],Q[:,3])
+        mu12 = w31 * w42 - w32 * w41
+        mu23 = w11 * w42 - w12 * w41
+        mu34 = w11 * w22 - w12 * w21
+        mu14 = w21 * w32 - w22 * w31
+        mu13 = w21 * w42 - w22 * w41
+        mu24 = w11 * w32 - w12 * w31
+        
+        for ι4 in divisors(ι)
+            ι4*(mu12 - mu24 - mu14) % mu14 == 0 || continue
+            q = ι4*(mu12 - mu24 - mu14) ÷ mu14
 
-        for ιr in divisors(ι)
-            ιr*(mu12 - mu24 - mu14) % mu14 == 0 || continue
-            q = ιr*(mu12 - mu24 - mu14) ÷ mu14
+            for c in divisors(q)
+                b = q ÷ c
+                for ι1 in divisors(ι)
+                    b % gcd(ι1, ι4) == 0 || continue
+                    y2 = ι1*c
+                    for d = ceil(T, -1//c) : floor(T, ι1 - 1//c)
+                        # checks if ι1 is really the local gorenstein
+                        # index of v1 and v2
+                        gcd(d,ι1) == 1 || continue
 
-            for c in divisors(q), ι1 in divisors(ι), α in 0 : (ι1*c)-1
-                β = ι1*c
-                gcd(β, 1-α) == c || continue
-                gcd(β, α) == 1 || continue
+                        x2 = 1 + c*d
+                        gcd(x2, y2) == 1 || continue
 
-                v1 = LatticePoint{T}(1,0)
-                v2 = LatticePoint{T}(α,β)
-                gorenstein_index(v1, v2) == ι1 || continue
+                        (mu23 + x2*mu13) % mu12 == 0 || continue
+                        x3 = -(mu23 + x2*mu13) ÷ mu12
+                        (y2*mu13) % mu12 == 0 || continue
+                        y3 = -(y2*mu13) ÷ mu12
+                        gcd(x3, y3) == 1 || continue
 
-                (mu23 + α*mu13) % mu12 == 0 || continue
-                (β*mu13) % mu12 == 0 || continue
-                (mu24 + α*mu14) % mu12 == 0 || continue
-                (β*mu14) % mu12 == 0 || continue
+                        (mu24 + x2*mu14) % mu12 == 0 || continue
+                        x4 = (mu24 + x2*mu14) ÷ mu12
+                        (y2*mu14) % mu12 == 0 || continue
+                        y4 = (y2*mu14) ÷ mu12
+                        gcd(x4, y4) == 1 || continue
+                        
+                        # check if ι4 is really the local gorenstein
+                        # index of v4 and v1
+                        ι4*(1-x4) % y4 == 0 || continue
+                        gcd(ι4, ι4*(1-x4) ÷ y4) == 1 || continue
 
-                v3 = LatticePoint{T}(-(mu23 + α*mu13) ÷ mu12, -(β*mu13) ÷ mu12)
-                gcd(v3[1], v3[2]) == 1 || continue
-                v4 = LatticePoint{T}((mu24 + α*mu14) ÷ mu12, (β*mu14) ÷ mu12)
-                gcd(v4[1], v4[2]) == 1 || continue
-                gorenstein_index(v4, v1) == ιr || continue
+                        P = RationalPolygon(SMatrix{2,4,T}(1,0,x2,y2,x3,y3,x4,y4),1)
+                        gorenstein_index(P) == ι || continue
 
-                P = convex_hull([v1, v2, v3, v4])
-                gorenstein_index(P) == ι || continue
-
-                push!(result, unimodular_normal_form(P))
-
+                        push!(result, unimodular_normal_form(P))
+                    end
+                end
             end
         end
     end

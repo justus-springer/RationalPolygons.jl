@@ -148,7 +148,7 @@ function degree_matrix(P :: RationalPolygon{T,N}) where {N, T <: Integer}
     S, U, _ = snf_with_transform(transpose(vertex_matrix(P)))
     d = S[2,2] # equals multiplicity(P)
     Q_free = SMatrix{N-2,N,T}(U[3:end,:])
-    Q_torsion = SVector{N,T}(U[2,:] .% d)
+    Q_torsion = SVector{N,T}([mod(U[2,i], 0:d-1) for i = 1 : N])
     return Q_free, Q_torsion
 end
 

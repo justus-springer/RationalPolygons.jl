@@ -49,5 +49,5 @@ import XXhash:
     xxh3_128
 
 import NormalForms:
-    hnfc
-
+    hnfc,
+    hnfr
