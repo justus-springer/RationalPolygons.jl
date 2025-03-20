@@ -1,3 +1,5 @@
+export modified_unit_fraction_solutions
+export classify_quadrilaterals_by_gorenstein_index
 export gorenstein_matrix
 export gorenstein_coefficients
 export degree_matrix

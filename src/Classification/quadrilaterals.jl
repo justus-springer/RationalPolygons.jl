@@ -1,9 +1,3 @@
-export is_almost_free_grading_matrix
-export get_gorenstein_coefficient_solutions
-export modified_unit_fraction_solutions
-export classify_quadrilaterals_by_gorenstein_index
-export get_degree_matrix_solutions
-
 @doc raw"""
     modified_unit_fraction_solutions(r :: T, s :: T, c :: T, d :: T) where {T <: Integer}
     
@@ -42,40 +36,73 @@ end
 modified_unit_fraction_solutions(q :: Rational{T}, c :: T, d :: T) where {T <: Integer} =
 modified_unit_fraction_solutions(numerator(q), denominator(q), c, d)
 
-function is_almost_free_grading_matrix(Q :: SMatrix{2,4,T}) where {T <: Integer}
-    gcd(det(Q[:,1],Q[:,2]), det(Q[:,2],Q[:,3]), det(Q[:,3],Q[:,1])) == 1 || return false
-    gcd(det(Q[:,1],Q[:,2]), det(Q[:,2],Q[:,4]), det(Q[:,4],Q[:,1])) == 1 || return false
-    gcd(det(Q[:,1],Q[:,3]), det(Q[:,3],Q[:,4]), det(Q[:,4],Q[:,1])) == 1 || return false
-    gcd(det(Q[:,2],Q[:,3]), det(Q[:,3],Q[:,4]), det(Q[:,4],Q[:,2])) == 1 || return false
-    return true
+function gorenstein_coefficients_to_degree_matrix_minors(ι :: T,
+        a11 :: T, a12 :: T, a21 :: T, a22 :: T,
+        a31 :: T, a32 :: T, a41 :: T, a42 :: T) where {T <: Integer}
+
+    # The gorenstein matrix
+    G = MMatrix{4,4,T}(ι, ι, ι-a42, ι-a11, ι-a21, ι, ι, ι-a12, ι-a22, ι-a31, ι, ι, ι, ι-a32, ι-a41, ι)
+
+    # An ad hoc way of computing the kernel of G, given that we already
+    # know that it is two-dimensional.
+    U = MMatrix{4,4,T}(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)
+    zero_column_after!(G, U, 1, 1)
+    if iszero(G[2,2])
+        i = findfirst(i -> !iszero(G[i,2]), 3 : 4)
+        swaprows!(G, 2, 2 + i)
+        swaprows!(U, 2, 2 + i)
+    end
+    zero_column_after!(G, U, 2, 2)
+    
+    # The lower two rows of U are now a lattice basis of the kernel of G,
+    # i.e. can be viewed as the free part of the degree matrix Q.
+    # We compute all of its minors.
+    m12 = U[3,3] * U[4,4] - U[4,3] * U[3,4]
+    m13 = U[3,2] * U[4,4] - U[4,2] * U[3,4]
+    m14 = U[3,2] * U[4,3] - U[4,2] * U[3,3]
+    m23 = U[3,1] * U[4,4] - U[4,1] * U[3,4]
+    m24 = U[3,1] * U[4,3] - U[4,1] * U[3,3]
+    m34 = U[3,1] * U[4,2] - U[4,1] * U[3,2]
+
+    return (m12, m13, m14, m23, m24, m34)
+
 end
 
-function get_gorenstein_coefficient_solutions(ι :: T) where {T <: Integer}
 
-    res = SMatrix{4,2,T}[]
+function get_degree_matrix_minors(ι :: T) where {T <: Integer}
 
-    for a11 = ι+1 : 3ι, 
-        a12 = 1 : a11-1,
-        (a32, a21) in modified_unit_fraction_solutions(1 // ι - 1 // a11, a12, a11),
-        a31 = 1 : a32-1
+    res = SVector{6,T}[]
 
-        a11*a32-ι*a11-ι*a32 ≠ 0 || continue
-        ι*a11*(a32-a31) % (a11*a32-ι*a11-ι*a32) == 0 || continue
-        a22 = ι*a11*(a32-a31) ÷ (a11*a32-ι*a11-ι*a32)
+    for a11 = ι+1 : 3ι, a12 = 1 : a11-1
+        for (a32, a21) in modified_unit_fraction_solutions(1 // ι - 1 // a11, a12, a11),
+            a31 = 1 : a32-1
 
-        a12*a22-ι*a12-ι*a22+ι*a21 ≠ 0 || continue
-        ι*a12*a22 % (a12*a22-ι*a12-ι*a22+ι*a21) == 0 || continue
-        a41 = ι*a12*a22 ÷ (a12*a22-ι*a12-ι*a22+ι*a21)
-        a41 > 0 || continue
+            a11*a32-ι*a11-ι*a32 ≠ 0 || continue
+            ι*a11*(a32-a31) % (a11*a32-ι*a11-ι*a32) == 0 || continue
+            a22 = ι*a11*(a32-a31) ÷ (a11*a32-ι*a11-ι*a32)
 
-        (ι*a22*a41+ι*a11*a41+ι*a11*a22-a11*a22*a41) % (ι*a22) == 0 || continue
-        a42 = (ι*a22*a41+ι*a11*a41+ι*a11*a22-a11*a22*a41) ÷ (ι*a22)
-        a41 > 0 || continue
+            a12*a22-ι*a12-ι*a22+ι*a21 ≠ 0 || continue
+            ι*a12*a22 % (a12*a22-ι*a12-ι*a22+ι*a21) == 0 || continue
+            a41 = ι*a12*a22 ÷ (a12*a22-ι*a12-ι*a22+ι*a21)
+            a41 > 0 || continue
 
-        push!(res, SMatrix{4,2,T}(a11,a21,a31,a41,a12,a22,a32,a42))
+            (ι*a22*a41+ι*a11*a41+ι*a11*a22-a11*a22*a41) % (ι*a22) == 0 || continue
+            a42 = (ι*a22*a41+ι*a11*a41+ι*a11*a22-a11*a22*a41) ÷ (ι*a22)
+            a41 > 0 || continue
 
+            m12, m13, m14, m23, m24, m34 = gorenstein_coefficients_to_degree_matrix_minors(ι,a11,a12,a21,a22,a31,a32,a41,a42)
+
+            # check necessary condition for almost freeness
+            gcd(m34, m14, m24) == 1 || continue
+            gcd(m34, m13, m23) == 1 || continue
+            gcd(m24, m12, m23) == 1 || continue
+            gcd(m14, m12, m13) == 1 || continue
+
+            push!(res, SVector{6,T}(m12, m13, m14, m23, m24, m34))
+        end
     end
 
+    # Treat a11 = a12 seperately
     for a11 = ι+1 : 2ι
         a12 = a11
         (ι*a11) % (a11-ι) == 0 || continue
@@ -93,25 +120,17 @@ function get_gorenstein_coefficient_solutions(ι :: T) where {T <: Integer}
             a22 = (ι*a11*a41) ÷ (a11*a41+ι*a42-ι*a11-ι*a41)
             a22 > 0 || continue
 
-            push!(res, SMatrix{4,2,T}(a11,a21,a31,a41,a12,a22,a32,a42))
+            m12, m13, m14, m23, m24, m34 = gorenstein_coefficients_to_degree_matrix_minors(ι,a11,a12,a21,a22,a31,a32,a41,a42)
+
+            # check necessary condition for almost freeness
+            gcd(m34, m14, m24) == 1 || continue
+            gcd(m34, m13, m23) == 1 || continue
+            gcd(m24, m12, m23) == 1 || continue
+            gcd(m14, m12, m13) == 1 || continue
+
+            push!(res, SVector{6,T}(m12, m13, m14, m23, m24, m34))
 
         end
-    end
-
-    return res
-
-end
-
-function get_degree_matrix_solutions(ι :: T) where {T <: Integer}
-
-    res = SMatrix{2,4,T}[]
-
-    for A ∈ get_gorenstein_coefficient_solutions(ι)
-        G = SMatrix{4,4,T}([ι-A[1,1] ι-A[1,2] ι ι ; ι ι-A[2,1] ι-A[2,2] ι ; ι ι ι-A[3,1] ι-A[3,2] ; ι-A[4,2] ι ι ι-A[4,1]])
-        U = hnfr(G).U
-        Q = SMatrix{2,4,T}(U[3:4,:])
-        is_almost_free_grading_matrix(Q) || continue
-        push!(res, Q)
     end
 
     return res
@@ -126,19 +145,11 @@ function classify_quadrilaterals_by_gorenstein_index(ι :: T) where {T <: Intege
 
     result = Set{RationalPolygon{T,4,8}}()
 
-    for Q in get_degree_matrix_solutions(ι)
-        w11,w12,w21,w22,w31,w32,w41,w42 = Q
-
-        mu12 = w31 * w42 - w32 * w41
-        mu23 = w11 * w42 - w12 * w41
-        mu34 = w11 * w22 - w12 * w21
-        mu14 = w21 * w32 - w22 * w31
-        mu13 = w21 * w42 - w22 * w41
-        mu24 = w11 * w32 - w12 * w31
+    for (m12, m13, m14, m23, m24, m34) in get_degree_matrix_minors(ι)
         
         for ι4 in divisors(ι)
-            ι4*(mu12 - mu24 - mu14) % mu14 == 0 || continue
-            q = ι4*(mu12 - mu24 - mu14) ÷ mu14
+            ι4*(m12 - m24 - m14) % m14 == 0 || continue
+            q = ι4*(m12 - m24 - m14) ÷ m14
 
             for c in divisors(q)
                 b = q ÷ c
@@ -153,16 +164,16 @@ function classify_quadrilaterals_by_gorenstein_index(ι :: T) where {T <: Intege
                         x2 = 1 + c*d
                         gcd(x2, y2) == 1 || continue
 
-                        (mu23 + x2*mu13) % mu12 == 0 || continue
-                        x3 = -(mu23 + x2*mu13) ÷ mu12
-                        (y2*mu13) % mu12 == 0 || continue
-                        y3 = -(y2*mu13) ÷ mu12
+                        (m23 + x2*m13) % m12 == 0 || continue
+                        x3 = -(m23 + x2*m13) ÷ m12
+                        (y2*m13) % m12 == 0 || continue
+                        y3 = -(y2*m13) ÷ m12
                         gcd(x3, y3) == 1 || continue
 
-                        (mu24 + x2*mu14) % mu12 == 0 || continue
-                        x4 = (mu24 + x2*mu14) ÷ mu12
-                        (y2*mu14) % mu12 == 0 || continue
-                        y4 = (y2*mu14) ÷ mu12
+                        (m24 + x2*m14) % m12 == 0 || continue
+                        x4 = (m24 + x2*m14) ÷ m12
+                        (y2*m14) % m12 == 0 || continue
+                        y4 = (y2*m14) ÷ m12
                         gcd(x4, y4) == 1 || continue
                         
                         # check if ι4 is really the local gorenstein
@@ -170,7 +181,7 @@ function classify_quadrilaterals_by_gorenstein_index(ι :: T) where {T <: Intege
                         ι4*(1-x4) % y4 == 0 || continue
                         gcd(ι4, ι4*(1-x4) ÷ y4) == 1 || continue
 
-                        P = RationalPolygon(SMatrix{2,4,T}(1,0,x2,y2,x3,y3,x4,y4),1)
+                        P = RationalPolygon(SMatrix{2,4,T}(1,0,x2,y2,x3,y3,x4,y4),one(T))
                         gorenstein_index(P) == ι || continue
 
                         push!(result, unimodular_normal_form(P))
