@@ -41,11 +41,11 @@ function gorenstein_coefficients_to_degree_matrix_minors(ι :: T,
         a31 :: T, a32 :: T, a41 :: T, a42 :: T) where {T <: Integer}
 
     # The gorenstein matrix
-    G = MMatrix{4,4,T}(ι, ι, ι-a42, ι-a11, ι-a21, ι, ι, ι-a12, ι-a22, ι-a31, ι, ι, ι, ι-a32, ι-a41, ι)
+    G = T[ι ι-a21 ι-a22 ι ; ι ι ι-a31 ι-a32 ; ι-a42 ι ι ι-a41 ; ι-a11 ι-a12 ι ι]
 
     # An ad hoc way of computing the kernel of G, given that we already
     # know that it is two-dimensional.
-    U = MMatrix{4,4,T}(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)
+    U = T[1 0 0 0 ; 0 1 0 0 ; 0 0 1 0 ; 0 0 0 1]
     zero_column_after!(G, U, 1, 1)
     if iszero(G[2,2])
         i = findfirst(i -> !iszero(G[i,2]), 3 : 4)
@@ -56,13 +56,17 @@ function gorenstein_coefficients_to_degree_matrix_minors(ι :: T,
     
     # The lower two rows of U are now a lattice basis of the kernel of G,
     # i.e. can be viewed as the free part of the degree matrix Q.
-    # We compute all of its minors.
-    m12 = U[3,3] * U[4,4] - U[4,3] * U[3,4]
-    m13 = U[3,2] * U[4,4] - U[4,2] * U[3,4]
-    m14 = U[3,2] * U[4,3] - U[4,2] * U[3,3]
-    m23 = U[3,1] * U[4,4] - U[4,1] * U[3,4]
-    m24 = U[3,1] * U[4,3] - U[4,1] * U[3,3]
-    m34 = U[3,1] * U[4,2] - U[4,1] * U[3,2]
+    
+    # We safeguard this computation by using big integers, since this seems to
+    # be the place where overflow happens first. The resulting minors however
+    # generally not very big, so we can switch to a fixed-size integer type
+    # again afterwards.
+    m12 = T(big(U[3,3]) * big(U[4,4]) - big(U[4,3]) * big(U[3,4]))
+    m13 = T(big(U[3,2]) * big(U[4,4]) - big(U[4,2]) * big(U[3,4]))
+    m14 = T(big(U[3,2]) * big(U[4,3]) - big(U[4,2]) * big(U[3,3]))
+    m23 = T(big(U[3,1]) * big(U[4,4]) - big(U[4,1]) * big(U[3,4]))
+    m24 = T(big(U[3,1]) * big(U[4,3]) - big(U[4,1]) * big(U[3,3]))
+    m34 = T(big(U[3,1]) * big(U[4,2]) - big(U[4,1]) * big(U[3,2]))
 
     return (m12, m13, m14, m23, m24, m34)
 

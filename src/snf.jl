@@ -36,7 +36,6 @@ function modify_rows!(
         x, y = A[i1,j], A[i2,j]
         A[i1,j] = α * x + β * y
         A[i2,j] = γ * x + δ * y
-
     end
 
 end
