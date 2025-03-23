@@ -56,17 +56,12 @@ function gorenstein_coefficients_to_degree_matrix_minors(ι :: T,
     
     # The lower two rows of U are now a lattice basis of the kernel of G,
     # i.e. can be viewed as the free part of the degree matrix Q.
-    
-    # We safeguard this computation by using big integers, since this seems to
-    # be the place where overflow happens first. The resulting minors however
-    # generally not very big, so we can switch to a fixed-size integer type
-    # again afterwards.
-    m12 = T(big(U[3,3]) * big(U[4,4]) - big(U[4,3]) * big(U[3,4]))
-    m13 = T(big(U[3,2]) * big(U[4,4]) - big(U[4,2]) * big(U[3,4]))
-    m14 = T(big(U[3,2]) * big(U[4,3]) - big(U[4,2]) * big(U[3,3]))
-    m23 = T(big(U[3,1]) * big(U[4,4]) - big(U[4,1]) * big(U[3,4]))
-    m24 = T(big(U[3,1]) * big(U[4,3]) - big(U[4,1]) * big(U[3,3]))
-    m34 = T(big(U[3,1]) * big(U[4,2]) - big(U[4,1]) * big(U[3,2]))
+    m12 = U[3,3] * U[4,4] - U[4,3] * U[3,4]
+    m13 = U[3,2] * U[4,4] - U[4,2] * U[3,4]
+    m14 = U[3,2] * U[4,3] - U[4,2] * U[3,3]
+    m23 = U[3,1] * U[4,4] - U[4,1] * U[3,4]
+    m24 = U[3,1] * U[4,3] - U[4,1] * U[3,3]
+    m34 = U[3,1] * U[4,2] - U[4,1] * U[3,2]
 
     return (m12, m13, m14, m23, m24, m34)
 
