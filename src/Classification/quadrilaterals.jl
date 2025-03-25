@@ -150,17 +150,21 @@ function classify_quadrilaterals_by_gorenstein_index(ι :: T) where {T <: Intege
             ι4*(m12 - m24 - m14) % m14 == 0 || continue
             q = ι4*(m12 - m24 - m14) ÷ m14
 
-            for c in divisors(q)
-                b = q ÷ c
+            for c1 in divisors(q)
+                b = q ÷ c1 # b = ι1*d4 + ι4*d1
                 for ι1 in divisors(ι)
                     b % gcd(ι1, ι4) == 0 || continue
-                    y2 = ι1*c
-                    for d = ceil(T, -1//c) : floor(T, ι1 - 1//c)
-                        # checks if ι1 is really the local gorenstein
-                        # index of v1 and v2
-                        gcd(d,ι1) == 1 || continue
+                    y2 = ι1*c1
+                    for d1 = ceil(T, -1//c1) : floor(T, ι1 - 1//c1)
+                        # validate that ι1 is the correct local gorenstein index
+                        gcd(d1,ι1) == 1 || continue
 
-                        x2 = 1 + c*d
+                        (b - ι4*d1) % ι1 == 0 || continue
+                        d4 = (b - ι4*d1) ÷ ι1
+                        # validate that ι4 is the correct local gorenstein index
+                        gcd(d4,ι4) == 1 || continue
+
+                        x2 = 1 + c1*d1
                         gcd(x2, y2) == 1 || continue
 
                         (m23 + x2*m13) % m12 == 0 || continue
@@ -175,11 +179,6 @@ function classify_quadrilaterals_by_gorenstein_index(ι :: T) where {T <: Intege
                         y4 = (y2*m14) ÷ m12
                         gcd(x4, y4) == 1 || continue
                         
-                        # check if ι4 is really the local gorenstein
-                        # index of v4 and v1
-                        ι4*(1-x4) % y4 == 0 || continue
-                        gcd(ι4, ι4*(1-x4) ÷ y4) == 1 || continue
-
                         P = RationalPolygon(SMatrix{2,4,T}(1,0,x2,y2,x3,y3,x4,y4),one(T))
                         gorenstein_index(P) == ι || continue
 
