@@ -169,11 +169,11 @@ function gorenstein_coefficients(P :: RationalPolygon{T,N}) where {T <: Integer,
     return transpose(hcat(As...))
 end
 
-function gorenstein_matrix(P :: RationalPolygon{T,N}) where {T <: Integer, N}
-    A = gorenstein_coefficients(P)
-    g = gorenstein_index(P)
-    return SMatrix{N,N,T}([g - (mod(j-i+1,1:N) ≤ N-2 ? A[i,mod(j-i+1,1:N)] : 0) for i = 1:N, j = 1:N])
-end
+gorenstein_matrix(ι :: T, A :: SMatrix{N,M,T}) where {T <: Integer, N, M} =
+SMatrix{N,N,T}([(mod(j-i+1,1:N) ≤ N-2 ? ι - A[i,mod(j-i+1,1:N)] : ι) for i = 1:N, j = 1:N])
+
+gorenstein_matrix(P :: RationalPolygon{T,N}) where {T <: Integer, N} =
+gorenstein_matrix(gorenstein_index(P), gorenstein_coefficients(P))
 
 function log_canonicities(P :: RationalPolygon{T,N}, i :: Int) where {N,T <: Integer}
     V = vertex_matrix(P)
