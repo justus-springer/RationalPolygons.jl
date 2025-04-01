@@ -87,7 +87,7 @@ function get_degree_matrix_minors(ι :: T) where {T <: Integer}
 
             (ι*a22*a41+ι*a11*a41+ι*a11*a22-a11*a22*a41) % (ι*a22) == 0 || continue
             a42 = (ι*a22*a41+ι*a11*a41+ι*a11*a22-a11*a22*a41) ÷ (ι*a22)
-            a41 > 0 || continue
+            a42 > 0 || continue
 
             m12, m13, m14, m23, m24, m34 = gorenstein_coefficients_to_degree_matrix_minors(ι,a11,a12,a21,a22,a31,a32,a41,a42)
 
