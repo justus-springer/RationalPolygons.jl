@@ -37,23 +37,12 @@ modified_unit_fraction_solutions(q :: Rational{T}, c :: T, d :: T) where {T <: I
 modified_unit_fraction_solutions(numerator(q), denominator(q), c, d)
 
 function gorenstein_coefficients_to_degree_matrix_minors(ι :: T,
-        a11 :: T, a12 :: T, a21 :: T, a22 :: T,
-        a31 :: T, a32 :: T, a41 :: T, a42 :: T) where {T <: Integer}
+        A :: SMatrix{4,2,T,8}) where {T <: Integer}
 
     # The gorenstein matrix
-    G = T[ι ι-a21 ι-a22 ι ; ι ι ι-a31 ι-a32 ; ι-a42 ι ι ι-a41 ; ι-a11 ι-a12 ι ι]
+    G = T[ι-A[1,1] ι-A[1,2] ι ι ; ι ι-A[2,1] ι-A[2,2] ι ; ι ι ι-A[3,1] ι-A[3,2] ; ι-A[4,2] ι ι ι-A[4,1]]
+    U = hnfc(G).U'
 
-    # An ad hoc way of computing the kernel of G, given that we already
-    # know that it is two-dimensional.
-    U = T[1 0 0 0 ; 0 1 0 0 ; 0 0 1 0 ; 0 0 0 1]
-    zero_column_after!(G, U, 1, 1)
-    if iszero(G[2,2])
-        i = findfirst(i -> !iszero(G[i,2]), 3 : 4)
-        swaprows!(G, 2, 2 + i)
-        swaprows!(U, 2, 2 + i)
-    end
-    zero_column_after!(G, U, 2, 2)
-    
     # The lower two rows of U are now a lattice basis of the kernel of G,
     # i.e. can be viewed as the free part of the degree matrix Q.
     m12 = U[3,3] * U[4,4] - U[4,3] * U[3,4]
@@ -68,68 +57,124 @@ function gorenstein_coefficients_to_degree_matrix_minors(ι :: T,
 end
 
 
+function get_gorenstein_coefficients(ι :: T) where {T <: Integer}
+
+    res = SMatrix{4,2,T}[]
+
+    # Case a11 < a12
+    for a12 = ι+1 : 3ι-1, a11 = 1 : a12-1
+        for (a31,a42) in modified_unit_fraction_solutions(1//ι - 1//a12, a11, a12)
+            a12 ≤ a31 || continue
+            for a32 = 1 : a31-1
+                a41, a41rem = divrem(a42*a12*(a32-a31), a31*(a11-a12))
+                a41rem == 0 || continue
+                a12 ≤ max(a41,a42) || continue
+
+                a11*a41 + a32*a42 - a11*a32 ≠ 0 || continue
+
+                a21, a21rem = divrem(a12*a32*a42, a11*a41 + a32*a42 - a11*a32)
+                a21rem == 0 || continue
+
+                a22, a22rem = divrem(a11*a21*(a31-a32), a32*(a12-a11))
+                a22rem == 0 || continue
+
+                a12 ≤ max(a21,a22) || continue
+
+                A = SMatrix{4,2,T}(a11,a21,a31,a41,a12,a22,a32,a42)
+                all(a -> a > 0, A) || continue
+                push!(res, A)
+                
+            end
+        end
+    end
+
+    # Case a11 = a12 (hence also a31 = a32)
+    for a11 = ι+1 : 3ι-1
+        a31, a31rem = divrem(ι*a11, a11-ι)
+        a31rem == 0 || continue
+        a11 ≤ a31 || continue
+
+        # Subcase a22 ≤ a21.
+        # Then we must have a22 ≤ a31 and a41 ≤ a31.
+        for a22 = 1 : a31, a41 = 1 : a31
+            # Now we can compute a21 and a42
+            a21, a21rem = divrem(a11*a22*(a41-a31), a31*a41)
+            a21 = a11 - a21
+            a21rem == 0 || continue
+            a22 ≤ a21 || continue
+
+            a42, a42rem = divrem(a21*a41, a22)
+            a42rem == 0 || continue
+            a41 ≤ a42 || continue
+
+            A = SMatrix{4,2,T}(a11,a21,a31,a41,a11,a22,a31,a42)
+            all(a -> a > 0, A) || continue
+            push!(res, A)
+
+        end
+
+        # Subcase a21 < a22.
+        # Then min(a21,a42) < 2ι. By symmetry, we may assume
+        # a21 = min(a21,a42) < 2ι.
+        for a21 = 1 : 2ι-1
+            # Subsubcase a22 ≤ a31.
+            for a22 = 1 : a31
+                a11 ≤ a22 || continue
+
+                a11*a22+a21*a31-a11*a31 ≠ 0 || continue
+                a41, a41rem = divrem(a11*a22*a31, a11*a22+a21*a31-a11*a31)
+                a41rem == 0 || continue
+
+                a42, a42rem = divrem(a21*a41, a22)
+                a42rem == 0 || continue
+                a11 ≤ max(a41,a42)
+
+                A = SMatrix{4,2,T}(a11,a21,a31,a41,a11,a22,a31,a42)
+                all(a -> a > 0, A) || continue
+                push!(res, A)
+
+            end
+
+            # Subsubcase a31 < a22. Then also a42 < a11
+            for a42 = 1 : a11-1
+                a22, a22rem = divrem(a31*(a11*a21+a11*a42-a21*a42), a11*a42)
+                a22rem == 0 || continue
+                a21 < a22 || continue
+                a31 < a22 || continue
+                a11 ≤ a22 || continue
+
+                a41, a41rem = divrem(a22*a31*(a11-a42), a11*(a22-a31))
+                a41rem == 0 || continue
+                a42 < a41 || continue
+                a11 ≤ a41 || continue
+
+                A = SMatrix{4,2,T}(a11,a21,a31,a41,a11,a22,a31,a42)
+                all(a -> a > 0, A) || continue
+                push!(res, A)
+            end
+        end
+
+    end
+
+    return res
+
+end
+
+
 function get_degree_matrix_minors(ι :: T) where {T <: Integer}
 
     res = SVector{6,T}[]
 
-    for a11 = ι+1 : 3ι, a12 = 1 : a11-1
-        for (a32, a21) in modified_unit_fraction_solutions(1 // ι - 1 // a11, a12, a11),
-            a31 = 1 : a32-1
+    for A ∈ get_gorenstein_coefficients(ι)
+        m12, m13, m14, m23, m24, m34 = gorenstein_coefficients_to_degree_matrix_minors(ι,A)
 
-            a11*a32-ι*a11-ι*a32 ≠ 0 || continue
-            ι*a11*(a32-a31) % (a11*a32-ι*a11-ι*a32) == 0 || continue
-            a22 = ι*a11*(a32-a31) ÷ (a11*a32-ι*a11-ι*a32)
+        # check necessary condition for almost freeness
+        gcd(m34, m14, m24) == 1 || continue
+        gcd(m34, m13, m23) == 1 || continue
+        gcd(m24, m12, m23) == 1 || continue
+        gcd(m14, m12, m13) == 1 || continue
 
-            a12*a22-ι*a12-ι*a22+ι*a21 ≠ 0 || continue
-            ι*a12*a22 % (a12*a22-ι*a12-ι*a22+ι*a21) == 0 || continue
-            a41 = ι*a12*a22 ÷ (a12*a22-ι*a12-ι*a22+ι*a21)
-            a41 > 0 || continue
-
-            (ι*a22*a41+ι*a11*a41+ι*a11*a22-a11*a22*a41) % (ι*a22) == 0 || continue
-            a42 = (ι*a22*a41+ι*a11*a41+ι*a11*a22-a11*a22*a41) ÷ (ι*a22)
-            a42 > 0 || continue
-
-            m12, m13, m14, m23, m24, m34 = gorenstein_coefficients_to_degree_matrix_minors(ι,a11,a12,a21,a22,a31,a32,a41,a42)
-
-            # check necessary condition for almost freeness
-            gcd(m34, m14, m24) == 1 || continue
-            gcd(m34, m13, m23) == 1 || continue
-            gcd(m24, m12, m23) == 1 || continue
-            gcd(m14, m12, m13) == 1 || continue
-
-            push!(res, SVector{6,T}(m12, m13, m14, m23, m24, m34))
-        end
-    end
-
-    # Treat a11 = a12 seperately
-    for a11 = ι+1 : 2ι
-        a12 = a11
-        (ι*a11) % (a11-ι) == 0 || continue
-        a31 = (ι*a11) ÷ (a11-ι)
-        a32 = a31
-        for a42 = 1 : a31, a21 = 1 : a31
-
-            a11*a21+ι*a12-ι*a11-ι*a21 ≠ 0 || continue
-            (ι*a11*a21+ι*a12*a42-ι*a21*a42) % (a11*a21+ι*a12-ι*a11-ι*a21) == 0 || continue 
-            a41 = (ι*a11*a21+ι*a12*a42-ι*a21*a42) ÷ (a11*a21+ι*a12-ι*a11-ι*a21)
-            a41 > 0 || continue
-
-            a11*a41+ι*a42-ι*a11-ι*a41 ≠ 0 || continue
-            (ι*a11*a41) % (a11*a41+ι*a42-ι*a11-ι*a41) == 0 || continue 
-            a22 = (ι*a11*a41) ÷ (a11*a41+ι*a42-ι*a11-ι*a41)
-            a22 > 0 || continue
-
-            m12, m13, m14, m23, m24, m34 = gorenstein_coefficients_to_degree_matrix_minors(ι,a11,a12,a21,a22,a31,a32,a41,a42)
-
-            # check necessary condition for almost freeness
-            gcd(m34, m14, m24) == 1 || continue
-            gcd(m34, m13, m23) == 1 || continue
-            gcd(m24, m12, m23) == 1 || continue
-            gcd(m14, m12, m13) == 1 || continue
-
-            push!(res, SVector{6,T}(m12, m13, m14, m23, m24, m34))
-
-        end
+        push!(res, SVector{6,T}(m12, m13, m14, m23, m24, m34))
     end
 
     return res
