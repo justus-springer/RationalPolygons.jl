@@ -130,7 +130,6 @@ of this algorithm, which successfully reproduces the numbers from Theorem 8.5
 of [Spr24](@cite).
 
 ```@docs
-quadruple_decompositions
 PicardIndexStorage
 InMemoryPicardIndexStorage
 HDFPicardIndexStorage

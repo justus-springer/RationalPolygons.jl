@@ -1,34 +1,5 @@
 
 @doc raw"""
-    quadruple_decompositions(p :: T) where {T <: Integer}
-    
-Return all quadruples `(n,w0,w1,w2)` such that `n^2 * w0 * w1 * w2 == n`.
-
-"""
-function quadruple_decompositions(p :: T) where {T <: Integer}
-    res = Tuple{T,T,T,T}[]
-    for n = 1 : isqrt(p)
-        q0,r0 = divrem(p, n^2)
-        r0 == 0 || continue
-        for w0 = 1 : q0
-            q1,r1 = divrem(q0, w0)
-            r1 == 0 || continue
-            for w1 = w0 : q1
-                w2,r2 = divrem(q1, w1)
-                r2 == 0 || continue
-                w1 ≤ w2 || continue
-                gcd(w0,w1) == 1 || continue
-                gcd(w1,w2) == 1 || continue
-                gcd(w2,w0) == 1 || continue
-                push!(res, (n,w0,w1,w2))
-            end
-        end
-    end
-    return res
-end
-
-
-@doc raw"""
     classify_lattice_triangles_by_picard_index(p :: T) where {T <: Integer}
 
 Return all lattice triangles with Picard index `p`.
@@ -48,14 +19,26 @@ Set{RationalPolygon{Int64, 3, 6}} with 2 elements:
 function classify_lattice_triangles_by_picard_index(p :: T) where {T <: Integer}
     res = Set{RationalPolygon{T,3,6}}()
 
-    for (n,w0,w1,w2) ∈ quadruple_decompositions(p)
-        for x = 0 : n*w2-1
-            (y,r) = divrem(w0 + x*w1, w2)
-            r == 0 || continue
-            gcd(x, n*w2) == 1 || continue
-            gcd(y, n*w1) == 1 || continue
-            P = RationalPolygon(SMatrix{2,3,T,6}(1,0,x,n*w2,-y,-n*w1), 1)
-            push!(res, unimodular_normal_form(P))
+    for n = 1 : isqrt(p)
+        q0,r0 = divrem(p, n^2)
+        r0 == 0 || continue
+        for w0 = 1 : isqrt(q0)
+            q1,r1 = divrem(q0, w0)
+            r1 == 0 || continue
+            gcd(w0, q0 ÷ w0) == 1 || continue
+            for w1 = w0 : isqrt(q1)
+                w2,r2 = divrem(q1, w1)
+                r2 == 0 || continue
+                gcd(w1,w2) == 1 || continue
+                for x = 0 : n*w0-1
+                    (y,r) = divrem(w2 + x*w1, w0)
+                    r == 0 || continue
+                    gcd(x, n*w0) == 1 || continue
+                    gcd(y, n*w1) == 1 || continue
+                    P = RationalPolygon(SMatrix{2,3,T,6}(1,0,x,n*w0,-y,-n*w1), 1)
+                    push!(res, unimodular_normal_form(P))
+                end
+            end
         end
     end
     return res
