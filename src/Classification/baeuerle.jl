@@ -78,7 +78,7 @@ function classify_lattice_triangles_by_gorenstein_index(ι :: T) where {T <: Int
                 δ = - w1 * γ ÷ w2
                 gcd(β, δ) == 1 || continue
 
-                P = RationalPolygon(SMatrix{2,3,T,6}(1,0,α,γ,β,δ), 1)
+                P = RationalPolygon(SMatrix{2,3,T,6}(1,0,α,γ,β,δ), one(T))
                 gorenstein_index(P) == ι || continue
                 push!(res, unimodular_normal_form(P))
             end
