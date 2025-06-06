@@ -9,6 +9,7 @@ RationalPolygons.jl implements the following classification algorithms:
 - [LDP triangles by Gorenstein index](#LDP-triangles-by-Gorenstein-index) from Andreas Bäuerle [Bae23](@cite),
 - [LDP triangles by Picard index](#LDP-triangles-by-Picard-index) from Justus Springer [Spr24](@cite),
 - [LDP triangles with integral degree](#LDP-triangles-with-integral-degree) from Hausen and Király [HaKi24](@cite).
+- [LDP quadrangles by Gorenstein index](#LDP-quadrangles-by-Gorenstein-index) from Justus Springer.
 
 Moreover, the classifications from [BS24](@cite) are implemented:
 
@@ -167,6 +168,18 @@ adjust_triple
 classify_squared_markov_type_equation_solutions
 fake_weight_vectors_to_triangles
 classify_lattice_triangles_integral_degree
+```
+
+## LDP quadrangles by Gorenstein index
+
+The following is a classification of LDP quadrangles by Gorenstein index.
+A reference explaining the approach used will be added in the future.
+
+```@docs
+modified_unit_fraction_solutions
+gorenstein_coefficients_to_degree_matrix_minors
+classify_gorenstein_coefficients
+classify_quadrilaterals_by_gorenstein_index
 ```
 
 ## Maximal rational polygons contained in ``\mathbb{R}\times[-1,1]``

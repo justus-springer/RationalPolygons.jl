@@ -88,7 +88,6 @@ end
 Classify Gorenstein coefficients associated to Fano ι-Gorenstein matrices.
 Optionally takes in a `Val{t}` argument, where `t` can be 1, 2, 3 or 4.
 In this case, only the Gorenstein coefficients of type `t` are classified.
-(TODO: Add reference to dissertation/paper for definition of types 1-4).
 
 """
 function classify_gorenstein_coefficients(ι :: T, ::Val{1}) where {T <: Integer}
