@@ -244,11 +244,14 @@ union!(classify_gorenstein_coefficients(ι, Val(1)),
 classify_gorenstein_coefficients(ι :: Integer) =
 classify_gorenstein_coefficients(ι, Val(0))
 
-function classify_degree_matrix_minors(ι :: T, ::Val{t}) where {t, T <: Integer}
+divisors(n :: Integer) = filter(k -> n % k == 0, 1 : abs(n))
 
-    res = SVector{6,T}[]
+function classify_quadrilaterals_by_gorenstein_index(ι :: T, As :: Set{SMatrix{4,2,T}}) where {T <: Integer}
 
-    for A ∈ classify_gorenstein_coefficients(ι, Val(t))
+    result = Set{RationalPolygon{T,4,8}}()
+
+    for A in As
+
         m12, m13, m14, m23, m24, m34 = gorenstein_coefficients_to_degree_matrix_minors(ι,A)
 
         # check necessary condition for almost freeness
@@ -256,25 +259,6 @@ function classify_degree_matrix_minors(ι :: T, ::Val{t}) where {t, T <: Integer
         gcd(m34, m13, m23) == 1 || continue
         gcd(m24, m12, m23) == 1 || continue
         gcd(m14, m12, m13) == 1 || continue
-
-        push!(res, SVector{6,T}(m12, m13, m14, m23, m24, m34))
-    end
-
-    return res
-
-end
-
-classify_degree_matrix_minors(ι :: Integer) =
-classify_degree_matrix_minors(ι, Val(0))
-
-
-divisors(n :: Integer) = filter(k -> n % k == 0, 1 : abs(n))
-
-function classify_quadrilaterals_by_gorenstein_index(ι :: T, ::Val{t}) where {t, T <: Integer}
-
-    result = Set{RationalPolygon{T,4,8}}()
-
-    for (m12, m13, m14, m23, m24, m34) in classify_degree_matrix_minors(ι, Val(t))
         
         for ι4 in divisors(ι)
             ι4*(m12 - m24 - m14) % m14 == 0 || continue
@@ -321,6 +305,10 @@ function classify_quadrilaterals_by_gorenstein_index(ι :: T, ::Val{t}) where {t
 
     return result
 end
+
+
+classify_quadrilaterals_by_gorenstein_index(ι :: T, :: Val{t}) where {t, T <: Integer} =
+classify_quadrilaterals_by_gorenstein_index(ι, classify_gorenstein_coefficients(ι, Val(t)))
 
 @doc raw"""
     classify_quadrilaterals_by_gorenstein_index(ι :: Integer)
