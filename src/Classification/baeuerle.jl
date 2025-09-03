@@ -57,28 +57,26 @@ Set{RationalPolygon{Int64, 3}} with 5 elements:
 function classify_lattice_triangles_by_gorenstein_index(ι :: T) where {T <: Integer}
     res = Set{RationalPolygon{T,3}}()
 
-    for (a0, a1, a2) in unit_fraction_partitions_length_three(ι)
+    for (a1, a2, a3) in unit_fraction_partitions_length_three(ι)
 
         # Compute the weight vector from the unit fraction partition
-        g = gcd(a1 * a2, a0 * a2, a0 * a1)
-        w0, w1, w2 = a1 * a2 ÷ g, a0 * a2 ÷ g, a0 * a1 ÷ g
+        g = gcd(a2 * a3, a1 * a3, a1 * a2)
+        w1, w2, w3 = a2 * a3 ÷ g, a1 * a3 ÷ g, a1 * a2 ÷ g
 
         # Check if it's well formed
-        (gcd(w0, w1) == 1 && gcd(w0, w2) == 1 && gcd(w1, w2) == 1) || continue
+        (gcd(w1, w2) == 1 && gcd(w1, w3) == 1 && gcd(w2, w3) == 1) || continue
 
-        γ_max = gcd(a0,a1)
-        for γ = 1 : γ_max
-            # `γ` must be a divisor of `gcd(a0,a1)`
-            γ_max % γ == 0 || continue
-            for α = 0 : γ-1
-                gcd(α, γ) == 1 || continue
-                (w0 + w1 * α) % w2 == 0 || continue
-                (w1 * γ) % w2 == 0 || continue
-                β = -(w0 + w1 * α) ÷ w2
-                δ = - w1 * γ ÷ w2
-                gcd(β, δ) == 1 || continue
+        for y2 = 1 : a1
+            a2 % y2 == 0 || continue
+            for x2 = 0 : y2-1
+                gcd(x2, y2) == 1 || continue
+                (w1 + w2 * x2) % w3 == 0 || continue
+                (w2 * y2) % w3 == 0 || continue
+                x3 = -(w1 + w2 * x2) ÷ w3
+                y3 = - w2 * y2 ÷ w3
+                gcd(x3, y3) == 1 || continue
 
-                P = RationalPolygon(SMatrix{2,3,T,6}(1,0,α,γ,β,δ), one(T))
+                P = RationalPolygon(SMatrix{2,3,T,6}(1,0,x2,y2,x3,y3), one(T))
                 gorenstein_index(P) == ι || continue
                 push!(res, unimodular_normal_form(P))
             end
