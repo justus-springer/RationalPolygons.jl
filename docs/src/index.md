@@ -21,7 +21,7 @@ algorithms, including two-dimensional euclidian geometry, from scratch in pure
 Julia. This allows for quite good performance, with computations involving
 billions of polygons being feasable on a personal computer.
 
-# Quick start
+## Quick start
 
 ```@repl quick_start
 using RationalPolygons
@@ -42,8 +42,3 @@ dual(P)
 are_affine_equivalent(P, dual(P))
 gorenstein_index(P)
 ```
-
-```@bibliography
-```
-
-

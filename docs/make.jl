@@ -22,7 +22,7 @@ if format == "html"
     makedocs(
         sitename = "RationalPolygons",
         pages = [
-            "Home" => "index.md",
+            "RationalPolygons.jl" => "index.md",
             "2D Geometry" => "2dgeometry.md",
             "Rational Polygons" => "polygons.md",
             "LDP polygons and toric surfaces" => "ldp.md",

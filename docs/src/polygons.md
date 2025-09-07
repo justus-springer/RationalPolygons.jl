@@ -1,6 +1,4 @@
-# Rational Polygons
-
-## The `RationalPolygon` type
+# Polygons
 
 In RationalPolygons.jl, we represent a polygon ``P \subseteq \mathbb{R}^2`` by
 two pieces of data: An integral matrix ``V \in \mathbb{Z}^{2\times N}`` and an
@@ -34,9 +32,9 @@ objects, once viewed as a ``k``-rational polygon and once viewed as a
 that there is no canonical "first vertex" of a polygon, i.e. we can shift the
 columns of ``V`` around and still describe the same polygon. Moreover, we
 choose to order them clockwise or counterclockwise. This problem is adressed in
-the section on [normal forms](##Normal forms).
+the section on [normal forms](#Normal forms).
 
-### Constructors
+## Constructors
 
 Besides the type constructor methods, we provide the functions
 [`convex_hull`](@ref) and [`intersect_halfplanes`](@ref) to create a polygon
@@ -49,9 +47,7 @@ intersect_halfplanes
 empty_polygon
 ```
 
-## Properties
-
-### Basic Properties
+## Basic Properties
 
 ```@docs
 number_of_vertices
@@ -163,18 +159,11 @@ to each other if and only if their (affine) unimodular normal forms coincide.
 For details about the normal form used in RationalPolygons.jl, we refer to
 [BS24](@cite).
 
-### Normal forms
-
 ```@docs
 unimodular_normal_form
 are_unimodular_equivalent
 affine_normal_form
 are_affine_equivalent
-```
-
-### Automorphism groups
-
-```@docs
 PolygonAutomorphismGroup
 CyclicGroup
 DihedralGroup
