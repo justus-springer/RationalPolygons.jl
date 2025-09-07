@@ -11,7 +11,7 @@ RationalPolygons.jl implements the following classification algorithms:
 - [LDP triangles with integral degree](#LDP-triangles-with-integral-degree) from Hausen and Király [HaKi24](@cite).
 - [LDP quadrangles by Gorenstein index](#LDP-quadrangles-by-Gorenstein-index) from Justus Springer.
 
-Moreover, the classifications from [BS24](@cite) are implemented:
+Moreover, the classifications from [BS24_1](@cite) are implemented:
 
 - [Maximal rational polygons contained in ``\mathbb{R}\times[-1,1]``](#Maximal-rational-polygons-contained-in-\mathbb{R}\times[-1,1]),
 - [Maximal rational polygons with no interior lattice points](#Maximal-rational-polygons-with-no-interior-lattice-points),
@@ -184,7 +184,7 @@ classify_quadrilaterals_by_gorenstein_index
 
 ## Maximal rational polygons contained in ``\mathbb{R}\times[-1,1]``
 
-Here we provide an implementation for Algorithm 3.4 of [BS24](@cite).
+Here we provide an implementation for Algorithm 3.4 of [BS24_1](@cite).
 
 ```@docs
 classify_maximal_polygons_m1p1
@@ -192,7 +192,7 @@ classify_maximal_polygons_m1p1
 
 ## Maximal rational polygons with no interior lattice points
 
-Here, we provide an implementation for Algorithm 4.4 of [BS24](@cite).
+Here, we provide an implementation for Algorithm 4.4 of [BS24_1](@cite).
 
 ```@docs
 classify_maximal_lattice_free_polygons_m1p2_squares
@@ -203,7 +203,7 @@ classify_maximal_lattice_free_polygons
 
 ## Rational polygons with one interior lattice point
 
-Here, we provide an implementation of Algorithm 5.4 of [BS24](@cite).
+Here, we provide an implementation of Algorithm 5.4 of [BS24_1](@cite).
 
 ```@docs
 classify_maximal_polygons_genus_one_m1p1
@@ -220,7 +220,7 @@ polygons with primitive vertices. These are exactly the almost ``k``-hollow LDP
 polygons and they correspond to ``1/k``-log canonical toric del Pezzo surfaces.
 In particular, we can reproduce the classification of the 48032 almost 3-hollow
 LDP polygons (``1/3``-log canonical toric del Pezzo surfaces) from Theorem 4.11
-of [HHS23](@cite). See also Table 6 of [BS24](@cite) for the classification up
+of [HaHaSp25](@cite). See also Table 6 of [BS24_1](@cite) for the classification up
 to ``k = 6``.
 
 ```julia

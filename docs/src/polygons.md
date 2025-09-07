@@ -157,7 +157,7 @@ equivalence class, i.e. two polygons should be (affine) unimodular equivalent
 to each other if and only if their (affine) unimodular normal forms coincide.
 
 For details about the normal form used in RationalPolygons.jl, we refer to
-[BS24](@cite).
+[BS24_1](@cite).
 
 ```@docs
 unimodular_normal_form
