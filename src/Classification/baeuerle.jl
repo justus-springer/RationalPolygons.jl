@@ -120,7 +120,7 @@ Perform Bäuerle's classification of lattice triangles up go
 # Example
 
 Reproduce Bäuerle's original classification up to gorenstein index 1000, see
-Theorem 1.4 of [Bae23](@cite).
+Theorem 1.4 of [Ba25](@cite).
 
 ```jldoctest
 julia> st = InMemoryBaeuerleStorage{Int}()
