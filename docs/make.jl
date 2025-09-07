@@ -1,14 +1,14 @@
 if length(ARGS) > 1
     println("Usage: julia make.jl <format>")
-    println("Format can be 'html', 'pdf', or 'tex'.")
+    println("Format can be 'html', 'thesis'")
     exit(1)
 end
 
 format = isempty(ARGS) ? "html" : ARGS[1]
 
-if format ∉ ["html", "pdf", "tex"]
+if format ∉ ["html", "thesis"]
     println("Usage: julia make.jl <format>")
-    println("Format can be 'html', 'pdf', or 'tex'.")
+    println("Format can be 'html', 'thesis'")
     exit(1)
 end
 
@@ -28,6 +28,7 @@ if format == "html"
             "LDP polygons and toric surfaces" => "ldp.md",
             "Subpolygons" => "subpolygons.md",
             "Classifications" => "classifications.md",
+            "Bibliography" => "bibliography.md",
             "Index" => "docs_index.md"
         ],
         plugins = [bib]
@@ -37,23 +38,31 @@ if format == "html"
         repo = "github.com/justus-springer/RationalPolygons.jl.git",
     )
 
-elseif format == "pdf"
+elseif format == "thesis"
     makedocs(
         sitename = "RationalPolygons",
-        format = Documenter.LaTeX(),
+        format = Documenter.LaTeX(platform = "none"),
         pages = [
-            "Home" => "index.md",
             "2D Geometry" => "2dgeometry.md",
             "Rational Polygons" => "polygons.md",
             "LDP polygons and toric surfaces" => "ldp.md",
             "Subpolygons" => "subpolygons.md",
             "Classifications" => "classifications.md",
-            "Index" => "docs_index.md"
         ],
         plugins = [bib],
     )
 
-elseif format == "tex"
+    filename = joinpath(@__DIR__, "build", "RationalPolygons.tex")
+
+    txt = read(filename, String)
+
+    # Add preamble
+    txt = "%!TEX root = thesis.tex\n" * txt
+
+    # Fix displaying of emojis
+    txt = replace(txt, "🗂️" => "|\\folder|", "🔢" => "|\\dataset|")
+
+    write(filename, txt)
 
 else
     println("Invalid format. Please choose 'html', 'pdf', or 'tex'.")
