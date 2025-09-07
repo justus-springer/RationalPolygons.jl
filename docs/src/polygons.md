@@ -1,7 +1,3 @@
-# Rational Polygons
-
-## The `RationalPolygon` type
-
 In RationalPolygons.jl, we represent a polygon ``P \subseteq \mathbb{R}^2`` by
 two pieces of data: An integral matrix ``V \in \mathbb{Z}^{2\times N}`` and an
 integer ``k \in \mathbb{Z}``, called the _rationality_. The associated polygon
@@ -34,9 +30,9 @@ objects, once viewed as a ``k``-rational polygon and once viewed as a
 that there is no canonical "first vertex" of a polygon, i.e. we can shift the
 columns of ``V`` around and still describe the same polygon. Moreover, we
 choose to order them clockwise or counterclockwise. This problem is adressed in
-the section on [normal forms](##Normal forms).
+the section on [normal forms](#Normal forms).
 
-### Constructors
+# Constructors
 
 Besides the type constructor methods, we provide the functions
 [`convex_hull`](@ref) and [`intersect_halfplanes`](@ref) to create a polygon
@@ -49,9 +45,7 @@ intersect_halfplanes
 empty_polygon
 ```
 
-## Properties
-
-### Basic Properties
+# Basic Properties
 
 ```@docs
 number_of_vertices
@@ -74,7 +68,7 @@ dual
 ```
 
 
-## Ehrhart Theory
+# Ehrhart Theory
 
 Consider a ``k``-rational polygon ``P``. The main result of Ehrhart Theory is
 that the the number of lattice points in integral multiples of ``P`` is a
@@ -117,7 +111,7 @@ RationalPolygons.jl comes with many methods for counting the (interior,
 boundary) lattice points of a rational polygon as well as computing its
 Ehrhart quasipolynomial and its periods.
 
-### Counting lattice points
+## Counting lattice points
 
 ```@docs
 generic_lattice_points
@@ -139,7 +133,7 @@ integer_hull
 interior_integer_hull
 ```
 
-### Ehrhart quasipolynomial
+## Ehrhart quasipolynomial
 
 ```@docs
 is_periodic
@@ -152,7 +146,7 @@ is_quasiintegral
 ```
 
 
-## Normal forms and automorphism groups
+# Normal forms and automorphism groups
 
 Two ``k``-rational polygons are called _(affine) unimodular_ equivalent if they
 can be transformed into each other by an (affine) unimodular transformation.
@@ -163,18 +157,11 @@ to each other if and only if their (affine) unimodular normal forms coincide.
 For details about the normal form used in RationalPolygons.jl, we refer to
 [BS24](@cite).
 
-### Normal forms
-
 ```@docs
 unimodular_normal_form
 are_unimodular_equivalent
 affine_normal_form
 are_affine_equivalent
-```
-
-### Automorphism groups
-
-```@docs
 PolygonAutomorphismGroup
 CyclicGroup
 DihedralGroup
@@ -184,7 +171,7 @@ unimodular_automorphism_group
 affine_automorphism_group
 ```
 
-## Lattice width
+# Lattice width
 
 In [Boh23](@cite), Bohnert describes the concept of _lattice width data_, which
 captures information about the slicing lengths of a polygon with respect to a
@@ -207,7 +194,7 @@ numbers_of_interior_integral_vertical_lines
 positions_of_longest_vertical_slice_length
 ```
 
-## IO
+# IO
 
 RationalPolygons.jl provides two ways to save polygons to a file: The first is text-based, where polygons can be written and read to files containing one polygon per line like this:
 

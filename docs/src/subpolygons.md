@@ -1,11 +1,9 @@
-# Subpolygons
-
 Given a ``k``-rational polygon ``P``, we want to find all subpolygons of ``P``
 up to equivalence. The algorithm used by RationalPoylgons.jl is described in
 section 2.3 of [BS24](@cite). The main idea is to succesively remove vertices
 of ``P`` by computing hilbert bases.
 
-## Hilbert bases
+# Hilbert bases
 
 We follow [CLS11](@cite) to compute hilbert bases of two-dimensional cones
 using Hirzebruch-Jung continued fractions.
@@ -17,7 +15,7 @@ hilbert_basis
 remove_vertex
 ```
 
-## Computing subpolygons
+# Computing subpolygons
 
 Subpolygons can be either computed in memory or on disk using HDF5. The
 latter is useful for large computations, since the amount of data can easily

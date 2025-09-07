@@ -1,5 +1,3 @@
-# LDP polygons and toric surfaces
-
 An LDP polygon is a lattice polygon with primitive vertices containing the
 origin in its interior. LDP polygons correspond to toric _l_og _d_el _P_ezzo
 surfaces. In this package, we call more generally a `k`-rational polygon LDP,

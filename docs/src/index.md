@@ -1,5 +1,3 @@
-# RationalPolygons.jl
-
 [RationalPolygons.jl](https://github.com/justus-springer/RationalPolygons.jl)
 is a pure Julia package for computations with rational convex polygons. It implements
 
