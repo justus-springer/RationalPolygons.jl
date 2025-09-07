@@ -11,7 +11,7 @@ is a pure Julia package for computations with rational convex polygons. It imple
 - various [classification algorithms](classifications.md) for integral and rational polygons.
 
 I have written RationalPolygons.jl in the span of about six months while
-working on a joint project with Martin Bohnert [BS24](@cite). Its main purpose
+working on a joint project with Martin Bohnert [BS24_1](@cite). Its main purpose
 is to provide reference implementations of the classification algorithms
 developed in our paper. However, it also implements many more basic algorithms
 for computations with rational polygons that I believe might be useful in other

@@ -122,7 +122,7 @@ The multiplicity of `P` divided by `gcd(w[2] - v[2], v[1] - w[1])`, where `v`
 and `w` are the `i`-th and `i+1`-th scaled vertices of `P` respectively. For
 ldp polygons, this equals the local gorenstein at the toric fixed point
 associated to the `i`-th and `i+1`-th ray of `P`, see e.g. Lemma 3.9
-of [HHHS22](@cite).
+of [HaHaHaSp25](@cite).
 
 """
 gorenstein_index(P :: RationalPolygon{T}, i :: Int) where {T <: Integer} =
@@ -204,7 +204,7 @@ minimum([log_canonicity(P,i) for i = 1 : N])
 Writing `u`, `v` and `w` for the `i-1`-th, `i`-th and `i+1`-th scaled vertex of
 `P` respectively, return `det(w,u) // (det(u,v) * det(v,w))`. For ldp polygons,
 this equals the self intersection number of the `i`-th toric prime divisor, see
-e.g. Summary 3.2 of [HHS23](@cite).
+e.g. Summary 3.2 of [HaHaSp25](@cite).
 
 """
 function toric_prime_divisor_self_intersection(P :: RationalPolygon{T,N}, i :: Int) where {N, T <: Integer}

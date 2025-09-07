@@ -2,7 +2,7 @@
 
 Given a ``k``-rational polygon ``P``, we want to find all subpolygons of ``P``
 up to equivalence. The algorithm used by RationalPoylgons.jl is described in
-section 2.3 of [BS24](@cite). The main idea is to succesively remove vertices
+section 2.3 of [BS24_1](@cite). The main idea is to succesively remove vertices
 of ``P`` by computing hilbert bases.
 
 ## Hilbert bases
