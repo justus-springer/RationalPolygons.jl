@@ -6,7 +6,7 @@ RationalPolygons.jl implements the following classification algorithms:
 - [Lattice polygons by number of interior lattice points](#Lattice-polygons-by-number-of-interior-lattice-points) from Castryck [Cas12](@cite),
 - [Lattice polygons contained in a square](#Lattice-polygons-contained-in-a-square) from Brown and Kasprzyk [BK13](@cite),
 - [LDP polygons by Gorenstein index](#LDP-polygons-by-Gorenstein-index) from Kasprzyk, Kreuzer and Nill [KKN10](@cite),
-- [LDP triangles by Gorenstein index](#LDP-triangles-by-Gorenstein-index) from Andreas Bäuerle [Bae23](@cite),
+- [LDP triangles by Gorenstein index](#LDP-triangles-by-Gorenstein-index) from Andreas Bäuerle [Ba25](@cite),
 - [LDP triangles by Picard index](#LDP-triangles-by-Picard-index) from Justus Springer [Spr24](@cite),
 - [LDP triangles with integral degree](#LDP-triangles-with-integral-degree) from Hausen and Király [HaKi24](@cite).
 - [LDP quadrangles by Gorenstein index](#LDP-quadrangles-by-Gorenstein-index) from Justus Springer.
@@ -109,10 +109,10 @@ classify_lattice_polygons_by_gorenstein_index
 
 ## LDP triangles by Gorenstein index
 
-In [Bae23](@cite), Bäuerle classified Fano simplices by dimension and
+In [Ba25](@cite), Bäuerle classified Fano simplices by dimension and
 gorenstein index. RationalPolygons.jl implements a version of his algorithm
 (specialized to the two-dimensional case), which reproduces his numbers
-sucessfully (see Theorem 1.4 of [Bae23](@cite) and
+sucessfully (see Theorem 1.4 of [Ba25](@cite) and
 [A145582](https://oeis.org/A145582)).
 
 ```@docs
