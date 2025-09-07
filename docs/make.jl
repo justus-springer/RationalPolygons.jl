@@ -62,6 +62,9 @@ elseif format == "thesis"
     # Fix displaying of emojis
     txt = replace(txt, "🗂️" => "|\\folder|", "🔢" => "|\\dataset|")
 
+    # Fix citations
+    txt = replace(txt, r"\[\\hyperref\[doc:(\w+)\]\{\d+\}\]" => s"\\cite{\1}")
+
     write(filename, txt)
 
 else
