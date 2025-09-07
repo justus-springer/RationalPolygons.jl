@@ -40,8 +40,3 @@ dual(P)
 are_affine_equivalent(P, dual(P))
 gorenstein_index(P)
 ```
-
-```@bibliography
-```
-
-

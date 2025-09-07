@@ -5,12 +5,13 @@ bib = CitationBibliography(joinpath(@__DIR__, "src", "refs.bib"))
 makedocs(
     sitename = "RationalPolygons",
     pages = [
-        "Home" => "index.md",
+        "RationalPolygons.jl" => "index.md",
         "2D Geometry" => "2dgeometry.md",
-        "Rational Polygons" => "polygons.md",
+        "Polygons" => "polygons.md",
         "LDP polygons and toric surfaces" => "ldp.md",
         "Subpolygons" => "subpolygons.md",
         "Classifications" => "classifications.md",
+        "Bibliograhy" => "bibliography.md",
         "Index" => "docs_index.md"
     ],
     plugins = [bib]
