@@ -1,7 +1,9 @@
+# 2D Geometry
+
 RationalPolygons.jl comes with its own library for two-dimensional geometry over
 the rational numbers, which is implented from scratch in pure Julia.
 
-# Points
+## Points
 
 The basic types for points in RationalPolygons.jl are `LatticePoint`, `RationalPoint` and `Point`, which are aliases for [static vectors](https://juliaarrays.github.io/StaticArrays.jl/stable/) of length two.
 
@@ -18,7 +20,7 @@ distance
 pseudo_angle
 ```
 
-# Graham scan
+## Graham scan
 
 
 ```@docs
@@ -26,7 +28,7 @@ graham_scan!
 graham_scan
 ```
 
-# Lines
+## Lines
 
 ```@docs
 Line
@@ -45,7 +47,7 @@ intersection_behaviour
 intersection_point
 ```
 
-# Affine halfplanes
+## Affine halfplanes
 
 ```@docs
 AffineHalfplane

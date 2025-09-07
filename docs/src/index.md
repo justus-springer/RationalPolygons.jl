@@ -1,3 +1,5 @@
+# RationalPolygons.jl
+
 [RationalPolygons.jl](https://github.com/justus-springer/RationalPolygons.jl)
 is a pure Julia package for computations with rational convex polygons. It implements
 
@@ -19,7 +21,7 @@ algorithms, including two-dimensional euclidian geometry, from scratch in pure
 Julia. This allows for quite good performance, with computations involving
 billions of polygons being feasable on a personal computer.
 
-# Quick start
+## Quick start
 
 ```@repl quick_start
 using RationalPolygons

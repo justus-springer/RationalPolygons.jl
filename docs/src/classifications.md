@@ -1,3 +1,5 @@
+# Classifications
+
 RationalPolygons.jl implements the following classification algorithms:
 
 - [Lattice polygons by number of lattice points](#Lattice-polygons-by-number-of-lattice-points) from R.J. Koelman [Koe91](@cite),
@@ -16,7 +18,7 @@ Moreover, the classifications from [BS24](@cite) are implemented:
 - [Rational polygons with one interior lattice point](#Rational-polygons-with-one-interior-lattice-point),
 - [Almost ``k``-hollow LDP polygons](#Almost-k-hollow-LDP-polygons).
 
-# Lattice polygons by number of lattice points
+## Lattice polygons by number of lattice points
 
 In his PhD thesis, R.J. Koelman describes an algorithm to classify lattice
 polygons with a given number of lattice points and ran it up to 42 lattice
@@ -34,7 +36,7 @@ classify_next_number_of_lattice_points
 classify_polygons_by_number_of_lattice_points
 ```
 
-# Lattice polygons by number of interior lattice points
+## Lattice polygons by number of interior lattice points
 
 In [Cas12](@cite), Castryck describes an algorithm for the classification of
 lattice polygons by their number of interior lattice points and ran it up to 30
@@ -51,7 +53,7 @@ classify_next_genus
 classify_lattice_polygons_by_genus
 ```
 
-# Lattice polygons contained in a square
+## Lattice polygons contained in a square
 
 In [BK13](@cite), the authors considered lattice polygons that are contained in
 a square of fixed side length and classified them up to side length 7. Their
@@ -94,7 +96,7 @@ julia> [length(filter(P -> number_of_vertices(P) == max_vertices[m], Pss[m])) fo
   3
 ```
 
-# LDP polygons by Gorenstein index
+## LDP polygons by Gorenstein index
 
 In [KKN10](@cite), the authors describe an algorithm to classify LDP polygons by Gorenstein index. RationalPolygons.jl implements a version of their algorithm, which successfully reproduces their numbers (see Theorem 1.2 of [KKN10](@cite)).
 
@@ -105,7 +107,7 @@ choose_next_vertex
 classify_lattice_polygons_by_gorenstein_index
 ```
 
-# LDP triangles by Gorenstein index
+## LDP triangles by Gorenstein index
 
 In [Bae23](@cite), Bäuerle classified Fano simplices by dimension and
 gorenstein index. RationalPolygons.jl implements a version of his algorithm
@@ -121,7 +123,7 @@ HDFBaeuerleStorage
 classify_lattice_triangles_by_gorenstein_index
 ```
 
-# LDP triangles by Picard index
+## LDP triangles by Picard index
 
 [Spr24](@cite) contains a classification of ldp triangles (toric log del Pezzo
 surfaces of rank one) by Picard index. RationalPolygons.jl implements a version
@@ -135,7 +137,7 @@ HDFPicardIndexStorage
 classify_lattice_triangles_by_picard_index
 ```
 
-# LDP triangles with integral degree
+## LDP triangles with integral degree
 
 In [HaKi24](@cite), Hausen and Király classified fake weighted projective
 planes having integral degree (=canonical self intersection). In terms of
@@ -168,7 +170,7 @@ fake_weight_vectors_to_triangles
 classify_lattice_triangles_integral_degree
 ```
 
-# LDP quadrangles by Gorenstein index
+## LDP quadrangles by Gorenstein index
 
 The following is a classification of LDP quadrangles by Gorenstein index.
 A reference explaining the approach used will be added in the future.
@@ -180,7 +182,7 @@ classify_gorenstein_coefficients
 classify_quadrilaterals_by_gorenstein_index
 ```
 
-# Maximal rational polygons contained in ``\mathbb{R}\times[-1,1]``
+## Maximal rational polygons contained in ``\mathbb{R}\times[-1,1]``
 
 Here we provide an implementation for Algorithm 3.4 of [BS24](@cite).
 
@@ -188,7 +190,7 @@ Here we provide an implementation for Algorithm 3.4 of [BS24](@cite).
 classify_maximal_polygons_m1p1
 ```
 
-# Maximal rational polygons with no interior lattice points
+## Maximal rational polygons with no interior lattice points
 
 Here, we provide an implementation for Algorithm 4.4 of [BS24](@cite).
 
@@ -199,7 +201,7 @@ classify_maximal_lattice_free_polygons_m1p2
 classify_maximal_lattice_free_polygons
 ```
 
-# Rational polygons with one interior lattice point
+## Rational polygons with one interior lattice point
 
 Here, we provide an implementation of Algorithm 5.4 of [BS24](@cite).
 
@@ -211,7 +213,7 @@ classify_maximal_polygons_genus_one
 classify_polygons_genus_one
 ```
 
-# Almost $k$-hollow LDP polygons
+## Almost $k$-hollow LDP polygons
 
 We can instruct `classify_polygons_genus_one` to only output `k`-rational
 polygons with primitive vertices. These are exactly the almost ``k``-hollow LDP
