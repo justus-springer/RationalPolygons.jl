@@ -9,8 +9,8 @@ equals `2*N`. It has the following fields:
 - `rationality :: T`: The rationality of the polygon, e.g. `1` for lattice polygons, `2` for half-integral polygons etc.
 - `vertex_matrix :: SMatrix{2,N,T,M}`: An integral 2xN matrix. The vertices of the polygon are understood to be the columns of this matrix divided by `rationality`.
 - `number_of_vertices :: Int`: The number of vertices of the polygon. This is redundant information, since the number of vertices is already available as the type parameter `N`. However, getting the number of vertices of a polygon through the type paremeter means lots of work for Julia's dispatch algorithm. Therefore, we found it to improve performance to put it as a variable into the struct as well.
-- `is_unimodular_normal_form :: Bool`: A flag variable to remember that the polygon is already in unimodular normal form.
-- `is_affine_normal_form :: Bool`: A flag variable to remember that the polygon is already in affine normal form.
+- `is_unimodular_normal_form :: Bool`: A flag to remember that the polygon is already in unimodular normal form. This should not be set by the user, but is used internally to avoid redundant computations of the normal form.
+- `is_affine_normal_form :: Bool`: A flag variable to remember that the polygon is already in affine normal form. This should not be set by the user, but is used internally to avoid redundant computations of the normal form.
 
 """
 struct RationalPolygon{T<:Integer,N,M}
@@ -111,7 +111,7 @@ RationalPolygon(SMatrix{2,0,T,0}(), rationality)
 
 
 @doc raw"""
-empty_polygon(::Type{T}) where {T <: Integer}
+    empty_polygon(::Type{T}) where {T <: Integer}
 
 Return the empty polygon of integer type `T`. The rationality is understood to
 be one, i.e. it is a lattice polygon.

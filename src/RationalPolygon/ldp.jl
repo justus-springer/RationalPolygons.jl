@@ -43,7 +43,7 @@ filter(i -> is_special_facet(P,i), 1 : N)
 @doc raw"""
     dual(P :: RationalPolygon{T}) where {T <: Integer}
 
-Return the dual of a polygon `P`. Note that `P` must contain the origin in its interior.
+Return the dual of a polygon `P`. Throws an error if `P` does not contain the origin in its interior.
 
 """
 function dual(P :: RationalPolygon{T}) where {T <: Integer}
