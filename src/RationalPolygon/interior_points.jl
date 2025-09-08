@@ -37,7 +37,8 @@ function generic_lattice_points(
         end
     elseif d == 1
         # polygon is a line segment
-        points = numerator.(k .* k_rational_points_on_line_segment(k, vertex(P,1), vertex(P,2); interior))
+        rational_points = k .* k_rational_points_on_line_segment(k, vertex(P,1), vertex(P,2); interior)
+        points = [numerator.(p) for p in rational_points]
         count = length(points)
     elseif d == 2
         # polygon is two-dimensional
@@ -113,7 +114,7 @@ Return all lattice points on the boundary of `P`.
 
 """
 boundary_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
-numerator.(boundary_k_rational_points(P, one(T)))
+[numerator.(b) for b in boundary_k_rational_points(P, one(T))]
 
 
 @doc raw"""

@@ -94,8 +94,8 @@ struct RationalPolygon{T<:Integer,N,M}
     function RationalPolygon(vertices :: Vector{RationalPoint{T}};
             is_unimodular_normal_form :: Bool = false,
             is_affine_normal_form :: Bool = false) where {T <: Integer}
-        k = lcm(rationality.(vertices))
-        scaled_vertices = numerator.(k .* vertices)
+        k = lcm(denominator.(vertices))
+        scaled_vertices = [numerator.(k * v) for v in vertices]
         return RationalPolygon(scaled_vertices, k; is_unimodular_normal_form, is_affine_normal_form)
     end
 
@@ -103,7 +103,7 @@ struct RationalPolygon{T<:Integer,N,M}
             rationality :: T;
             is_unimodular_normal_form :: Bool = false,
             is_affine_normal_form :: Bool = false) where {T <: Integer}
-        scaled_vertices = numerator.(rationality .* vertices)
+        scaled_vertices = [numerator.(rationality * v) for v in vertices]
         return RationalPolygon(scaled_vertices, rationality; is_unimodular_normal_form, is_affine_normal_form)
     end
 
