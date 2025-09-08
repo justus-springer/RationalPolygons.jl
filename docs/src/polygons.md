@@ -20,7 +20,7 @@ objects: once as a ``k``-rational polygon and once as a ``2k``-rational polygon.
 The second way in which this encoding is not unique is that we can change the
 order of the columns. While we require them to be sorted counterclockwise, we
 may use any vertex as the first column. This problem is addressed in the section
-on [normal forms](##Normal-forms).
+on [normal forms](#Normal-forms).
 
 ```@docs
 RationalPolygon
