@@ -5,8 +5,8 @@ ccw(a::Point{T}, b::Point{T}, c::Point{T}) where {T <: Integer} =
 @doc raw"""
     graham_scan!(points :: Vector{<:Point{T}}) where {T <: Integer}
 
-Perform a graham scan on the given points, removing all points that are not
-vertices of their convex hull.
+Perform a Graham scan on the given points, removing all points that are not
+vertices of their convex hull and ordering them counterclockwise.
 
 # Example
 

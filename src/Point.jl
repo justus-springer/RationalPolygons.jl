@@ -21,7 +21,7 @@ const RationalPoint{T<:Integer} = SVector{2, Rational{T}}
 @doc raw"""
     Point{T<:Integer} 
 
-The union of `LatticePoint` and `RationalPoint`.
+The union of [`LatticePoint`](@ref) and [`RationalPoint`](@ref).
 
 """
 const Point{T<:Integer} = SVector{2, S} where S<:Union{T,Rational{T}}
@@ -147,8 +147,9 @@ is_integral(p :: Point{T}) where {T <: Integer} = is_k_rational(one(T), p)
 @doc raw"""
     pseudo_angle(p :: Point{T}) where {T <: Integer}
 
-A quick implementation of a pseudo_angle of two-dimensional vectors. It
-returns values in the half-open interval (-2,2].
+Returns a value in the half-open interval ``(-2,2]``. A pseudo angle
+allows comparing vectors by angle, but is faster to compute than the
+euclidean angle.
 
 # Example
 
