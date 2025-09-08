@@ -10,10 +10,10 @@ groups](polygons.md#Automorphism-groups), [computation of
 subpolygons](subpolygons.md) as well as various [classification
 algorithms](classifications.md).
 
-RationalPolygons.jl does not make use of any external computer algebra system
+`RationalPolygons.jl` does not make use of any external computer algebra system
 but implements all necessary algorithms, including two-dimensional euclidean
 geometry, from scratch in pure Julia. This allows for quite good performance,
-with computations involving billions of polygons being feasable on a personal
+with computations involving billions of polygons being feasible on a personal
 computer.
 
 ## Quick start
