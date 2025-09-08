@@ -169,7 +169,7 @@ A struct holding preferences for Koelman's classification using the HDF5 file fo
     Defaults to `true`.
 - `maximum_number_of_vertices :: Int`: An upper bound for the maximal number of
     vertices to be expected in the classification. This has to be set since every
-    HDF5 file generated will have a dataset "numbers\_of\_polygons" storing the
+    HDF5 file generated will have a dataset `numbers_of_polygons` storing the
     number of polygons for each number of vertices and the size of this dataset
     needs to be set beforehand. Defaults to `100`, which should be more than enough for any
     feasable computation.
@@ -305,9 +305,7 @@ end
     classify_polygons_by_number_of_lattice_points(st :: KoelmanStorage{T}, max_number_of_lattice_points :: Int; logging :: Bool = false) where {T <: Integer}
 
 Run Koelman's classification of lattice polygons by number of lattice points,
-up to `max_number_of_lattice_points`. The classification is multithreaded, so
-make sure julia has access to a good number of threads for maximum performance
-(i.e. `Threads.nthreads()` is greater than one).
+up to `max_number_of_lattice_points`.
 
 # Example
 
@@ -362,7 +360,7 @@ julia> classify_polygons_by_number_of_lattice_points(st, 42; logging=true);
 
 # Example
 
-Reproduce Koelman's classification and storing the output to HDF5 files.
+Reproduce Koelman's classification and store the output to HDF5 files.
 
 ```julia
 julia> st = HDFKoelmanStorage{Int}("/tmp");
@@ -393,10 +391,10 @@ julia> f = h5open("/tmp/test/l42.h5", "r")
 
 julia> A = read_dataset(f, "numbers_of_polygons");
 
-julia> sum(A) # the number of lattice polygons with 42 lattice points
+julia> sum(A) # The number of lattice polygons with 42 lattice points
 1048176
 
-julia> Ps = read_polygon_dataset(1, f, "n5"); # Read in all pentagons with 42 lattice points.
+julia> Ps = read_polygon_dataset(1, f, "n5"); # All pentagons with 42 lattice points.
 
 julia> all(P -> number_of_lattice_points(P) == 42, Ps)
 true

@@ -73,9 +73,9 @@ abstract type CastryckStorage{T <: Integer} end
     mutable struct InMemoryCastryckStorage{T <: Integer} <: CastryckStorage{T}   
 
 A struct holding classification results of Castryck's classification of lattice
-polygons by number of interior lattice points (i.e. their genus). It has the following fields:
+polygons by number of interior lattice points. It has the following fields:
 
-- `maximum_genus :: Int`: An upper bound for the maximum genus that the
+- `maximum_genus :: Int`: An upper bound for the maximum number of lattice points that the
    classification should run to. Defaults to `100`.
 - `maximal_polygons :: Vector{Vector{RationalPolygon{T}}}`,
 - `all_polygons :: Vector{Vector{RationalPolygon{T}}}`,
@@ -193,7 +193,7 @@ A struct holding preferences for Castryck's classification using the HDF5 file f
     lattice points to which the classification should be run. Defaults to `100`.
 - `maximum_number_of_vertices :: Int`: An upper bound for the maximal number of
     vertices to be expected in the classification. This has to be set since every
-    HDF5 file generated will have a dataset "numbers\_of\_polygons" storing the
+    HDF5 file generated will have a dataset `numbers_of_polygons` storing the
     number of polygons for each number of vertices and the size of this dataset
     needs to be set beforehand. Defaults to `100`, which should be more than enough for any
     feasable computation.
@@ -382,9 +382,7 @@ end
     classify_lattice_polygons_by_genus(st :: CastryckStorage{T}, max_genus :: Int; logging :: Bool = false) where {T <: Integer}
 
 Run Castryck's classification of lattice polygons by number of interior lattice
-points, up to `max_genus`. The classification is multithreaded, so make sure
-julia has access to a good number of threads for maximum performance (i.e.
-`Threads.nthreads()` is greater than one).
+points, up to `max_genus`.
 
 # Example
 
@@ -490,7 +488,7 @@ julia> classify_lattice_polygons_by_genus(st, 30; logging=true)
 
 # Example
 
-Reproduce Castryck's classification and storing the output to HDF5 files
+Reproduce Castryck's classification and store the output to HDF5 files
 
 ```julia
 julia> st = HDFCastryckStorage{Int}("/tmp");
@@ -498,12 +496,12 @@ julia> st = HDFCastryckStorage{Int}("/tmp");
 julia> classify_lattice_polygons_by_genus(st, 30);
 ```
 
-This will create two directories "all" and "maximal" in the target directory
-and populate them with HDF5 files "i1.h5, i2.h5, ..." containing the polygons.
-The files in "maximal" contain datasets ordered by number of vertices. The
-files in "all" contain groups ordered by area, which contain datasets ordered
+This will create two directories `all` and `maximal` in the target directory
+and populate them with HDF5 files `i1.h5`, `i2.h5`, etc., containing the polygons.
+The files in `maximal` contain datasets ordered by number of vertices. The
+files in `all` contain groups ordered by area, which contain datasets ordered
 by number of vertices. Every h5 file additionally contains a dataset
-"numbers\_of\_polygons".
+`numbers_of_polygons`.
 
 ```julia
 julia> using HDF5

@@ -71,6 +71,7 @@ export fake_weight_vectors_to_triangles
 export filter_ldp_polygons
 export generic_lattice_points
 export gorenstein_coefficients
+export gorenstein_coefficients_normal_form
 export gorenstein_coefficients_to_degree_matrix_minors
 export gorenstein_index
 export gorenstein_index

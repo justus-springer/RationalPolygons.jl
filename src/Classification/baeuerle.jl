@@ -1,7 +1,7 @@
 @doc raw"""
     unit_fraction_partitions_length_three(ι :: T) where {T <: Integer}
 
-Return all triples `(a,b,c)` such that `1//ι = 1//a + 1//b + 1//c` Andreas`a ≤ b ≤ c`. See also A004194 on oeis.
+Return all triples `(a,b,c)` such that `1//ι = 1//a + 1//b + 1//c` and `a ≤ b ≤ c`. See also A004194 on OEIS.
 
 # Example
 
@@ -37,11 +37,11 @@ end
 @doc raw"""
     classify_lattice_triangles_by_gorenstein_index(ι :: T) where {T <: Integer}
 
-Return all lattice triangles with gorenstein index `ι`.
+Return all lattice triangles with Gorenstein index `ι`.
 
 # Example
 
-There are five lattice triangles with gorenstein index one:
+There are five lattice triangles with Gorenstein index one:
 
 ```jldoctest
 julia> classify_lattice_triangles_by_gorenstein_index(1)
@@ -98,8 +98,8 @@ abstract type BaeuerleStorage{T <: Integer} end
 @doc raw"""
     mutable struct InMemoryBaeuerleStorage{T <: Integer} <: BaeuerleStorage{T}
 
-A struct holding classification results of Baeuerle's classification of lattice
-triangles by gorenstein index.
+A struct holding classification results of Bäuerle's classification of lattice
+triangles by Gorenstein index.
 
 """
 mutable struct InMemoryBaeuerleStorage{T <: Integer} <: BaeuerleStorage{T}
@@ -119,7 +119,7 @@ Perform Bäuerle's classification of lattice triangles up go
 
 # Example
 
-Reproduce Bäuerle's original classification up to gorenstein index 1000, see
+Reproduce Bäuerle's original classification up to Gorenstein index 1000, see
 Theorem 1.4 of [Ba25](@cite).
 
 ```jldoctest
@@ -164,8 +164,8 @@ A struct holding preferences for Baeuerle's classification using the HDF5 file f
 - `swmr :: Bool`: Whether to use single-reader-multiple-writer mode for HDF5.
     Defaults to `true`.
 - `step_size :: Int`: The step size for multithreaded classification in
-    terms of the gorenstein index. Defaults to `100`.
-- `maximum_gorenstein_index :: Int`: The maximum gorenstein index to be
+    terms of the Gorenstein index. Defaults to `100`.
+- `maximum_gorenstein_index :: Int`: The maximum Gorenstein index to be
     classified. Defaults to `10^5`.
 
 """
