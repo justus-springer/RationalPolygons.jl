@@ -41,19 +41,19 @@ det(M :: Matrix2{T}) where {T <: Integer} = M[1,1]*M[2,2] - M[1,2]*M[2,1]
 
 
 @doc raw"""
-    rationality(p :: Point)
+    denominator(p :: Point)
 
 The smallest integer `r` such that `r*p` is integral.
 
 # Example
 
 ```jldoctest
-julia> rationality(RationalPoint(1//2,1//3))
+julia> denominator(RationalPoint(1//2,1//3))
 6
 ```
 
 """
-rationality(p :: Point) = lcm(denominator(p[1]), denominator(p[2]))
+Base.denominator(p :: Point) = lcm(denominator(p[1]), denominator(p[2]))
 
 
 @doc raw"""
@@ -99,9 +99,6 @@ julia> primitivize(RationalPoint(4//3,2//3))
 """
 primitivize(p :: Point) = numerator.(multiplicity(p) * p)
 
-numerator(p :: Point) = numerator.(p)
-denominator(p :: Point) = denominator.(p)
-
 
 @doc raw"""
     norm(p :: Point{T})
@@ -135,7 +132,7 @@ Checks whether a point `p` is `k`-rational, i.e. its coordinates have
 denominator at most `k`.
 
 """
-is_k_rational(k :: T, p :: Point{T}) where {T <: Integer} = k % rationality(p) == 0
+is_k_rational(k :: T, p :: Point{T}) where {T <: Integer} = k % denominator(p) == 0
 
 
 @doc raw"""
