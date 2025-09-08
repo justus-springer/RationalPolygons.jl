@@ -11,7 +11,7 @@ subpolygons](subpolygons.md) as well as various [classification
 algorithms](classifications.md).
 
 RationalPolygons.jl does not make use of any external computer algebra system
-but implements all necessary algorithms, including two-dimensional euclidian
+but implements all necessary algorithms, including two-dimensional euclidean
 geometry, from scratch in pure Julia. This allows for quite good performance,
 with computations involving billions of polygons being feasable on a personal
 computer.
@@ -29,7 +29,7 @@ plot(P)
 ```@repl quick_start
 number_of_interior_lattice_points(P)
 number_of_boundary_lattice_points(P)
-euclidian_area(P)
+euclidean_area(P)
 ehrhart_quasipolynomial(P)
 affine_automorphism_group(P)
 is_ldp(P)

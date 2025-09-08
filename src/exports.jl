@@ -63,7 +63,7 @@ export ehrhart_quasipolynomial_period
 export ehrhart_quasipolynomial_periods
 export ehrhart_quasipolynomial_with_periods
 export empty_polygon
-export euclidian_area
+export euclidean_area
 export export_hdf_subpolygon_storage_status 
 export export_text_files_subpolygon_storage_status 
 export fake_weight_vector

@@ -142,7 +142,7 @@ classify_lattice_triangles_by_picard_index
 In [HaKi24](@cite), Hausen and Király classified fake weighted projective
 planes having integral degree (=canonical self intersection). In terms of
 polygons, these can be described as LDP triangles such that twice the
-euclidian area of its dual is an integer. The attained values of this integer
+euclidean area of its dual is an integer. The attained values of this integer
 (which is the degree of the associated fake weighted projective plane) are 1,
 2, 3, 4, 5, 6, 8 and 9. In total, there are 24 infinite series of these
 triangles, where each of them is parameterized by the solution set of a squared
@@ -238,7 +238,7 @@ julia> max_vertices = [maximum(number_of_vertices.(Pss[k])) for k = 1 : 3]
   8
  12
 
-julia> max_volumes = [k^2 * maximum(euclidian_area.(Pss[k])) for k = 1 : 3]
+julia> max_volumes = [k^2 * maximum(euclidean_area.(Pss[k])) for k = 1 : 3]
 3-element Vector{Rational{Int64}}:
  9//2
  17

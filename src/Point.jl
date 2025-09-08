@@ -106,7 +106,7 @@ denominator(p :: Point) = denominator.(p)
 @doc raw"""
     norm(p :: Point{T})
 
-Return the square of the euclidian norm of `p`.
+Return the square of the euclidean norm of `p`.
 
 # Example
 
@@ -122,7 +122,7 @@ norm(p :: Point{T}) where {T <: Integer} = p[1]^2 + p[2]^2
 @doc raw"""
     distance(p :: Point{T}, q :: Point{T})
 
-Return the square of the euclidian distance between `p` and `q`.
+Return the square of the euclidean distance between `p` and `q`.
 
 """
 distance(p :: Point{T}, q :: Point{T}) where {T <: Integer} = norm(p - q)

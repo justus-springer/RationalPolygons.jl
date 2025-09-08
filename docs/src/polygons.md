@@ -64,7 +64,7 @@ Base.in(x :: Point{T}, P :: RationalPolygon{T}) where {T <: Integer}
 contains_in_interior(x :: Point{T}, P :: RationalPolygon{T,N}) where {N,T <: Integer}
 dim
 normalized_area
-euclidian_area
+euclidean_area
 is_maximal
 dual
 ```
@@ -80,7 +80,7 @@ quasipolynomial, called its _Ehrhart quasipolynomial_:
 \mathrm{ehr_P}(t) = |tP \cap \mathbb{Z}^2| = At^2 + a(t)t+b(t), \qquad t \in \mathbb{Z}.
 ```
 
-Here, ``A`` is the euclidian area of ``P`` and ``a, b\colon \mathbb{Z} \to
+Here, ``A`` is the euclidean area of ``P`` and ``a, b\colon \mathbb{Z} \to
 \mathbb{Q}`` are ``k``-periodic functions. These can be computed by
 
 ```math
