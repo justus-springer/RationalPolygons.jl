@@ -64,6 +64,9 @@ elseif format == "thesis"
 
     # Fix citations
     txt = replace(txt, r"\[\\hyperref\[doc:(\w+)\]\{\d+\}\]" => s"\\cite{\1}")
+    
+    # Remove line breaks before examples
+    txt = replace(txt, r"\n(\\textbf{Example})" => s"\1")
 
     write(filename, txt)
 
