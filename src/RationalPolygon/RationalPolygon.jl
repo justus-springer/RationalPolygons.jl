@@ -6,11 +6,21 @@ The type of rational polygons in two-dimensional space. `T` is the type of
 integers to be used. `N` is the number of vertices of the polygon and `M`
 equals `2*N`. It has the following fields:
 
-- `rationality :: T`: The rationality of the polygon, e.g. `1` for lattice polygons, `2` for half-integral polygons etc.
-- `vertex_matrix :: SMatrix{2,N,T,M}`: An integral 2xN matrix. The vertices of the polygon are understood to be the columns of this matrix divided by `rationality`.
-- `number_of_vertices :: Int`: The number of vertices of the polygon. This is redundant information, since the number of vertices is already available as the type parameter `N`. However, getting the number of vertices of a polygon through the type paremeter means lots of work for Julia's dispatch algorithm. Therefore, we found it to improve performance to put it as a variable into the struct as well.
-- `is_unimodular_normal_form :: Bool`: A flag to remember that the polygon is already in unimodular normal form. This should not be set by the user, but is used internally to avoid redundant computations of the normal form.
-- `is_affine_normal_form :: Bool`: A flag variable to remember that the polygon is already in affine normal form. This should not be set by the user, but is used internally to avoid redundant computations of the normal form.
+- `rationality :: T`: The rationality of the polygon, e.g. `1` for lattice polygons, 
+  `2` for half-integral polygons etc.
+- `vertex_matrix :: SMatrix{2,N,T,M}`: An integral `2xN` matrix. The vertices of the polygon 
+  are understood to be the columns of this matrix divided by `rationality`.
+- `number_of_vertices :: Int`: The number of vertices of the polygon. This is redundant 
+  information, since the number of vertices is already available as the type parameter `N`. 
+  However, getting the number of vertices of a polygon through the type paremeter means lots 
+  of work for Julia's dispatch algorithm. Therefore, we found it to improve performance to put 
+  it as a variable into the struct as well.
+- `is_unimodular_normal_form :: Bool`: A flag to remember that the polygon is already in 
+  unimodular normal form. This is used internally to avoid redundant computations of the 
+  normal form.
+- `is_affine_normal_form :: Bool`: A flag variable to remember that the polygon is 
+  already in affine normal form. This is used internally to avoid redundant computations of the 
+  normal form.
 
 """
 struct RationalPolygon{T<:Integer,N,M}
@@ -39,15 +49,15 @@ struct RationalPolygon{T<:Integer,N,M}
 
     When using this constructor, no consistency checks are done on the input.
     In particular, the user must be sure that the given points are truly
-    vertices of the polygon and *that they are ordered counterclockwise*. If
-    this is not known ahead of contruction, [`convex_hull`](@ref) should be
+    vertices of the polygon and that they are ordered counterclockwise. If
+    this is not known ahead of contraction, [`convex_hull`](@ref) should be
     used instead of this constructor.
 
-    All constructors accept the optional arguments `is_unimodular_normal_form`
+    All constructors accept the optional keyword arguments `is_unimodular_normal_form`
     and `is_affine_normal_form`, which are set to `false` by default. If they
     are set to true, this means the user is certain that the given polygon is
     already in the respective normal form. This information will be used to
-    prevent addional computations of the normal form and thus speed up
+    prevent additional computations of the normal form and thus speed up
     equivalence checking.
 
     # Example
@@ -181,7 +191,7 @@ number_of_vertices(P :: RationalPolygon{T,N,M}) where {N,M,T <: Integer} = P.num
     rationality(P :: RationalPolygon)
 
 Return the rationality of `P`. Note that this does not need to be the _denominator_ 
-of `P` (see [`Base.denominator`](@ref), which is the _smallest_
+of `P`, which is the _smallest_
 positive integer `k` such that `k*P` is a lattice polygon: The standard lattice
 triangle may also be viewed as a half-integral polygon, in which case the
 rationality would be two, but the denominator is one.

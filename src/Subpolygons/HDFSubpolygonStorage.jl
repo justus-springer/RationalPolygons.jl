@@ -1,7 +1,7 @@
 @doc raw"""
     struct HDFSubpolygonStoragePreferences{T <: Integer}
 
-A struct holding preferences for `HDFSubpolygonStorage`. There are the
+A struct holding preferences for [`HDFSubpolygonStorage`](@ref). There are the
 following fields:
 
 - `rationality :: T`: The rationality of the polygons. The default is `one(T)`.
@@ -21,7 +21,7 @@ following fields:
     HDF5 file generated will have a dataset "numbers\_of\_polygons" storing the
     number of polygons for each number of vertices and the size of this dataset
     needs to be set beforehand. Defaults to `100`, which should be more than enough for any
-    feasable computation.
+    feasible computation.
 - `swmr :: Bool`: Whether to use single-reader-multiple-writer mode for HDF5.
     Defaults to `true`.
 
@@ -66,7 +66,7 @@ file format. It has the following fields:
    to avoid needing to read in polygons that have been written out in the past,
    which saves a lot of time.
 - `last_completed_area :: T`: The last area that has been completed. This
-   counts down from the maximum area of the starting polygons to 1.
+   counts down from the maximum area of the starting polygons to `1`.
 - `total_count :: Int`
 
 """
@@ -175,7 +175,7 @@ end
 @doc raw"""
     restore_hdf_subpolygon_storage_status(st :: HDFSubpolygonStorage{T}) where {T <: Integer}
 
-Restore a subpolygons computation's status that was interrupted from an HDF5
+Restore a subpolygon computation's status that was interrupted from an HDF5
 file. All polygons will be read in, hashed and saved into `st.hash_sets`.
 Moreover, `st.last_completed_area` and `st.total_count` will be properly set.
 After calling this function, the computation can be resumed by calling

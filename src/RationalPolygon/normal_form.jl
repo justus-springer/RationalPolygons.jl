@@ -245,7 +245,7 @@ end
 @doc raw"""
     affine_normal_form(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 
-Return a affine normal form of a rational polygon. Two rational polygons have
+Return an affine normal form of a rational polygon. Two rational polygons have
 the same affine normal form if and only if the can be transformed into each
 other by applying an affine unimodular transformation.
 

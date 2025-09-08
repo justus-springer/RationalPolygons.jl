@@ -1,7 +1,7 @@
 @doc raw"""
     struct InMemorySubpolygonStoragePreferences{T <: Integer}
 
-A struct holding preferences for `InMemorySubpolygonStorage`. There are the following fields:
+A struct holding preferences for [`InMemorySubpolygonStorage`](@ref). There are the following fields:
 
 - `primitive :: Bool`: Whether only subpolygons with primitive vertices should
    be computed. The default is `false`.
@@ -166,13 +166,16 @@ arguments:
 - `only_equal_number_of_interior_lattice_points :: Bool`: Whether only
     subpolygons that share the same number of interior lattice points with the
     starting polygons should be returned.
+- `exclude_very_thin_polygons`: Whether polygons that can be realized in 
+  ``\mathbb{R} \times [0,1]`` should be excluded. This is only relevant for 
+  polygons with no interior lattice points. The default is `false`.
 - `logging :: Bool`: Whether to display logging messages about the computation
     progress.
 
 # Example
 
-There are 148 subpolygons of the square of side length 3, up to affine
-equivalence. The maximal number of vertices of those is 8, attained by exactly
+There are ``148`` subpolygons of the square of side length three, up to affine
+equivalence. The maximal number of vertices of those is eight, attained by exactly
 one polygon.
 
 ```jldoctest

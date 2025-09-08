@@ -7,10 +7,12 @@ Parse a list of files containing the vertices of a `k`-rational polygon. The
 files must have one polygon per line and the vertices must be given as a list of
 lists of integers, i.e. as in the following example:
 
+```shell
 [[2, 0], [1, 3], [-1, 0], [-3, -4]]
 [[1, 0], [2, 6], [-4, -9]]
 [[1, 0], [3, 5], [0, 1], [-5, -8]]
 ....
+```
 
 """
 function parse_rational_polygons(k :: T, files :: AbstractVector{String}) where {T <: Integer}
@@ -38,10 +40,12 @@ parse_rational_polygons(k, [file])
 Write a list of polygons to a text file. Each polygon will be written as one
 line containing its vertices, as in the following example:
 
+```shell
 [[2, 0], [1, 3], [-1, 0], [-3, -4]]
 [[1, 0], [2, 6], [-4, -9]]
 [[1, 0], [3, 5], [0, 1], [-5, -8]]
 ....
+```
 
 """
 function write_rational_polygons(Ps :: Vector{<:RationalPolygon{T}}, filepath :: String, mode :: String = "w") where {T <: Integer}
