@@ -322,7 +322,7 @@ classify_quadrilaterals_by_gorenstein_index(ι, classify_gorenstein_coefficients
 
 Return all LDP quadrilaterals with Gorenstein index ι.
 
-# Example
+# Example:
 
 There are 73725 distinct LDP quadrilaterals with Gorenstein index at most 50.
 

@@ -8,7 +8,7 @@ is true if and only if `Q` has the same number of interior lattice points as
 `P`. If the argument `primitive = true` is passed, the convex hull is taken of
 all _primitive_ `k`-rational points of `P` except the `i`-th vertex.
 
-# Example
+# Example:
 
 Compare Example 10.2.7 of [CLS11](@cite).
 

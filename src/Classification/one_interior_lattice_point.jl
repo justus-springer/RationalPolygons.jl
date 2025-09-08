@@ -283,7 +283,7 @@ Return all maximal `k`-rational polygons with exactly one interior lattice
 point. If `primitive = true` is passed, then only primitive polygons (i.e. ldp
 polygons) are returned.
 
-# Example
+# Example:
 
 Compute the numbers of polygons for ``k ≤ 3``.
 
@@ -344,7 +344,7 @@ Compute all `k`-rational polygons with exactly one interior lattice point. The f
 - `logging :: Bool`. Controls whether to display logging messages showing the
 current progress.
 
-# Example
+# Example:
 
 Reproduce the classifcation of all 5145 half-integral polygons with exactly one
 interior lattice point. It first computes all maximal polygons with

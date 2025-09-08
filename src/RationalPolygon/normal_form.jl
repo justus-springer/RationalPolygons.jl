@@ -140,7 +140,7 @@ unimodular_normal_form(P) == unimodular_normal_form(Q)
 Return the automorphism group of `P` with respect to unimodular
 transformations.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> P = convex_hull(LatticePoint{Int}[(1,0),(0,1),(-1,1),(-1,0),(0,-1),(1,-1)])

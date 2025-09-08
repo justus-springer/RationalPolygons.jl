@@ -23,7 +23,7 @@ end
 Return the affine halfplane given by the equation `nv[1] * x[1] + nv[2] * x[2]
 ≥ b`.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> affine_halfplane(Point(-2,1),1)
@@ -97,7 +97,7 @@ end
 
 Check whether a point `x` lies in the halfplane `H`.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> Point(0,1) ∈ affine_halfplane(Point(-2,1),1)
@@ -116,7 +116,7 @@ end
 
 Check whether a point `x` lies in the interior of `H`.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> contains_in_interior(Point(0,1), affine_halfplane(Point(-2,1),1))

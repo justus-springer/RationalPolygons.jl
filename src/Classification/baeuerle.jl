@@ -3,7 +3,7 @@
 
 Return all triples `(a,b,c)` such that `1//ι = 1//a + 1//b + 1//c` and `a ≤ b ≤ c`. See also A004194 on OEIS.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> unit_fraction_partitions_length_three(2)
@@ -39,7 +39,7 @@ end
 
 Return all lattice triangles with Gorenstein index `ι`.
 
-# Example
+# Example:
 
 There are five lattice triangles with Gorenstein index one:
 
@@ -117,7 +117,7 @@ end
 Perform Bäuerle's classification of lattice triangles up go
 `max_gorenstein_index`, storing the results in memory.
 
-# Example
+# Example:
 
 Reproduce Bäuerle's original classification up to Gorenstein index 1000, see
 Theorem 1.4 of [Ba25](@cite).

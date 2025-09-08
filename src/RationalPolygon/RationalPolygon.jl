@@ -60,7 +60,7 @@ struct RationalPolygon{T<:Integer,N,M}
     prevent additional computations of the normal form and thus speed up
     equivalence checking.
 
-    # Example
+    # Example:
     
     The standard lattice triangle.
 
@@ -69,7 +69,7 @@ struct RationalPolygon{T<:Integer,N,M}
     Rational polygon of rationality 1 with 3 vertices.   
     ```
 
-    # Example
+    # Example:
     
     A half-integral polygon.
     
@@ -148,7 +148,7 @@ RationalPolygon(graham_scan(points), k)
 Return the convex hull of a given set of rational points. The rationality will
 be inferred from the input.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> convex_hull(RationalPoint{Int}[(1,0),(0,1//2),(0,-1//3)])
@@ -166,7 +166,7 @@ RationalPolygon(graham_scan(points))
 Return the convex hull of a given set of rational points, viewed as a
 `k`-rational polygon.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> convex_hull(RationalPoint{Int}[(1,0),(0,1//2),(0,-1//3)], 12)
@@ -206,7 +206,7 @@ rationality(P :: RationalPolygon{T,N}) where {N,T <: Integer} = P.rationality
 The vertex matrix of `P` is the 2xN integral matrix containing the vertices of
 `rationality(P) * P` as its columns.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> P = convex_hull(RationalPoint{Int}[(1,0),(0,1//2),(0,-1//3)])
