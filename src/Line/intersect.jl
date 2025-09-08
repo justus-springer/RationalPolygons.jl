@@ -3,8 +3,8 @@
     IntersectionBehaviour{T <: Integer}
 
 An abstract supertype for possible intersection behaviours of two lines.
-There are the three subtypes `IntersectInPoint`, `NoIntersection` and
-`LinesAreEqual`.
+There are the three subtypes [`IntersectInPoint`](@ref), [`NoIntersection`](@ref), and
+[`LinesAreEqual`](@ref).
 
 """
 abstract type IntersectionBehaviour{T <: Integer} end

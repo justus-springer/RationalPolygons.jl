@@ -1,47 +1,39 @@
 # Polygons
 
-In RationalPolygons.jl, we represent a polygon ``P \subseteq \mathbb{R}^2`` by
-two pieces of data: An integral matrix ``V \in \mathbb{Z}^{2\times N}`` and an
-integer ``k \in \mathbb{Z}``, called the _rationality_. The associated polygon
-has as vertices the columns of ``V`` divided by ``k``. To represent ``V``, we
-use a [static matrix](https://juliaarrays.github.io/StaticArrays.jl/stable/),
-which are faster than Julia's internal matrices for many common operations. 
+In `RationalPolygons.jl`, we represent a polygon ``P \subseteq \mathbb{R}^2`` by
+two pieces of data: An integral matrix ``V \in \mathbb{Z}^{2\times N}``, called
+the _vertex matrix_ and an integer ``k \in \mathbb{Z}``, called the
+_rationality_. The associated polygon has as vertices the columns of ``V``
+divided by ``k``. To represent ``V``, we use a [static
+matrix](https://juliaarrays.github.io/StaticArrays.jl/stable/), which are faster
+than Julia's internal matrices for many common operations. However, this implies
+that the type `RationalPolygon` will depend on the number of vertices `N` as a
+type parameter, which affects Julia's dispatch mechanism at runtime. As long as
+the number of distinct values of `N` occurring during a computation remains
+relatively small, this should not cause performance issues.
 
-The standard lattice triangle can be created as follows:
+There are two ways in which our encoding of rational polygons is not unique:
+First, scaling ``V`` and ``k`` by the same factor does not change the polygon,
+e.g. ``(V,k)`` describes the same polygon as ``(2V,2k)``. Even though they are
+mathematically the same polygon, `RationalPolygon.jl` views them as different
+objects: once as a ``k``-rational polygon and once as a ``2k``-rational polygon.
+The second way in which this encoding is not unique is that we can change the
+order of the columns. While we require them to be sorted counterclockwise, we
+may use any vertex as the first column. This problem is addressed in the section
+on [normal forms](##Normal-forms).
 
-```julia
-julia> using RationalPolygons, StaticArrays
-
-julia> P = RationalPolygon(SMatrix{2,3}([0 1 0 ; 0 0 1]), 1)
-Rational polygon of rationality 1 with 3 vertices.
+```@docs
+RationalPolygon
 ```
-
-!!! warning 
-    When creating a `RationalPolygon` from a constructor, the user has
-    to be certain that the columns of ``V`` truly are vertices of a polygons, i.e.
-    no column is contained in the convex hull of the other columns and the columns
-    are sorted by angle (both clockwise and counterclockwise is allowed). If this
-    is not known, use [`convex_hull`](@ref) to create the polygon instead.
-
-There are two ways in which this encoding is not unique: First, scaling ``V``
-and ``k`` by the same factor does not change the polygon, e.g. ``(V,k)`` describes
-the same polygon as ``(2V,2k)``. Even though they are
-mathematically the same polygon, RationalPolygon.jl views them as different
-objects, once viewed as a ``k``-rational polygon and once viewed as a
-``2k``-rational polygon. The second way in which this encoding is not unique is
-that there is no canonical "first vertex" of a polygon, i.e. we can shift the
-columns of ``V`` around and still describe the same polygon. Moreover, we
-choose to order them clockwise or counterclockwise. This problem is adressed in
-the section on [normal forms](#Normal forms).
 
 ## Constructors
 
 Besides the type constructor methods, we provide the functions
 [`convex_hull`](@ref) and [`intersect_halfplanes`](@ref) to create a polygon
-from an unstructured collection of points in the plane of affine halfplanes.
+from an unstructured collection of points or affine halfplanes.
 
 ```@docs
-RationalPolygon
+RationalPolygon(vertex_matrix :: SMatrix{2,N,T,M}, rationality :: T) where {N, M, T <: Integer}
 convex_hull
 intersect_halfplanes
 empty_polygon
@@ -49,12 +41,15 @@ empty_polygon
 
 ## Basic Properties
 
+We provide basic properties and checks for rational polygons. Note that indices
+corresponding to vertices are always considered cyclic, i.e. the ``N+1``-th vertex
+of a polygon with ``N`` vertices cycles back to its first vertex.
+
 ```@docs
 number_of_vertices
 rationality(P :: RationalPolygon)
+Base.denominator(P :: RationalPolygon)
 vertex_matrix
-is_unimodular_normal_form
-is_affine_normal_form
 scaled_vertex
 vertex
 vertices
@@ -64,7 +59,7 @@ Base.in(x :: Point{T}, P :: RationalPolygon{T}) where {T <: Integer}
 contains_in_interior(x :: Point{T}, P :: RationalPolygon{T,N}) where {N,T <: Integer}
 dim
 normalized_area
-euclidian_area
+euclidean_area
 is_maximal
 dual
 ```
@@ -72,15 +67,15 @@ dual
 
 ## Ehrhart Theory
 
-Consider a ``k``-rational polygon ``P``. The main result of Ehrhart Theory is
-that the the number of lattice points in integral multiples of ``P`` is a
-quasipolynomial, called its _Ehrhart quasipolynomial_:
+The main result of Ehrhart Theory is that the number of lattice points in
+integral multiples of a ``k``-rational polygon ``P`` is a quasipolynomial,
+called its _Ehrhart quasipolynomial_:
 
 ```math
 \mathrm{ehr_P}(t) = |tP \cap \mathbb{Z}^2| = At^2 + a(t)t+b(t), \qquad t \in \mathbb{Z}.
 ```
 
-Here, ``A`` is the euclidian area of ``P`` and ``a, b\colon \mathbb{Z} \to
+Here, ``A`` is the euclidean area of ``P`` and ``a, b\colon \mathbb{Z} \to
 \mathbb{Q}`` are ``k``-periodic functions. These can be computed by
 
 ```math
@@ -92,8 +87,8 @@ b(t) = (t^2+tk)\cdot A + \frac{(t+k)\mathrm{ehr}_P(t)-t\mathrm{ehr}_P(t+k)}{k}.
 
 Setting ``\tilde{A} := 2k^2A,\ \tilde{a} := 2k^2 a`` and ``\tilde{b} := 2k^2b``, we get
 integer valued functions ``\tilde a`` and ``\tilde b`` which we call the
-_normalized Ehrhart coefficients_. We then encode the Ehrhart quasipolynomial
-by the ``3\times k`` integral matrix of its normalized Ehrhart coefficients:
+_normalized Ehrhart coefficients_. Hence we can encode the Ehrhart quasipolynomial
+by the ``3\times k``-integral matrix of its normalized Ehrhart coefficients:
 
 ```math
 \begin{bmatrix}
@@ -105,11 +100,12 @@ by the ``3\times k`` integral matrix of its normalized Ehrhart coefficients:
 ```
 
 If ``P`` is integral, we have ``k=1`` and its Ehrhart quasipolynomial is a
-regular polyomial of degree 2. In general, the periods of ``a`` and ``b`` are
-divisors of ``k``. If they are strictly smaller than ``k``, we speak of _quasiperiod collapse_. A rational polygon is called _quasiintegral_ if the
+regular polynomial of degree 2. In general, the periods of ``a`` and ``b`` are
+divisors of ``k``. If they are strictly smaller than ``k``, we speak of
+_quasiperiod collapse_. A rational polygon is called _quasiintegral_ if the
 periods of ``a`` and ``b`` are both 1, hence it has an Ehrhart polynomial.
 
-RationalPolygons.jl comes with many methods for counting the (interior,
+`RationalPolygons.jl` comes with many methods for counting the (interior,
 boundary) lattice points of a rational polygon as well as computing its
 Ehrhart quasipolynomial and its periods.
 
@@ -156,7 +152,7 @@ The purpose of a normal form is to provide a unique representative for every
 equivalence class, i.e. two polygons should be (affine) unimodular equivalent
 to each other if and only if their (affine) unimodular normal forms coincide.
 
-For details about the normal form used in RationalPolygons.jl, we refer to
+For details about the normal form used in `RationalPolygons.jl`, see
 [BS24_1](@cite).
 
 ```@docs
@@ -176,8 +172,9 @@ affine_automorphism_group
 ## Lattice width
 
 In [Boh23](@cite), Bohnert describes the concept of _lattice width data_, which
-captures information about the slicing lengths of a polygon with respect to a
-given direction vectors. RationalPolygons.jl implements this concept, following his Definition 2.11.
+captures information about the slicing lengths of a polygon with respect to
+given direction vectors. `RationalPolygons.jl` implements this concept,
+following his Definition 2.11.
 
 ```@docs
 width
@@ -198,7 +195,9 @@ positions_of_longest_vertical_slice_length
 
 ## IO
 
-RationalPolygons.jl provides two ways to save polygons to a file: The first is text-based, where polygons can be written and read to files containing one polygon per line like this:
+`RationalPolygons.jl` provides two ways to save and retrieve polygons from a
+file. The first is text-based. Polygons can be read from files containing one
+polygon per line like this:
 
 ```shell
 [[2, 0], [1, 3], [-1, 0], [-3, -4]]
@@ -207,12 +206,12 @@ RationalPolygons.jl provides two ways to save polygons to a file: The first is t
 ....
 ```
 
-This text-based format has the advantage of being universally understandable
-and easy to use. However, storing polygons as ascii strings is not very
-space-efficients, as they contain lots of redundant control characters. Hence
-we provide another way to store polygons in binary form, which uses the HDF5
-format and is more suitable for large datasets. For an example session, see
-[`write_polygon_dataset`](@ref).
+This text-based format has the advantage of being universally understandable and
+easy to use. However, storing polygons as ASCII strings is not very
+space-efficient, as they contain lots of redundant control characters. Hence we
+provide another way to store polygons in binary and compressed form, which uses
+the HDF5 file format and is more suitable for large datasets. For an example
+session, see [`write_polygon_dataset`](@ref).
 
 ```@docs
 parse_rational_polygons

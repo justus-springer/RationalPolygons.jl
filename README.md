@@ -17,7 +17,7 @@ classification algorithms developed in our paper. However, it also implements
 many more basic algorithms for computations with rational polygons that I
 believe might be useful in other projects. RationalPolygons.jl does not make
 use of any external computer algebra system but implements all necessary
-algorithms, including two-dimensional euclidian geometry, from scratch in pure
+algorithms, including two-dimensional euclidean geometry, from scratch in pure
 Julia. This allows for quite good performance, with computations involving
 billions of polygons being feasable on a personal computer.
 

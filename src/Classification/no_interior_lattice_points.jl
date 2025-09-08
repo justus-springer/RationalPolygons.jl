@@ -69,7 +69,7 @@ Return all `k`-maximal polygons with no interior lattice points that are
 contained in ``A \cup \mathbb{R} \times [-1,2] \cup B`` where ``A`` is the
 trapezoid with vertices ``(-1,2),(0,1),(1,1),(1,2)`` and ``B`` is the trapezoid
 with vertices ``(0,0),(0,-1),(2,-1),(1,0)``, excluding the polygons from
-`classify_maximal_lattice_free_polygons_m1p2_squares`.
+[`classify_maximal_lattice_free_polygons_m1p2_squares`](@ref).
 
 """
 function classify_maximal_lattice_free_polygons_m1p2_trapezoids(k :: T) where {T <: Integer}
@@ -128,8 +128,8 @@ end
 
 Return all `k`-maximal polygons with no interior lattice points contained in
 ``\mathbb{R} \times [-1,2]``. This is simply the union of
-`classify_maximal_lattice_free_polygons_m1p2_squares` and
-`classify_maximal_lattice_free_polygons_m1p2_trapezoids`.
+[`classify_maximal_lattice_free_polygons_m1p2_squares`](@ref) and
+[`classify_maximal_lattice_free_polygons_m1p2_trapezoids`](@ref).
 
 """
 classify_maximal_lattice_free_polygons_m1p2(k :: T) where {T <: Integer} =

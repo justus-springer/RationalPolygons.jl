@@ -66,7 +66,7 @@ dim(interior_integer_hull(P))
     normalized_area(P :: RationalPolygon)
 
 Return the normalized area of a `k`-rational polygon, i.e. `2k^2` times its
-euclidian area. The result is always an integer, counting the number of
+euclidean area. The result is always an integer, counting the number of
 standard `k`-rational triangles contained in `P`.
 
 """
@@ -77,12 +77,12 @@ end
 
 
 @doc raw"""
-    euclidian_area(P :: RationalPolygon)
+    euclidean_area(P :: RationalPolygon)
 
-Return the euclidian area of a rational polygon.
+Return the euclidean area of a rational polygon.
 
 """
-euclidian_area(P :: RationalPolygon) = normalized_area(P) // (2 * rationality(P)^2)
+euclidean_area(P :: RationalPolygon) = normalized_area(P) // (2 * rationality(P)^2)
 
 
 @doc raw"""

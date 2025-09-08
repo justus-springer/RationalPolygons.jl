@@ -38,8 +38,8 @@ AffineHalfplane(nv, b)
 @doc raw"""
     affine_halfplane(L :: Line{T}) where {T <: Integer}
 
-Return the affine halfplane associated to a line in 2D space. The halfplane is
-understood to consist of those points *to the left* of the line `L`, looking in
+Return the affine halfplane associated to a line. The halfplane is
+understood to consist of those points to the left of the line `L`, looking in
 the direction given by `direction_vector(L)`.
 
 """
@@ -63,7 +63,7 @@ affine_halfplane(line_through_points(p,q))
 @doc raw"""
     normal_vector(H :: AffineHalfplane{T}) where {T <: Integer}
 
-Return the normal vector of the `H`.
+Return the normal vector of `H`.
 
 """
 normal_vector(H :: AffineHalfplane{T}) where {T <: Integer} = H.normal_vector

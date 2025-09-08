@@ -63,7 +63,7 @@ export ehrhart_quasipolynomial_period
 export ehrhart_quasipolynomial_periods
 export ehrhart_quasipolynomial_with_periods
 export empty_polygon
-export euclidian_area
+export euclidean_area
 export export_hdf_subpolygon_storage_status 
 export export_text_files_subpolygon_storage_status 
 export fake_weight_vector
@@ -71,6 +71,7 @@ export fake_weight_vectors_to_triangles
 export filter_ldp_polygons
 export generic_lattice_points
 export gorenstein_coefficients
+export gorenstein_coefficients_normal_form
 export gorenstein_coefficients_to_degree_matrix_minors
 export gorenstein_index
 export gorenstein_index

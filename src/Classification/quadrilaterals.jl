@@ -1,9 +1,9 @@
 @doc raw"""
     modified_unit_fraction_solutions(r :: T, s :: T, c :: T, d :: T) where {T <: Integer}
     
-Return all integral solutions $(x,y) ∈ \mathbb{Z}^2_{\geq 1}$ to the
-equation $r/s = 1/x + 1/y - c/(d*y)$. Returns an error if there are
-infinitely many solutions, which happens if and only if $c = d$.
+Return all integral solutions ``(x,y) ∈ \mathbb{Z}^2_{\geq 1}`` to the
+equation ``r/s = 1/x + 1/y - c/(d*y)``. Returns an error if there are
+infinitely many solutions, which happens if and only if ``c = d``.
 
 """
 function modified_unit_fraction_solutions(r :: T, s :: T, c :: T, d :: T) where {T <: Integer}
@@ -70,6 +70,13 @@ SMatrix{4,2,T,8}(A[mod(i+k, 1:4), j] for i = 1 : 4, j = 1 : 2)
 reflect_gorenstein_coefficients(A :: SMatrix{4,2,T,8}) where {T <: Integer} =
 SMatrix{4,2,T,8}(A[mod(3-i, 1:4), mod(3-j, 1:2)] for i = 1 : 4, j = 1 : 2)
 
+@doc raw"""
+    gorenstein_coefficients_normal_form(A :: SMatrix{4,2,T,8}) where {T <: Integer}
+
+Bring Gorenstein coefficients ``A \in \mathbb{Z}^{2 \times 4}`` into normal form,
+see Definition ?? of ??.
+
+"""
 function gorenstein_coefficients_normal_form(A :: SMatrix{4,2,T,8}) where {T <: Integer}
 
     As = SVector{8,SMatrix{4,2,T,8}}(reflect ?
@@ -317,7 +324,7 @@ Return all LDP quadrilaterals with Gorenstein index ι.
 
 # Example
 
-There are 73725 distincet LDP quadrilaterals with Gorenstein index at most 50.
+There are 73725 distinct LDP quadrilaterals with Gorenstein index at most 50.
 
 ```jldoctest
 julia> Pss = classify_quadrilaterals_by_gorenstein_index.(1:50);
