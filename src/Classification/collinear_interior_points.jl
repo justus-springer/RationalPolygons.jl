@@ -5,7 +5,7 @@
 Return all maximal `k`-rational polygons with `i` interior lattice points
 that can be realized in $\mathbb{R} \times [-1,1]$.
 
-# Example
+# Example:
 
 Compute the numbers of polygons for `1 ≤ k ≤ 5` and `0 ≤ i ≤ 10`. 
 

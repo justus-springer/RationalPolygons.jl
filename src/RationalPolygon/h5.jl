@@ -53,7 +53,7 @@ end
 Write the polygons `Ps` to an HDF5 dataset named `path`. Creates the dataset if
 it does not exist already. If it does exist, the data will be appended to it.
 
-# Example
+# Example:
 
 Write the reflexive lattice triangles to an HDF5 file:
 

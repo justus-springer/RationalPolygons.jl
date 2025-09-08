@@ -50,7 +50,7 @@ end
 
 Check whether a point `x` lies on a line `L`.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> RationalPoint(3//2,1) ∈ line_through_points(Point(1,0),Point(2,2))
@@ -67,7 +67,7 @@ iszero(det(x - base_point(L), direction_vector(L)))
 
 Return a primitive vector orthogonal to the direction vector of `L`.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> normal_vector(line_through_points(Point(1,0),Point(2,2)))
@@ -88,7 +88,7 @@ end
 
 Return the line going through the points `A` and `B`.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> line_through_points(Point(1,0),Point(2,2))

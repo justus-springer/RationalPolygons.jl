@@ -29,7 +29,7 @@ many mutations. This function returns a vector of length `depth+1`, containing
 for each level `i = 0 : depth` the set of solution triples after exactly `i`
 mutation steps.
 
-# Example
+# Example:
 
 Get all solutions to the squared Markov type equation ``9xyz=(x+y+z)^2`` by
 starting with the initial solution ``(1,1,1)`` and applying at most four
@@ -71,7 +71,7 @@ end
 Return the unique initial triple of the squared Markov type equation ``Axyz =
 (x+y+z)^2``. Allowed values of `A` are 9, 8, 6 and 5.
 
-# Example
+# Example:
 
 The unique initial triples for all allowed values of `A`, see Theorem 2.2 of
 [HaKi24](@cite).
@@ -99,7 +99,7 @@ Return all solutions to the squared Markov type equation ``Axyz = (x+y+z)^2``
 by starting with the initial solution and applying at most `depth` many
 mutations. Allowed values of `A` are 9, 8, 6 and 5.
 
-# Example
+# Example:
 
 All solution triples to ``8xyz = (x+y+z)^2`` with depth at most three.
 
@@ -129,7 +129,7 @@ adjusted, according to Definition 3.14 of [HaKi24](@cite). Allowed values of
 `A` are 9, 8, 6 and 5. If `A` is not given, it is determined by calculating the
 degree of `u`.
 
-# Example
+# Example:
 
 The solution triple ``(50,9,3481)`` for ``A=8`` is not adjusted, since the even
 entry is not last.
@@ -217,7 +217,7 @@ to the notation of Theorem 1.1 of [HaKi24](@cite). Allowed values of `K` are
 1, 2, 3, 4, 5, 6, 8 and 9. Allowed values of `μ` are all integers such that
 `μ * K` is 5, 6, 8 or 9.
 
-# Example
+# Example:
 
 Compute all LDP triangles of degree 1 and class group torsion order 9, up to
 Markov depth 5. These consist of the three series (1-9-2), (1-9-5) and (1-9-8)
@@ -256,7 +256,7 @@ degree `K`, up to a given depth in the Markov tree. Essentially, this returns
 the triangles of the series (K - * - *) according to the notation of Theorem 1.1 of
 [HaKi24](@cite). Allowed values of `K` are 1, 2, 3, 4, 5, 6, 8 and 9.
 
-# Example
+# Example:
 
 Print the numbers of LDP triangles with integral degree `K`, for all possible
 values of `K`, up to depth 10.

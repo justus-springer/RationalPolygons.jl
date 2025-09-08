@@ -106,7 +106,7 @@ end
 Return all lattice polygons with given Gorenstein index, using the Algorithm
 described in [KKN10](@cite).
 
-# Example
+# Example:
 
 There are 91 LDP polygons of Gorenstein index four: 13 triangles, 48
 quadrilaterals, 29 pentagons and one hexagon.

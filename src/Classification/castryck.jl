@@ -112,7 +112,7 @@ number of interior lattice points, using in-memory storage. Returns a tuple
 where the first entry is the number of lattice polygons obtained and the second
 number is the number of maximal lattice polygons.
 
-# Example
+# Example:
 
 Perform two steps in Castryck's classification. The result tells us that there
 are 45 lattice polygons with exactly two interior lattice points, four of which
@@ -384,7 +384,7 @@ end
 Run Castryck's classification of lattice polygons by number of interior lattice
 points, up to `max_genus`.
 
-# Example
+# Example:
 
 Reproduce Castryck's classification in memory, see Table 1 of [Cas12](@cite) or
 A322343 on OEIS. This should not take longer than a few minutes on modern
@@ -486,7 +486,7 @@ julia> classify_lattice_polygons_by_genus(st, 30; logging=true)
 [ Info: [i = 30]. Moving out complete. New maximal polygons: 23873
 ```
 
-# Example
+# Example:
 
 Reproduce Castryck's classification and store the output to HDF5 files
 

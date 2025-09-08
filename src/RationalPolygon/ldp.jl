@@ -231,7 +231,7 @@ toric_prime_divisor_adjacent_intersection(P :: RationalPolygon{T,N}, i :: Int) w
 For ldp polygons, return the self intersection number of an anticanonocal
 divisor of the associated toric surface.
 
-# Example
+# Example:
 
 The projective plane has degree 9.
 

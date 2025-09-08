@@ -124,7 +124,7 @@ last_completed_number_of_lattice_points(st :: InMemoryKoelmanStorage{T}) where {
 Perform a single step in Koelman's classification of lattice polygons using
 in-memory storage.
 
-# Example
+# Example:
 
 Perform a single step of Koelmans classification using `Int64`. The result
 tells us that there are three lattice polygons with exactly four lattice
@@ -307,7 +307,7 @@ end
 Run Koelman's classification of lattice polygons by number of lattice points,
 up to `max_number_of_lattice_points`.
 
-# Example
+# Example:
 
 Reproduce Koelman's original classification in memory, see Table 4.4.3 of
 [Koe91](@cite) or A371917 on OEIS. This should not take longer than a few
@@ -358,7 +358,7 @@ julia> classify_polygons_by_number_of_lattice_points(st, 42; logging=true);
 [ Info: [l = 42]. New polygons: 1048176. Total: 5583163
 ```
 
-# Example
+# Example:
 
 Reproduce Koelman's classification and store the output to HDF5 files.
 

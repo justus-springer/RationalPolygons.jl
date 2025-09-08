@@ -23,7 +23,7 @@ end
 
 Return all lattice triangles with Picard index `p`.
 
-# Example
+# Example:
 
 There are two lattice triangles with Picard index 6:
 
@@ -95,7 +95,7 @@ end
 Perform Springer's classification of lattice triangles up go
 `max_picard_index`, storing the results in memory.
 
-# Example
+# Example:
 
 Reproduce Springer's original classification up to picard index 10000, see
 Theorem 1.2 of [Spr24](@cite).

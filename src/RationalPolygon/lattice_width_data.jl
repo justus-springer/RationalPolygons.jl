@@ -4,7 +4,7 @@
 
 Return the lattice width of `P` in direction `w`.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> P = convex_hull(LatticePoint{Int}[(1,1),(1,-2),(-4,2),(-2,2)],2)
@@ -29,7 +29,7 @@ end
 
 Return all direction vectors in which the width of `P` is less than or equal to a given constant.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> P = convex_hull(LatticePoint{Int}[(1,1),(1,-2),(-4,2),(-2,2)],2)
@@ -75,7 +75,7 @@ end
 
 Return the lattice width of `P`.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> P = convex_hull(LatticePoint{Int}[(1,1),(1,-2),(-4,2),(-2,2)],2)
@@ -105,7 +105,7 @@ scaled_width(P :: RationalPolygon) = numerator(rationality(P) * width(P))
 Return the lattice width direction vectors of `P`, i.e. those directions that
 realize the lattice width of `P`.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> P = convex_hull(LatticePoint{Int}[(1,1),(1,-2),(-4,2),(-2,2)],2)
@@ -146,7 +146,7 @@ end
 Return the number of interior integral lines of `P` with respect to a given
 direction vector `w`.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> P = convex_hull(RationalPoint{Int}[(1//3,-1),(4//3,2),(2//3,2),(-4//3,-1)])
@@ -174,7 +174,7 @@ end
 
 Return the minimal number of interior integral lines of `P`.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> P = convex_hull(RationalPoint{Int}[(1//3,-1),(4//3,2),(2//3,2),(-4//3,-1)])
@@ -199,7 +199,7 @@ Check whether `P` is realizable in ``\mathbb{R} \times [0,h]``. This is true
 if and only if `minimal_number_of_interior_integral_lines` is less than or
 equal to ``h-1``.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> P = convex_hull(RationalPoint{Int}[(1//3,-1),(4//3,2),(2//3,2),(-4//3,-1)])
@@ -248,7 +248,7 @@ position_of_longest_vertical_slice_length(lwd :: LatticeWidthData) =
 Compute the lattice width data of a rational polygon with respect to a given
 width direction vector, see Definition 2.11 of [Boh23](@cite). This function returns a value of type `LatticeWidthData`.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> P = convex_hull(LatticePoint{Int}[(1,1),(1,-2),(-4,2),(-2,2)],2)

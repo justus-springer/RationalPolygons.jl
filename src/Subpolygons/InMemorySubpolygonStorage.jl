@@ -172,7 +172,7 @@ arguments:
 - `logging :: Bool`: Whether to display logging messages about the computation
     progress.
 
-# Example
+# Example:
 
 There are ``148`` subpolygons of the square of side length three, up to affine
 equivalence. The maximal number of vertices of those is eight, attained by exactly
