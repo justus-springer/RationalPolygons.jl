@@ -88,6 +88,13 @@ end
 
 Return the line going through the points `A` and `B`.
 
+# Example
+
+```jldoctest
+julia> line_through_points(Point(1,0),Point(2,2))
+Line with base point Rational{Int64}[1, 0] and direction vector Rational{Int64}[1, 2]
+```
+
 """
 line_through_points(A :: Point{T}, B :: Point{T}) where {T <: Integer} =
 Line(A, B - A)

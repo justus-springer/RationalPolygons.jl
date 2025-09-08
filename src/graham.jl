@@ -79,7 +79,7 @@ end
 @doc raw"""
     graham_scan(points :: Vector{<:Point{T}}) where {T <: Integer}
 
-A non-modifying version of `graham_scan!`.
+A non-modifying version of [`graham_scan!`](@ref).
 
 """
 graham_scan(points :: Vector{<:Point{T}}) where {T <: Integer} = graham_scan!(deepcopy(points))
