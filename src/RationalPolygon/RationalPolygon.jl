@@ -180,10 +180,11 @@ number_of_vertices(P :: RationalPolygon{T,N,M}) where {N,M,T <: Integer} = P.num
 @doc raw"""
     rationality(P :: RationalPolygon)
 
-Return the rationality of `P`. Note that this does not need to be the smallest
+Return the rationality of `P`. Note that this does not need to be the _denominator_ 
+of `P` (see [`Base.denominator`](@ref), which is the _smallest_
 positive integer `k` such that `k*P` is a lattice polygon: The standard lattice
 triangle may also be viewed as a half-integral polygon, in which case the
-rationality would be `2`, even though all vertices are integral.
+rationality would be two, but the denominator is one.
 
 """
 rationality(P :: RationalPolygon{T,N}) where {N,T <: Integer} = P.rationality
@@ -289,6 +290,14 @@ Return the vertices of `P`.
 """
 vertices(P :: RationalPolygon{T,N}) where {N,T <: Integer} = collect(P)
 
+@doc raw"""
+    Base.denominator(P :: RationalPolygon{T,N}) where {N,T <: Integer}
+
+Return the smallest positive integer `k` such that `k * P` is a lattice polygon.
+
+"""
+Base.denominator(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
+lcm(denominator.(vertices(P)))
 
 @doc raw"""
     Base.:(+)(P :: RationalPolygon{T}, Q :: RationalPolygon{T}) where {T <: Integer}
