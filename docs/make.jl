@@ -43,6 +43,7 @@ elseif format == "thesis"
         sitename = "RationalPolygons",
         format = Documenter.LaTeX(platform = "none"),
         pages = [
+            "Home" => "index.md",
             "2D Geometry" => "2dgeometry.md",
             "Rational Polygons" => "polygons.md",
             "LDP polygons and toric surfaces" => "ldp.md",
@@ -56,8 +57,8 @@ elseif format == "thesis"
 
     txt = read(filename, String)
 
-    # Add preamble
-    txt = "%!TEX root = thesis.tex\n" * txt
+    # Add Tex root directive
+    txt = "%!TEX root = thesis.tex\n\n" * txt
 
     # Fix displaying of emojis
     txt = replace(txt, "🗂️" => "|\\folder|", "🔢" => "|\\dataset|")
@@ -66,7 +67,10 @@ elseif format == "thesis"
     txt = replace(txt, r"\[\\hyperref\[doc:(\w+)\]\{\d+\}\]" => s"\\cite{\1}")
     
     # Remove line breaks before examples
-    txt = replace(txt, r"\n(\\textbf{Example})" => s"\1")
+    txt = replace(txt, r"\n(\n\\textbf{Example})" => s"\1")
+
+    # Remove math mode for references and add tilde
+    txt = replace(txt, r" \\\( (\\ref\{\S+\}) \\\)" => s"~\1")
 
     write(filename, txt)
 
