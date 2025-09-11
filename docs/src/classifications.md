@@ -1,23 +1,27 @@
 # Classifications
 
-`RationalPolygons.jl` provides implementations of the classification algorithms
-from [BS24_1](@cite):
-
-- [Maximal rational polygons contained in ``\mathbb{R}\times[-1,1]``](#Maximal-rational-polygons-contained-in-\mathbb{R}\times[-1,1]),
-- [Maximal rational polygons with no interior lattice points](#Maximal-rational-polygons-with-no-interior-lattice-points),
-- [Rational polygons with one interior lattice point](#Rational-polygons-with-one-interior-lattice-point),
-- [Almost ``k``-hollow LDP polygons](#Almost-k-hollow-LDP-polygons).
-
-Moreover, we have reimplemented several other classifications of polygons:
-
-- [Lattice polygons by number of lattice points](#Lattice-polygons-by-number-of-lattice-points) from R.J. Koelman [Koe91](@cite),
-- [Lattice polygons by number of interior lattice points](#Lattice-polygons-by-number-of-interior-lattice-points) from Castryck [Cas12](@cite),
-- [Lattice polygons contained in a square](#Lattice-polygons-contained-in-a-square) from Brown and Kasprzyk [BK13](@cite),
-- [LDP polygons by Gorenstein index](#LDP-polygons-by-Gorenstein-index) from Kasprzyk, Kreuzer and Nill [KKN10](@cite),
-- [LDP triangles by Gorenstein index](#LDP-triangles-by-Gorenstein-index) from Andreas Bäuerle [Ba25](@cite),
-- [LDP triangles by Picard index](#LDP-triangles-by-Picard-index) from Justus Springer [Spr24](@cite),
-- [LDP triangles with integral degree](#LDP-triangles-with-integral-degree) from Hausen and Király [HaKi24](@cite).
-- [LDP quadrangles by Gorenstein index](#LDP-quadrangles-by-Gorenstein-index) from Justus Springer.
+We provide implementations for the classification algorithms of rational
+polygons from Chapter ``\ref{chp:rational_polygons}``, see Sections
+``\ref{doc:Maximal15090583064303023392}`` -
+``\ref{doc:Almost-k-hollow-LDP-polygons}``. Additionally, we implement the
+classification of LDP triangles by Picard index from Section
+``\ref{sec:ldp_triangles_classification_by_picard_index}``, see
+``\ref{doc:LDP-triangles-by-Picard-index}`` and the classification of LDP
+quadrangles by Gorenstein index from Section
+``\ref{sec:ldp_polygons_classifications_by_gorenstein_index}``, see
+``\ref{doc:LDP-quadrangles-by-Gorenstein-index}``. Moreover, several other
+classifications of polygons are implemented. This includes the classification of
+lattice polygons by number of lattice points by Koelman [Koe91](@cite) in
+Section ``\ref{doc:Lattice-polygons-by-number-of-lattice-points}``, lattice
+polygons by number of interior lattice points by Castryck [Cas12](@cite) in
+Section ``\ref{doc:Lattice-polygons-by-number-of-interior-lattice-points}``,
+lattice polygons contained in a square by Brown and Kasprzyk [BK13](@cite) in
+Section ``\ref{doc:Lattice-polygons-contained-in-a-square}``, LDP polygons by
+Gorenstein index from Kasprzyk, Kreuzer and Nill [KKN10](@cite) in Section
+``\ref{doc:LDP-polygons-by-Gorenstein-index}``, LDP triangles by Gorenstein
+index from Bäuerle in Section ``\ref{doc:LDP-triangles-by-Gorenstein-index}``
+[Ba25](@cite) and LDP triangles with integral degree by Hausen and Király
+[HaKi24](@cite) in Section ``\ref{doc:LDP-triangles-with-integral-degree}``.
 
 ## Maximal rational polygons contained in ``\mathbb{R}\times[-1,1]``
 
@@ -80,6 +84,33 @@ julia> max_volumes = [k^2 * maximum(euclidean_area.(Pss[k])) for k = 1 : 3]
  9//2
  17
  47
+```
+
+## LDP triangles by Picard index
+
+Springer [Spr24](@cite) gave an algorithm to classify LDP triangles (toric log del Pezzo
+surfaces of rank one) by Picard index. `RationalPolygons.jl` implements a version
+of this algorithm, which successfully reproduces the numbers from Theorem 8.5
+of [Spr24](@cite).
+
+```@docs
+PicardIndexStorage
+InMemoryPicardIndexStorage
+HDFPicardIndexStorage
+classify_lattice_triangles_by_picard_index
+```
+
+## LDP quadrangles by Gorenstein index
+
+The following is a classification of LDP quadrangles by Gorenstein index.
+A reference explaining the approach used will be added in the future.
+
+```@docs
+modified_unit_fraction_solutions
+gorenstein_coefficients_to_degree_matrix_minors
+classify_gorenstein_coefficients
+gorenstein_coefficients_normal_form
+classify_quadrilaterals_by_gorenstein_index
 ```
 
 ## Lattice polygons by number of lattice points
@@ -194,20 +225,6 @@ HDFBaeuerleStorage
 classify_lattice_triangles_by_gorenstein_index
 ```
 
-## LDP triangles by Picard index
-
-Springer [Spr24](@cite) gave an algorithm to classify LDP triangles (toric log del Pezzo
-surfaces of rank one) by Picard index. `RationalPolygons.jl` implements a version
-of this algorithm, which successfully reproduces the numbers from Theorem 8.5
-of [Spr24](@cite).
-
-```@docs
-PicardIndexStorage
-InMemoryPicardIndexStorage
-HDFPicardIndexStorage
-classify_lattice_triangles_by_picard_index
-```
-
 ## LDP triangles with integral degree
 
 Hausen and Király [HaKi24](@cite) classified fake weighted projective planes
@@ -239,18 +256,5 @@ adjust_triple
 classify_squared_markov_type_equation_solutions
 fake_weight_vectors_to_triangles
 classify_lattice_triangles_integral_degree
-```
-
-## LDP quadrangles by Gorenstein index
-
-The following is a classification of LDP quadrangles by Gorenstein index.
-A reference explaining the approach used will be added in the future.
-
-```@docs
-modified_unit_fraction_solutions
-gorenstein_coefficients_to_degree_matrix_minors
-classify_gorenstein_coefficients
-gorenstein_coefficients_normal_form
-classify_quadrilaterals_by_gorenstein_index
 ```
 
