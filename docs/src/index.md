@@ -55,3 +55,8 @@ algorithms from Chapter ``\ref{chp:rational_polygons}``, Sections
 ``\ref{sec:ldp_triangles_classification_by_picard_index}`` and
 ``\ref{sec:ldp_polygons_classifications_by_gorenstein_index}`` as well as
 various classification algorithms by other authors.
+
+This documentation has been generated from the docstrings of the package's
+source code. A web version is available on its GitHub page
+[RationalPolygons_jl](@cite). All example sessions have been tested against
+version `v1.2.0`.
