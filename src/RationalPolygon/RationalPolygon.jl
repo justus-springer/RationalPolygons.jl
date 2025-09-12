@@ -203,7 +203,7 @@ rationality(P :: RationalPolygon{T,N}) where {N,T <: Integer} = P.rationality
 @doc raw"""
     vertex_matrix(P :: RationalPolygon)
 
-The vertex matrix of `P` is the 2xN integral matrix containing the vertices of
+The vertex matrix of `P` is the ``2 \times N`` integral matrix containing the vertices of
 `rationality(P) * P` as its columns.
 
 # Example:
