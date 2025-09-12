@@ -6,7 +6,7 @@ In this package, we call more generally a ``k``-rational polygon _LDP_, if it
 contains the origin in its interior and its ``k``-fold multiple has primitive
 vertices. With this definition, the ``k``-rational LDP polygons with exactly one
 interior lattice point correspond to the toric del Pezzo surfaces with at most
-``\frak{1}{k}``-log canonical singularities. Here, we list some properties of
+``\frac{1}{k}``-log canonical singularities. Here, we list some properties of
 LDP polygons that correspond to meaningful invariants of the associated toric
 del Pezzo surface.
 

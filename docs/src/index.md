@@ -47,13 +47,12 @@ euclidean geometry over the rationals, such as computing the convex hull and
 intersecting lines. Section ``\ref{doc:Polygons}`` covers the type of rational
 polygons as well as basic properties and the normal form. Section
 ``\ref{doc:LDP-Polygons}`` is about LDP polygons and their relation to toric del
-Pezzo surfaces. In Section ``\ref{doc:Subpolygons}``, we describe the algorithm
-to compute subpolygons, which is central to many of our classifications from
-Chapter ``\ref{chp:rational_polygons}``. Finally, Section
-``\ref{doc:Classifications}`` covers implementations of the classification
-algorithms from Chapter ``\ref{chp:rational_polygons}``, Sections
+Pezzo surfaces. In Section ``\ref{doc:Subpolygons}``, we discuss computation
+subpolygons, following the approach from Section ``\ref{subsec:subpolygons}``.
+Finally, Section ``\ref{doc:Classifications}`` covers implementations of the
+classification algorithms from Chapter ``\ref{chp:rational_polygons}``, Sections
 ``\ref{sec:ldp_triangles_classification_by_picard_index}`` and
-``\ref{sec:ldp_polygons_classifications_by_gorenstein_index}`` as well as
+``\ref{sec:ldp_polygons_classifications_by_gorenstein_index}``, as well as
 various classification algorithms by other authors.
 
 This documentation has been generated from the docstrings of the package's

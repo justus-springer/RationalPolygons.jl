@@ -2,9 +2,9 @@
 
 A polygon ``P`` is called a _subpolygon_ of ``Q``, if ``\varphi(P) \subseteq Q``
 for some affine unimodular transformation ``\varphi``. Given a ``k``-rational
-polygon ``P``, we can find all subpolygons of ``P`` using the algorithm described
-in section 2.3 of [BS24_1](@cite). The main idea is to successively remove
-vertices of ``P`` by computing Hilbert bases.
+polygon ``P``, we can find all subpolygons of ``P`` using the Algorithm
+``\ref{algo:subpolygons}``. The main idea is to successively remove vertices of
+``P`` by computing Hilbert bases.
 
 ## Hilbert bases
 

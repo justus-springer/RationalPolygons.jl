@@ -19,18 +19,28 @@ mathematically the same polygon, `RationalPolygon.jl` views them as different
 objects: once as a ``k``-rational polygon and once as a ``2k``-rational polygon.
 The second way in which this encoding is not unique is that we can change the
 order of the columns. While we require them to be sorted counterclockwise, we
-may use any vertex as the first column. This problem is addressed in the section
-on [normal forms](#Normal-forms).
+may use any vertex as the first column. This problem is addressed in Section
+``\ref{doc:Normal-forms-and-automorphism-groups}`` when we describe normal
+forms.
 
 ```@docs
 RationalPolygon
 ```
 
+The rest of this section is organized as follows. In Subsection
+``\ref{doc:Constructors}``, we describe different methods of constructing a
+rational polygon. Subsection ``\ref{doc:Basic-Properties}`` is about basic
+properties. In Subsection ``\ref{doc:Ehrhart-Theory}``, we discuss various
+ways of counting lattice points as well as Ehrhart theory. Subsection
+``\ref{doc:Normal-forms-and-automorphism-groups}`` is about unimodular and
+affine unimodular normal forms. Finally, Subsection ``\ref{doc:Lattice-width}``
+is about lattice width and related concepts.
+
 ## Constructors
 
-Besides the type constructor methods, we provide the functions
-[`convex_hull`](@ref) and [`intersect_halfplanes`](@ref) to create a polygon
-from an unstructured collection of points or affine halfplanes.
+To construct a rational polygon, one can either use a type constructor
+or one of the functions [`convex_hull`](@ref) and
+[`intersect_halfplanes`](@ref). We describe the type constructors first.
 
 ```@docs
 RationalPolygon(vertex_matrix :: SMatrix{2,N,T,M}, rationality :: T) where {N, M, T <: Integer}
@@ -152,8 +162,8 @@ The purpose of a normal form is to provide a unique representative for every
 equivalence class, i.e. two polygons should be (affine) unimodular equivalent
 to each other if and only if their (affine) unimodular normal forms coincide.
 
-For details about the normal form used in `RationalPolygons.jl`, see
-[BS24_1](@cite).
+For details about the normal form used in `RationalPolygons.jl`, see Section
+``\ref{subsec:normal_forms}``.
 
 ```@docs
 unimodular_normal_form
