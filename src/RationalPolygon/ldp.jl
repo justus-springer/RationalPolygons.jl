@@ -70,7 +70,7 @@ det(scaled_vertex(P,i), scaled_vertex(P,i+1))
     multiplicity(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 
 The order of the sublattice spanned by the scaled vertices of `P`. For LDP
-polygons, this equals the order of the torsion part of the divisors class group
+polygons, this equals the order of the torsion part of the divisor class group
 of the associated toric surface.
 
 """
@@ -106,7 +106,7 @@ all(i -> is_smooth(P, i), 1 : N)
 
 The product of all local multiplicities of `P` divided by the global
 multiplicity. For LDP polygons, this equals the index of the Picard group inside
-the divisor class group of the associated toric surface, see [Spr24](@cite). 
+the divisor class group of the associated toric surface, see ``\ref{prp:picard_index_formula_ldp_polygons}``
 
 """
 picard_index(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
