@@ -47,11 +47,11 @@ struct RationalPolygon{T<:Integer,N,M}
     provided, these are understood to be the integral vertices of the scaled
     polygon `rationality(P) * P`.
 
-    When using this constructor, no consistency checks are done on the input.
+    These constructors don't perform any consistency checks on the input.
     In particular, the user must be sure that the given points are truly
     vertices of the polygon and that they are ordered counterclockwise. If
-    this is not known ahead of contraction, [`convex_hull`](@ref) should be
-    used instead of this constructor.
+    this is not known ahead of construction, [`convex_hull`](@ref) should be
+    used instead.
 
     All constructors accept the optional keyword arguments `is_unimodular_normal_form`
     and `is_affine_normal_form`, which are set to `false` by default. If they
