@@ -180,10 +180,10 @@ affine_automorphism_group
 
 ## Lattice width
 
-In [Boh23](@cite), Bohnert describes the concept of _lattice width data_, which
-captures information about the slicing lengths of a polygon with respect to
-given direction vectors. `RationalPolygons.jl` implements this concept,
-following his Definition 2.11.
+We provide functions to compute the lattice width as well as all direction vectors
+in which the lattice width is attained. Furthermore, we implement the concept of
+_lattice width data_ following [Boh23](@cite), which captures information about
+the slicing lengths of a polygon with respect to given direction vectors.
 
 ```@docs
 width

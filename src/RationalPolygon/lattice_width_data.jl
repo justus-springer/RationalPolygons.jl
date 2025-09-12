@@ -196,7 +196,7 @@ end
     is_realizable_in_interval(P :: RationalPolygon{T}, h :: T) where {T <: Integer}
 
 Check whether `P` is realizable in ``\mathbb{R} \times [0,h]``. This is true
-if and only if `minimal_number_of_interior_integral_lines` is less than or
+if and only if the minimal number of interior integral lines is less than or
 equal to ``h-1``.
 
 # Example:

@@ -14,7 +14,7 @@ end
 @doc raw"""
     CyclicGroup(n :: Int)
 
-Return the cyclic group of order `n`, as an `PolygonAutomorphismGroup`.
+Return the cyclic group of order `n`, as a `PolygonAutomorphismGroup`.
 
 """
 CyclicGroup(n :: Int) = PolygonAutomorphismGroup(true, n)
@@ -23,7 +23,7 @@ CyclicGroup(n :: Int) = PolygonAutomorphismGroup(true, n)
 @doc raw"""
     DihedralGroup(n :: Int)
 
-Return the dihedral group of order `2n`, as an `PolygonAutomorphismGroup`.
+Return the dihedral group of order `2n`, as a `PolygonAutomorphismGroup`.
 
 """
 DihedralGroup(n :: Int) = PolygonAutomorphismGroup(false, n)
