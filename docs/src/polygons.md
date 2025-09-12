@@ -19,9 +19,7 @@ mathematically the same polygon, `RationalPolygon.jl` views them as different
 objects: once as a ``k``-rational polygon and once as a ``2k``-rational polygon.
 The second way in which this encoding is not unique is that we can change the
 order of the columns. While we require them to be sorted counterclockwise, we
-may use any vertex as the first column. This problem is addressed in Section
-``\ref{doc:Normal-forms-and-automorphism-groups}`` when we describe normal
-forms.
+may use any vertex as the first column.
 
 ```@docs
 RationalPolygon
