@@ -75,9 +75,9 @@ dual
 
 ## Ehrhart Theory
 
-The main result of Ehrhart Theory is that the number of lattice points in
-integral multiples of a ``k``-rational polygon ``P`` is a quasipolynomial,
-called its _Ehrhart quasipolynomial_:
+Recall that the number of lattice points in integral multiples of a
+``k``-rational polygon ``P`` is a quasipolynomial, called its _Ehrhart
+quasipolynomial_:
 
 ```math
 \mathrm{ehr_P}(t) = |tP \cap \mathbb{Z}^2| = At^2 + a(t)t+b(t), \qquad t \in \mathbb{Z}.
@@ -93,10 +93,11 @@ a(t) = -(2t+k)\cdot A + \frac{\mathrm{ehr}_P(t+k)-\mathrm{ehr}_P(t)}{k},
 b(t) = (t^2+tk)\cdot A + \frac{(t+k)\mathrm{ehr}_P(t)-t\mathrm{ehr}_P(t+k)}{k}.
 ```
 
-Setting ``\tilde{A} := 2k^2A,\ \tilde{a} := 2k^2 a`` and ``\tilde{b} := 2k^2b``, we get
-integer valued functions ``\tilde a`` and ``\tilde b`` which we call the
-_normalized Ehrhart coefficients_. Hence we can encode the Ehrhart quasipolynomial
-by the ``3\times k``-integral matrix of its normalized Ehrhart coefficients:
+Setting ``\tilde{A} := 2k^2A,\ \tilde{a} := 2k^2 a`` and ``\tilde{b} := 2k^2b``,
+we get integer-valued functions ``\tilde a`` and ``\tilde b``, which we call the
+_normalized Ehrhart coefficients_. In `RationalPolygons.jl`, we encode the
+Ehrhart quasipolynomial by the ``3\times k``-integral matrix of its normalized
+Ehrhart coefficients:
 
 ```math
 \begin{bmatrix}
@@ -104,7 +105,7 @@ by the ``3\times k``-integral matrix of its normalized Ehrhart coefficients:
 \tilde{A} & \tilde{a}(2) & \tilde{b}(2) \\
 \vdots & \vdots & \vdots \\
 \tilde{A} & \tilde{a}(k) & \tilde{b}(k)
-\end{bmatrix} \in \mathbb{Z}^{3\times k}.
+\end{bmatrix}
 ```
 
 If ``P`` is integral, we have ``k=1`` and its Ehrhart quasipolynomial is a
