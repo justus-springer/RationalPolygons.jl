@@ -4,8 +4,7 @@
     parse_rational_polygons(k :: T, file :: String) where {T <: Integer}
 
 Parse a list of files containing the vertices of a `k`-rational polygon. The
-files must have one polygon per line and the vertices must be given as a list of
-lists of integers, i.e. as in the following example:
+files must have one polygon per line contained its vertices, as in the following example:
 
 ```shell
 [[2, 0], [1, 3], [-1, 0], [-3, -4]]
