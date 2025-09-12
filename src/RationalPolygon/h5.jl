@@ -136,7 +136,7 @@ GROUP "/" {
 }
 ```
 
-We can read them back into RationalPolygons.jl at any time using
+We can read them back into `RationalPolygons.jl` at any time using
 [`read_polygon_dataset`](@ref):
 
 ```julia

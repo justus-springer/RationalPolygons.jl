@@ -8,7 +8,7 @@ vertices. With this definition, the ``k``-rational LDP polygons with exactly one
 interior lattice point correspond to the toric del Pezzo surfaces with at most
 ``\frac{1}{k}``-log canonical singularities. Here, we list some properties of
 LDP polygons that correspond to meaningful invariants of the associated toric
-del Pezzo surface.
+del Pezzo surface. For more background on LDP polygons, see Section ``\ref{sec:ldp_polygons_toric_log_del_pezzo_surfaces}``.
 
 ```@docs
 contains_origin_in_interior

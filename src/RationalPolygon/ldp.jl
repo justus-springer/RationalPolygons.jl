@@ -22,7 +22,7 @@ all(i -> is_primitive(scaled_vertex(P,i)), 1 : N)
 @doc raw"""
     is_ldp(P :: RationalPolygon)
 
-Check whether `P` is a ldp polygon, i.e. is primitive and contains the origin
+Check whether `P` is LDP, i.e. is primitive and contains the origin
 in its interior.
 
 """
@@ -57,7 +57,7 @@ end
     multiplicity(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
 
 The index of the sublattice spanned by the `i`-th and `i+1`-th scaled vertex of
-`P` (i.e. the determinant of those two vertices). For ldp polygons, this equals
+`P` (i.e. the determinant of those two vertices). For LDP polygons, this equals
 the order of the local class group associated with the toric fixed point
 associated to the `i`-th and `i+1`-th ray.
 
@@ -69,7 +69,7 @@ det(scaled_vertex(P,i), scaled_vertex(P,i+1))
 @doc raw"""
     multiplicity(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 
-The order of the sublattice spanned by the scaled vertices of `P`. For ldp
+The order of the sublattice spanned by the scaled vertices of `P`. For LDP
 polygons, this equals the order of the torsion part of the divisors class group
 of the associated toric surface.
 
@@ -82,7 +82,7 @@ gcd([multiplicity(P,i) for i = 1 : N])
     is_smooth(P :: RationalPolygon, i :: Int)
 
 Check whether the cone spanned by the `i`-th and `i+1`-th vertex of `P` is
-regular, i.e. generates the entire lattice. For ldp polygons, this means that
+regular, i.e. generates the entire lattice. For LDP polygons, this means that
 the toric fixed point associated to the `i`-th and `i+1`-th ray is smooth.
 
 """
@@ -93,7 +93,7 @@ multiplicity(P, i) == 1
 @doc raw"""
     is_smooth(P :: RationalPolygon)
 
-Check whether all cones of the face fan of `P` are regular. For ldp polygons,
+Check whether all cones of the face fan of `P` are regular. For LDP polygons,
 this means that the associated toric surface is smooth.
 
 """
@@ -105,7 +105,7 @@ all(i -> is_smooth(P, i), 1 : N)
     picard_index(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 
 The product of all local multiplicities of `P` divided by the global
-multiplicity. For ldp polygons, this equals the index of the Picard group inside
+multiplicity. For LDP polygons, this equals the index of the Picard group inside
 the divisor class group of the associated toric surface, see [Spr24](@cite). 
 
 """
@@ -120,7 +120,7 @@ gorenstein_index(v :: LatticePoint{T}, w :: LatticePoint{T}) where {T <: Integer
 
 The multiplicity of `P` divided by `gcd(w[2] - v[2], v[1] - w[1])`, where `v`
 and `w` are the `i`-th and `i+1`-th scaled vertices of `P` respectively. For
-ldp polygons, this equals the local gorenstein at the toric fixed point
+LDP polygons, this equals the local gorenstein at the toric fixed point
 associated to the `i`-th and `i+1`-th ray of `P`, see e.g. Lemma 3.9
 of [HaHaHaSp25](@cite).
 
@@ -132,7 +132,7 @@ gorenstein_index(scaled_vertex(P,i), scaled_vertex(P,i+1))
 @doc raw"""
     gorenstein_index(P :: RationalPolygon{T}) where {T <: Integer}
 
-The least common multiple of the local gorenstein indices of `P`. For ldp
+The least common multiple of the local gorenstein indices of `P`. For LDP
 polygons, this equals the gorenstein index of the associated toric surface.
 
 """
@@ -190,7 +190,7 @@ minimum(log_canonicities(P,i))
 
 Given a `k`-rational polygon `P`, return the maximal rational number 0 < ϵ ≤ 1
 such that ε*P contains only one `k`-rational point in its interior (the
-origin). For an ldp polygon, this equals the maximal rational number 0 < ε ≤ 1
+origin). For an LDP polygon, this equals the maximal rational number 0 < ε ≤ 1
 such that the associated toric surface is ε-log canonical.
 
 """
@@ -202,7 +202,7 @@ minimum([log_canonicity(P,i) for i = 1 : N])
     toric_prime_divisor_self_intersection(P :: RationalPolygon, i :: Int)
 
 Writing `u`, `v` and `w` for the `i-1`-th, `i`-th and `i+1`-th scaled vertex of
-`P` respectively, return `det(w,u) // (det(u,v) * det(v,w))`. For ldp polygons,
+`P` respectively, return `det(w,u) // (det(u,v) * det(v,w))`. For LDP polygons,
 this equals the self intersection number of the `i`-th toric prime divisor, see
 e.g. Summary 3.2 of [HaHaSp25](@cite).
 
@@ -217,7 +217,7 @@ end
     toric_prime_divisor_adjacent_intersection(P :: RationalPolygon, i :: Int)
 
 Writing `v` and `w` for the `i`-th and `i+1`-th scaled vertex of `P`, return `1
-// det(v,w)`. For ldp polygons, this equals the intersection number between the
+// det(v,w)`. For LDP polygons, this equals the intersection number between the
 `i`-th and `i+1`-th toric prime divisors.
 
 """
@@ -228,7 +228,7 @@ toric_prime_divisor_adjacent_intersection(P :: RationalPolygon{T,N}, i :: Int) w
 @doc raw"""
     degree(P :: RationalPolygon)
 
-For ldp polygons, return the self intersection number of an anticanonocal
+For LDP polygons, return the self intersection number of an anticanonocal
 divisor of the associated toric surface.
 
 # Example:
