@@ -204,9 +204,9 @@ positions_of_longest_vertical_slice_length
 
 ## IO
 
-`RationalPolygons.jl` provides two ways to save and retrieve polygons from a
-file. The first is text-based. Polygons can be read from files containing one
-polygon per line like this:
+`RationalPolygons.jl` provides two ways to read and write polygons from files.
+The first is text-based. Polygons can be read from files containing one polygon
+per line like this:
 
 ```shell
 [[2, 0], [1, 3], [-1, 0], [-3, -4]]
@@ -215,12 +215,12 @@ polygon per line like this:
 ....
 ```
 
-This text-based format has the advantage of being universally understandable and
-easy to use. However, storing polygons as ASCII strings is not very
-space-efficient, as they contain lots of redundant control characters. Hence we
-provide another way to store polygons in binary and compressed form, which uses
-the HDF5 file format and is more suitable for large datasets. For an example
-session, see [`write_polygon_dataset`](@ref).
+This text-based format has the advantage of being easy to understand and use.
+However, storing polygons as ASCII strings is not very space-efficient, as they
+contain lots of redundant control characters. Hence we provide another way to
+store polygons in binary and compressed form, which uses the HDF5 file format.
+This is more suitable for large datasets. For an example session, see
+[`write_polygon_dataset`](@ref).
 
 ```@docs
 parse_rational_polygons

@@ -221,7 +221,7 @@ minimal_number_of_interior_integral_lines(P) <= h - 1
     LatticeWidthData{T <: Integer}
 
 A struct capturing information about the lattice width of a rational polygon
-with respect to a some width direction vector, see Definition 2.11 of
+with respect to a lattice width direction vector, see Definition 2.11 of
 [Boh23](@cite). It has two fields:
 
 - `interval_of_nonzero_vertical_slice_length :: Tuple{Rational{T},Rational{T}}`,
@@ -246,7 +246,8 @@ position_of_longest_vertical_slice_length(lwd :: LatticeWidthData) =
     lattice_width_data(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
 
 Compute the lattice width data of a rational polygon with respect to a given
-width direction vector, see Definition 2.11 of [Boh23](@cite). This function returns a value of type `LatticeWidthData`.
+width direction vector, see Definition 2.11 of [Boh23](@cite). 
+This function returns a value of type [`LatticeWidthData`](@ref).
 
 # Example:
 
