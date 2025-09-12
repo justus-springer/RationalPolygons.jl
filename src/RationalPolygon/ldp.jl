@@ -106,7 +106,7 @@ all(i -> is_smooth(P, i), 1 : N)
 
 The product of all local multiplicities of `P` divided by the global
 multiplicity. For LDP polygons, this equals the index of the Picard group inside
-the divisor class group of the associated toric surface, see ``\ref{prp:picard_index_formula_ldp_polygons}``
+the divisor class group of the associated toric surface, see Proposition ``\ref{prp:picard_index_formula_ldp_polygons}``
 
 """
 picard_index(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
@@ -120,9 +120,8 @@ gorenstein_index(v :: LatticePoint{T}, w :: LatticePoint{T}) where {T <: Integer
 
 The multiplicity of `P` divided by `gcd(w[2] - v[2], v[1] - w[1])`, where `v`
 and `w` are the `i`-th and `i+1`-th scaled vertices of `P` respectively. For
-LDP polygons, this equals the local gorenstein at the toric fixed point
-associated to the `i`-th and `i+1`-th ray of `P`, see e.g. Lemma 3.9
-of [HaHaHaSp25](@cite).
+LDP polygons, this equals the local Gorenstein at the toric fixed point
+associated to the `i`-th and `i+1`-th ray of `P`, see Proposition ``\ref{prp:gorenstein_index_formula}``
 
 """
 gorenstein_index(P :: RationalPolygon{T}, i :: Int) where {T <: Integer} =
@@ -132,8 +131,8 @@ gorenstein_index(scaled_vertex(P,i), scaled_vertex(P,i+1))
 @doc raw"""
     gorenstein_index(P :: RationalPolygon{T}) where {T <: Integer}
 
-The least common multiple of the local gorenstein indices of `P`. For LDP
-polygons, this equals the gorenstein index of the associated toric surface.
+The least common multiple of the local Gorenstein indices of `P`. For LDP
+polygons, this equals the Gorenstein index of the associated toric surface.
 
 """
 function gorenstein_index(P :: RationalPolygon{T,N}) where {N,T <: Integer}
@@ -188,10 +187,10 @@ minimum(log_canonicities(P,i))
 @doc raw"""
     log_canonicity(P :: RationalPolygon)
 
-Given a `k`-rational polygon `P`, return the maximal rational number 0 < ϵ ≤ 1
-such that ε*P contains only one `k`-rational point in its interior (the
-origin). For an LDP polygon, this equals the maximal rational number 0 < ε ≤ 1
-such that the associated toric surface is ε-log canonical.
+Given a ``k``-rational polygon ``P``, return the maximal rational number ``0 < ϵ ≤ 1``
+such that ``ε*P`` contains only one ``k``-rational point in its interior (the
+origin). For an LDP polygon, this equals the maximal rational number ``0 < ε ≤ 1``
+such that the associated toric surface is ``ε``-log canonical.
 
 """
 log_canonicity(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
