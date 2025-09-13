@@ -3,8 +3,8 @@
     cls_cone_normal_form(A :: Matrix2{T}) where {T <: Integer}
 
 Bring a two-dimensional cone into normal form in the sense of [CLS11](@cite).
-The result is a triple ``(d, k, M)``, where d and k are the parameters of the cone
-and M is a ``2x2`` integral matrix such that `M * [0 d ; 1 -k] == A`
+The result is a triple ``(d, k, M)``, where ``d`` and ``k`` are the parameters of the cone
+and ``M`` is a ``2 \times 2`` integral matrix such that `M * [0 d ; 1 -k] == A`
 
 # Example
 
@@ -33,7 +33,7 @@ end
 @doc raw"""
     hirzebruch_jung(x :: T, y :: T) where {T <: Integer}
 
-Return the Hirzebruch-Jung continued fraction associated to `x // y`.
+Return the Hirzebruch-Jung continued fraction associated to ``x / y``.
 
 # Example
 

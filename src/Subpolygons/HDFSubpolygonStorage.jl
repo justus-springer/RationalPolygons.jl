@@ -18,7 +18,7 @@ following fields:
     during the shaving process. Defaults to `10^6`.
 - `maximum_number_of_vertices :: Int`: An upper bound for the maximal number of
     vertices to be expected in the computation. This has to be set since every
-    HDF5 file generated will have a dataset "numbers\_of\_polygons" storing the
+    HDF5 file generated will have a dataset `numbers_of_polygons` storing the
     number of polygons for each number of vertices and the size of this dataset
     needs to be set beforehand. Defaults to `100`, which should be more than enough for any
     feasible computation.
@@ -59,7 +59,7 @@ file format. It has the following fields:
 - `preferences :: HDFSubpolygonStoragePreferences{T}`
 - `file_path :: String`: The file path of the HDF5 file to be created.
 - `group_path :: String`: Path to a group within the HDF5 file, if it already
-   exists. Defaults to "/", i.e. the root group.
+   exists. Defaults to `"/"`, i.e. the root group.
 - `hash_sets :: Dict{T,Set{UInt128}}`: A dictionary of hashes of polygons
    already encountered. This is used for comparison with new polygons to ensure
    the result contains each polygon exactly once. We hold these hashes in memory
