@@ -2,9 +2,9 @@
 @doc raw"""
     classify_maximal_polygons_genus_one_m1p1(k :: T) where {T <: Integer}
 
-Return all maximal `k`-rational polygons with exactly one interior lattice
-point that can be realized in $\mathbb{R} \times [-1,1]$. If `primitive = true`
-is passed, then only primitive polygons (i.e. ldp polygons) are returned.
+Return all maximal ``k``-rational polygons with exactly one interior lattice
+point that can be realized in ``\mathbb{R} \times [-1,1]``. If `primitive = true`
+is passed, then only primitive polygons (i.e. LDP polygons) are returned.
 
 """
 function classify_maximal_polygons_genus_one_m1p1(k :: T; primitive :: Bool = false) where {T <: Integer}
@@ -53,9 +53,9 @@ end
 @doc raw"""
     classify_maximal_polygons_genus_one_m1p2(k :: T) where {T <: Integer}
 
-Return all maximal `k`-rational polygons with exactly one interior lattice
-point that can be realized in $\mathbb{R} \times [-1,2]$. If `primitive = true`
-is passed, then only primitive polygons (i.e. ldp polygons) are returned.
+Return all maximal ``k``-rational polygons with exactly one interior lattice
+point that can be realized in ``\mathbb{R} \times [-1,2]``. If `primitive = true`
+is passed, then only primitive polygons (i.e. LDP polygons) are returned.
 
 """
 function classify_maximal_polygons_genus_one_m1p2(k :: T; primitive :: Bool = false) where {T <: Integer}
@@ -132,10 +132,10 @@ end
 @doc raw"""
     classify_maximal_polygons_genus_one_m2p2(k :: T, q :: Int) where {T <: Integer}
 
-Return all maximal `k`-rational polygons with exactly one interior lattice
-point that can be realized in $\mathbb{R} \times [-2,2]$ that have non-empty
-intersection with the `q`-th classification box, where `1 ≤ q ≤ 3`. If
-`primitive = true` is passed, then only primitive polygons (i.e. ldp polygons)
+Return all maximal ``k``-rational polygons with exactly one interior lattice
+point that can be realized in ``\mathbb{R} \times [-2,2]`` that have non-empty
+intersection with the ``q``-th classification box, where ``1 \leq q \leq 3``. If
+`primitive = true` is passed, then only primitive polygons (i.e. LDP polygons)
 are returned.
 
 """
@@ -279,13 +279,13 @@ end
 @doc raw"""
     classify_maximal_polygons_genus_one(k :: T) where {T <: Integer}
 
-Return all maximal `k`-rational polygons with exactly one interior lattice
-point. If `primitive = true` is passed, then only primitive polygons (i.e. ldp
+Return all maximal ``k``-rational polygons with exactly one interior lattice
+point. If `primitive = true` is passed, then only primitive polygons (i.e. LDP
 polygons) are returned.
 
 # Example:
 
-Compute the numbers of polygons for ``k ≤ 3``.
+Compute the numbers of polygons for ``k \leq 3``.
 
 ```jldoctest
 julia> length.(classify_maximal_polygons_genus_one.(1:3))
@@ -338,11 +338,10 @@ end
 @doc raw"""
     classify_polygons_genus_one(k :: T) where {T <: Integer}
 
-Compute all `k`-rational polygons with exactly one interior lattice point. The following keyword arguments are supported:
+Compute all ``k``-rational polygons with exactly one interior lattice point. The following keyword arguments are supported:
 
-- `primitive :: Bool`. If set to true, only primitive polygons (i.e. ldp polygons) are returned.
-- `logging :: Bool`. Controls whether to display logging messages showing the
-current progress.
+- `primitive :: Bool`. If set to true, only primitive polygons (i.e. LDP polygons) are returned.
+- `logging :: Bool`. Controls whether to display logging messages showing the current progress.
 
 # Example:
 

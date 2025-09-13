@@ -3,9 +3,9 @@
 @doc raw"""
     classify_maximal_lattice_free_polygons_m1p2_squares(k :: T) where {T <: Integer}
 
-Return all `k`-maximal polygons with no interior lattice points that are
+Return all ``k``-maximal polygons with no interior lattice points that are
 contained in ``A \cup \mathbb{R} \times [-1,2] \cup B`` where ``A`` is the
-square with vertices ``(0,1),(1,1),(1,2),(0,2)`` and B is the square with vertices
+square with vertices ``(0,1),(1,1),(1,2),(0,2)`` and ``B`` is the square with vertices
 ``(0,0),(0,-1),(1,-1),(1,0)``.
 
 """
@@ -65,7 +65,7 @@ end
 @doc raw"""
     classify_maximal_lattice_free_polygons_m1p2_trapezoids(k :: T) where {T <: Integer}
 
-Return all `k`-maximal polygons with no interior lattice points that are
+Return all ``k``-maximal polygons with no interior lattice points that are
 contained in ``A \cup \mathbb{R} \times [-1,2] \cup B`` where ``A`` is the
 trapezoid with vertices ``(-1,2),(0,1),(1,1),(1,2)`` and ``B`` is the trapezoid
 with vertices ``(0,0),(0,-1),(2,-1),(1,0)``, excluding the polygons from
@@ -126,7 +126,7 @@ end
 @doc raw"""
     classify_maximal_lattice_free_polygons_m1p2(k :: T) where {T <: Integer}
 
-Return all `k`-maximal polygons with no interior lattice points contained in
+Return all ``k``-maximal polygons with no interior lattice points contained in
 ``\mathbb{R} \times [-1,2]``. This is simply the union of
 [`classify_maximal_lattice_free_polygons_m1p2_squares`](@ref) and
 [`classify_maximal_lattice_free_polygons_m1p2_trapezoids`](@ref).
@@ -140,11 +140,11 @@ union(classify_maximal_lattice_free_polygons_m1p2_squares(k),
 @doc raw"""
     classify_maximal_lattice_free_polygons(k :: T ; logging = false) where {T <: Integer}
 
-Return all `k`-rational polygons with no interior lattice points.
+Return all ``k``-rational polygons with no interior lattice points.
 
 # Example:
 
-Compute the numbers of polygons for `1 ≤ k ≤ 6`:
+Compute the numbers of polygons for ``1 \leq k \leq 6``:
 
 ```jldoctest
 julia> length.(classify_maximal_lattice_free_polygons.(1:6))

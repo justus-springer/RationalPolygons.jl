@@ -3,11 +3,11 @@
     classify_maximal_polygons_m1p1(k :: T, i :: Int)
 
 Return all maximal `k`-rational polygons with `i` interior lattice points
-that can be realized in $\mathbb{R} \times [-1,1]$.
+that can be realized in ``\mathbb{R} \times [-1,1]``.
 
 # Example:
 
-Compute the numbers of polygons for `1 ≤ k ≤ 5` and `0 ≤ i ≤ 10`. 
+Compute the numbers of polygons for ``1 \leq k \leq 5`` and ``0 \leq i \leq 10``. 
 
 ```jldoctest
 julia> [length(classify_maximal_polygons_m1p1(k,i)) for k = 1 : 5, i = 0 :10]

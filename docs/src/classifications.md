@@ -25,7 +25,7 @@ index from Bäuerle in Section ``\ref{doc:LDP-triangles-by-Gorenstein-index}``
 
 ## Maximal rational polygons contained in ``\mathbb{R}\times[-1,1]``
 
-This is an implementation of Algorithm 3.4 from [BS24_1](@cite).
+We provide an implementation of Algorithm ``\ref{algo:classify_maximal_polygons_m1p1}``.
 
 ```@docs
 classify_maximal_polygons_m1p1
@@ -33,7 +33,8 @@ classify_maximal_polygons_m1p1
 
 ## Maximal rational polygons with no interior lattice points
 
-This is an implementation of Algorithm 4.4 from [BS24_1](@cite).
+We provide an implementation of Algorithm ``\ref{algo:classify_maximal_polygons_no_interior_lattice_points}``.
+
 
 ```@docs
 classify_maximal_lattice_free_polygons_m1p2_squares
@@ -44,7 +45,7 @@ classify_maximal_lattice_free_polygons
 
 ## Rational polygons with one interior lattice point
 
-This is an implementation of Algorithm 5.4 of [BS24_1](@cite).
+We provide an implementation of Algorithm ``\ref{algo:classify_maximal_polygons_one_interior_lattice_points}``.
 
 ```@docs
 classify_maximal_polygons_genus_one_m1p1
@@ -56,11 +57,11 @@ classify_polygons_genus_one
 
 ## Almost $k$-hollow LDP polygons
 
-We can instruct `classify_polygons_genus_one` to only output `k`-rational
+We can instruct [`classify_polygons_genus_one`](@ref) to only output ``k``-rational
 polygons with primitive vertices. These are exactly the almost ``k``-hollow LDP
-polygons and they correspond to ``1/k``-log canonical toric del Pezzo surfaces.
-In particular, we can reproduce the classification of the 48032 almost 3-hollow
-LDP polygons (``1/3``-log canonical toric del Pezzo surfaces) from Theorem 4.11
+polygons and they correspond to ``\frak{1}{k}``-log canonical toric del Pezzo surfaces.
+In particular, we can reproduce the classification of the ``48032`` almost ``3``-hollow
+LDP polygons (``\frak{1}{3}``-log canonical toric del Pezzo surfaces) from Theorem 4.11
 of [HaHaSp25](@cite). See also Table 6 of [BS24_1](@cite) for the classification up
 to ``k = 6``.
 
