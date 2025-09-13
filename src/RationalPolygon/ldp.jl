@@ -187,10 +187,10 @@ minimum(log_canonicities(P,i))
 @doc raw"""
     log_canonicity(P :: RationalPolygon)
 
-Given a ``k``-rational polygon ``P``, return the maximal rational number ``0 < ϵ ≤ 1``
-such that ``ε*P`` contains only one ``k``-rational point in its interior (the
-origin). For an LDP polygon, this equals the maximal rational number ``0 < ε ≤ 1``
-such that the associated toric surface is ``ε``-log canonical.
+Given a ``k``-rational polygon ``P``, return the maximal rational number ``0 < \varepsilon \leq 1``
+such that ``\varepsilon*P`` contains only one ``k``-rational point in its interior (the
+origin). For an LDP polygon, this equals the maximal rational number ``0 < \varepsilon \leq 1``
+such that the associated toric surface is ``\varepsilon``-log canonical.
 
 """
 log_canonicity(P :: RationalPolygon{T,N}) where {N,T <: Integer} =

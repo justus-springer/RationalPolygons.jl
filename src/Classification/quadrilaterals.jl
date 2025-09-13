@@ -1,7 +1,7 @@
 @doc raw"""
     modified_unit_fraction_solutions(r :: T, s :: T, c :: T, d :: T) where {T <: Integer}
     
-Return all integral solutions ``(x,y) ∈ \mathbb{Z}^2_{\geq 1}`` to the
+Return all integral solutions ``(x,y) \in \mathbb{Z}^2_{\geq 1}`` to the
 equation ``r/s = 1/x + 1/y - c/(d*y)``. Returns an error if there are
 infinitely many solutions, which happens if and only if ``c = d``.
 
