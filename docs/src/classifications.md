@@ -219,8 +219,9 @@ classify_lattice_polygons_by_gorenstein_index
 Bäuerle [Ba25](@cite) gave an algorithm to classify Fano simplices by dimension
 and Gorenstein index. `RationalPolygons.jl` implements a version of his
 algorithm (specialized to the two-dimensional case), which reproduces his
-numbers successfully (see Theorem 1.4 of [Ba25](@cite) and
-[A145582](https://oeis.org/A145582)).
+numbers successfully. See also Subsection
+``\ref{subsec:gorenstein_classification_rho_1}`` for a description of the
+Algorithm and the classification up to Gorenstein index ``45\,000``.
 
 ```@docs
 unit_fraction_partitions_length_three

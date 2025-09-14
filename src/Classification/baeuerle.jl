@@ -1,7 +1,8 @@
 @doc raw"""
     unit_fraction_partitions_length_three(ι :: T) where {T <: Integer}
 
-Return all triples `(a,b,c)` such that `1//ι = 1//a + 1//b + 1//c` and `a ≤ b ≤ c`. See also A004194 on OEIS.
+Return all triples ``(a,b,c)`` such that ``\frac{1}{\iota} = \frac{1}{a} + \frac{1}{b} + \frac{1}{c} ``
+and ``a \leq b \leq c``. See also [A004194](https://oeis.org/A004194) on OEIS.
 
 # Example:
 
@@ -37,7 +38,7 @@ end
 @doc raw"""
     classify_lattice_triangles_by_gorenstein_index(ι :: T) where {T <: Integer}
 
-Return all lattice triangles with Gorenstein index `ι`.
+Return all lattice triangles with Gorenstein index ``ι``.
 
 # Example:
 
@@ -89,7 +90,7 @@ end
 @doc raw"""
     abstract type BaeuerleStorage{T <: Integer} end
 
-Abstract supertype of `InMemoryBaeuerleStorage` and `HDFBaeuerleStorage`.
+Abstract supertype of [`InMemoryBaeuerleStorage`](@ref) and [`HDFBaeuerleStorage`](@ref).
 
 """
 abstract type BaeuerleStorage{T <: Integer} end
@@ -114,7 +115,7 @@ end
 @doc raw"""
     classify_lattice_triangles_by_gorenstein_index(st :: InMemoryBaeuerleStorage{T}, max_gorenstein_index :: T) where {T <: Integer}
 
-Perform Bäuerle's classification of lattice triangles up go
+Perform Bäuerle's classification of lattice triangles up to
 `max_gorenstein_index`, storing the results in memory.
 
 # Example:
@@ -159,14 +160,15 @@ end
 @doc raw"""
     struct HDFBaeuerleStoragePreferences{T <: Integer}   
 
-A struct holding preferences for Baeuerle's classification using the HDF5 file format. It has four fields:
+A struct holding preferences for Bäuerle's classification using the HDF5 file format.
+It has the following fields:
 
 - `swmr :: Bool`: Whether to use single-reader-multiple-writer mode for HDF5.
     Defaults to `true`.
 - `step_size :: Int`: The step size for multithreaded classification in
-    terms of the Gorenstein index. Defaults to `100`.
+    terms of the Gorenstein index. Defaults to ``100``.
 - `maximum_gorenstein_index :: Int`: The maximum Gorenstein index to be
-    classified. Defaults to `10^5`.
+    classified. Defaults to ``10^5``.
 
 """
 struct HDFBaeuerleStoragePreferences{T <: Integer}
@@ -191,8 +193,8 @@ lattice triangles using the HDF5 file format. It has the following fields:
 
 - `preferences :: HDFBaeuerleStoragePreferences{T}`
 - `file_path :: String`: The path of the HDF file to be generated.
-- `last_completed_gorenstein_index :: Int`: The last completed step of the classification. Initially, this will be `0`.
-- `total_count :: Int`
+- `last_completed_gorenstein_index :: Int`: The last completed step of the classification. Initially, this will be ``0``.
+- `total_count :: Int`: The total number of polygons found so far.
 
 """
 mutable struct HDFBaeuerleStorage{T <: Integer} <: BaeuerleStorage{T}
@@ -226,7 +228,7 @@ end
 @doc raw"""
     classify_lattice_triangles_by_gorenstein_index(st :: HDFBaeuerleStorage{T}, max_gorenstein_index :: T; logging :: Bool = false) where {T <: Integer}
 
-Perform Bäuerle's classification of lattice triangles up go
+Perform Bäuerle's classification of LDP triangles up to
 `max_gorenstein_index`, storing the results in an HDF5 file
 
 """
