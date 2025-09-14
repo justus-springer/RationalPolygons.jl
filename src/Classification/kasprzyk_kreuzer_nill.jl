@@ -6,7 +6,7 @@ contains three fields:
 
 - `P :: RationalPolygon{T,N,M}`: The polygon constructed so far.
 - `initial_local_index : T`: The local index of the special facet.
-- `ymin : T`: Lower bound for the y-value of the next vertex to be chosen, see
+- `ymin : T`: Lower bound for the ``y``-value of the next vertex to be chosen, see
    Algorithm 6.3 of [KKN10](@cite).
 
 """

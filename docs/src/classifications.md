@@ -155,13 +155,15 @@ classify_lattice_polygons_by_genus
 
 ## Lattice polygons contained in a square
 
-Brown and Kasprzyk [BK13](@cite) authors considered lattice polygons that are
+Brown and Kasprzyk [BK13](@cite) considered lattice polygons that are
 contained in a square of fixed side length and classified them up to side length
 ``7``. Their numbers (Table 1 of [BK13](@cite), see also
 [A374975](https://oeis.org/A374975)) can be reproduced with
-`RationalPolygons.jl` as follows:
+`RationalPolygons.jl` by computing subpolygons of the square. See also
+Classifiction ``\ref{class:polygons_in_box}`` for the numbers up to side length
+``11``.
 
-```julia
+```jlcon
 julia> square(m) = convex_hull(LatticePoint{Int}[(0,0),(m,0),(0,m),(m,m)])
 square (generic function with 1 method)
 
@@ -200,9 +202,10 @@ julia> [length(filter(P -> number_of_vertices(P) == max_vertices[m], Pss[m])) fo
 ## LDP polygons by Gorenstein index
 
 Kasprzyk, Kreuzer and Nill [KKN10](@cite) gave an algorithm to classify LDP
-polygons by Gorenstein index. `RationalPolygons.jl` implements a version of their
-algorithm, which successfully reproduces their numbers (see Theorem 1.2 of
-[KKN10](@cite)).
+polygons by Gorenstein index and ran the classification up to index ``17``.
+`RationalPolygons.jl` implements a version of their algorithm, which
+successfully reproduces their numbers (see Theorem 1.2 of [KKN10](@cite)). See
+also [A145581](https://oeis.org/A145581) for the numbers up to index ``32``.
 
 ```@docs
 PartialLDP
