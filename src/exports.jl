@@ -85,6 +85,7 @@ export HDFCastryckStoragePreferences
 export HDFKoelmanStorage
 export HDFKoelmanStoragePreferences
 export HDFPicardIndexStorage
+export HDFPicardIndexStoragePreferences
 export HDFSubpolygonStorage
 export HDFSubpolygonStoragePreferences
 export height_one_points
@@ -185,6 +186,7 @@ export positions_of_longest_vertical_slice_length
 export primitivize
 export pseudo_angle
 export pseudo_angle_with_distance
+export quadruple_decompositions
 export rationality
 export RationalPoint
 export RationalPolygon

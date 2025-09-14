@@ -1,3 +1,21 @@
+@doc raw"""
+    quadruple_decompositions(p :: T) where {T <: Integer}
+
+Return all quadruples ``(\mu, w_1, w_2, w_3)`` such that ``p = \mu^2 w_1 w_2 w_3``
+and ``w_1 \leq w_2 \leq w_3``.
+
+# Example
+
+```jldoctest
+julia> quadruple_decompositions(24)
+4-element Vector{NTuple{4, Int64}}:
+ (1, 1, 1, 24)
+ (1, 1, 3, 8)
+ (2, 1, 1, 6)
+ (2, 1, 2, 3)
+```
+
+"""
 function quadruple_decompositions(p :: T) where {T <: Integer}
     res = Tuple{T,T,T,T}[]
     for n = 1 : isqrt(p)
@@ -67,7 +85,7 @@ end
 @doc raw"""
     abstract type PicardIndexStorage{T <: Integer} end
 
-Abstract supertype of `InMemoryPicardIndexStorage` and `HDFPicardIndexStorage`.
+Abstract supertype of [`InMemoryPicardIndexStorage`](@ref) and [`HDFPicardIndexStorage`](@ref).
 
 """
 abstract type PicardIndexStorage{T <: Integer} end
@@ -76,8 +94,7 @@ abstract type PicardIndexStorage{T <: Integer} end
 @doc raw"""
     mutable struct InMemoryPicardIndexStorage{T <: Integer} <: PicardIndexStorage{T}
 
-A struct holding classification results of Springer's classification of lattice
-triangles by picard index.
+A struct holding classification results of LDP triangles by Picard index.
 
 """
 mutable struct InMemoryPicardIndexStorage{T <: Integer} <: PicardIndexStorage{T}
@@ -92,12 +109,12 @@ end
 @doc raw"""
     classify_lattice_triangles_by_picard_index(st :: InMemoryPicardIndexStorage{T}, max_picard_index :: T) where {T <: Integer}
 
-Perform Springer's classification of lattice triangles up go
+Perform the classification of LDP triangles up to
 `max_picard_index`, storing the results in memory.
 
 # Example:
 
-Reproduce Springer's original classification up to picard index 10000, see
+Reproduce the classification up to Picard index 10000, see also
 Theorem 1.2 of [Spr24](@cite).
 
 ```jldoctest
@@ -137,14 +154,12 @@ end
 @doc raw"""
     struct HDFPicardIndexStoragePreferences{T <: Integer}   
 
-A struct holding preferences for Springer's classification using the HDF5 file format. It has four fields:
+A struct holding preferences for the classification of LDP triangles
+by Picard index using the HDF5 file format. It has the following fields:
 
-- `swmr :: Bool`: Whether to use single-reader-multiple-writer mode for HDF5.
-    Defaults to `true`.
-- `step_size :: Int`: The step size for multithreaded classification in
-    terms of the picard index. Defaults to `10^4`.
-- `maximum_picard_index :: Int`: The maximum picard index to be
-    classified. Defaults to `10^7`.
+- `swmr :: Bool`: Whether to use single-reader-multiple-writer mode for HDF5. Defaults to `true`.
+- `step_size :: Int`: The step size for multithreaded classification in terms of the Picard index. Defaults to ``10^4``.
+- `maximum_picard_index :: Int`: The maximum Picard index to be classified. Defaults to ``10^7``.
 
 """
 struct HDFPicardIndexStoragePreferences{T <: Integer}
@@ -164,13 +179,13 @@ end
 @doc raw"""
     mutable struct HDFPicardIndexStorage{T <: Integer} <: PicardIndexStorage{T}
 
-A struct for managing classification results of Springer's classification of
-lattice triangles using the HDF5 file format. It has the following fields:
+A struct for managing classification results of LDP triangles
+by Picard index using the HDF5 file format. It has the following fields:
 
 - `preferences :: HDFPicardIndexStoragePreferences{T}`
 - `file_path :: String`: The path of the HDF file to be generated.
 - `last_completed_picard_index :: Int`: The last completed step of the classification. Initially, this will be `0`.
-- `total_count :: Int`
+- `total_count :: Int`: The total number of triangles found so far.
 
 """
 mutable struct HDFPicardIndexStorage{T <: Integer} <: PicardIndexStorage{T}
@@ -203,7 +218,7 @@ end
 @doc raw"""
     classify_lattice_triangles_by_picard_index(st :: HDFPicardIndexStorage{T}, max_picard_index :: T; logging :: Bool = false) where {T <: Integer}
 
-Perform Springer's classification of lattice triangles up go
+Perform the classification of LDP triangles up go
 `max_picard_index`, storing the results in an HDF5 file
 
 """

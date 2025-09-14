@@ -89,15 +89,16 @@ julia> max_volumes = [k^2 * maximum(euclidean_area.(Pss[k])) for k = 1 : 3]
 
 ## LDP triangles by Picard index
 
-Springer [Spr24](@cite) gave an algorithm to classify LDP triangles (toric log del Pezzo
-surfaces of rank one) by Picard index. `RationalPolygons.jl` implements a version
-of this algorithm, which successfully reproduces the numbers from Theorem 8.5
-of [Spr24](@cite).
+We provide an implementation of the classification of LDP triangles (fake
+weighted projective planes) by Picard index from Section
+``\ref{sec:ldp_triangles_classification_by_picard_index}``.
 
 ```@docs
 PicardIndexStorage
 InMemoryPicardIndexStorage
+HDFPicardIndexStoragePreferences
 HDFPicardIndexStorage
+quadruple_decompositions
 classify_lattice_triangles_by_picard_index
 ```
 
