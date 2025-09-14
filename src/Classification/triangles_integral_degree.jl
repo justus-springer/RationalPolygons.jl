@@ -2,7 +2,7 @@
     degree(w :: SVector{3})
 
 Return the degree of a fake weighted projective plane with given fake
-weight vector `w`. This is given by the formula `sum(w)^2 // prod(w)`,
+weight vector ``w=(w_1, w_2, w_3)``. This is given by the formula ``(w_1 + w_2 + w_3) / (w_1 w_2 w_3)``,
 see for instance Proposition 3.7 of [HaKi24](@cite).
 
 """
@@ -13,7 +13,7 @@ degree(w :: SVector{3}) = sum(w)^2 // prod(w)
     fake_weight_vector(P :: RationalPolygon{T,3}) where {T <: Integer}
 
 Return the fake weight vector of the fake weighted projective plane
-associated to the LDP triangle `P`.
+associated to the LDP triangle ``P``.
 
 """
 fake_weight_vector(P :: RationalPolygon{T,3}) where {T <: Integer} =
@@ -69,11 +69,11 @@ end
     initial_triple(:: Val{A}, T :: Type{<:Integer} = BigInt)
 
 Return the unique initial triple of the squared Markov type equation ``Axyz =
-(x+y+z)^2``. Allowed values of `A` are 9, 8, 6 and 5.
+(x+y+z)^2``. Allowed values of ``A`` are ``9``, ``8``, ``6`` and ``5``.
 
 # Example:
 
-The unique initial triples for all allowed values of `A`, see Theorem 2.2 of
+The unique initial triples for all allowed values of ``A``, see Theorem 2.2 of
 [HaKi24](@cite).
 
 ```jldoctest
@@ -97,7 +97,7 @@ initial_triple(:: Val{5}, T :: Type{<:Integer} = BigInt) = SVector{3,T}(1,4,5)
 
 Return all solutions to the squared Markov type equation ``Axyz = (x+y+z)^2``
 by starting with the initial solution and applying at most `depth` many
-mutations. Allowed values of `A` are 9, 8, 6 and 5.
+mutations. Allowed values of ``A`` are ``9``, ``8``, ``6`` and ``5``.
 
 # Example:
 
@@ -126,8 +126,8 @@ end
 
 Reorder a solution triple of a squared Markov type equation to make it
 adjusted, according to Definition 3.14 of [HaKi24](@cite). Allowed values of
-`A` are 9, 8, 6 and 5. If `A` is not given, it is determined by calculating the
-degree of `u`.
+``A`` are ``9``, ``8``, ``6`` and ``5``. If ``A`` is not given, it is determined by calculating the
+degree of ``u``.
 
 # Example:
 
@@ -184,10 +184,10 @@ end
 @doc raw"""
     fake_weight_vectors_to_triangles(us :: Set{SVector{3,T}}, μ :: T) where {T <: Integer}
 
-Given a set of triples `us` sharing the same integral degree `A` and an integer
-`μ`, return all LDP triangles having fake weight vector `μ * u`. Allowed values
-of `A` are 9, 8, 6 and 5. Moreover, `μ` must be a divisor of `A`. The resulting
-triangles will have degree `A ÷ μ` and multiplicity `μ`.
+Given a set of triples `us` sharing the same integral degree ``A`` and an integer
+``\mu``, return all LDP triangles having fake weight vector ``\mu \cdot u``. Allowed values
+of ``A`` are ``9``, ``8``, ``6`` and ``5``. Moreover, ``\mu`` must be a divisor of ``A``. The resulting
+triangles will have degree ``A / \mu`` and multiplicity ``\mu``.
 
 """
 function fake_weight_vectors_to_triangles(us :: Set{SVector{3,T}}, μ :: T) where {T <: Integer}
@@ -211,18 +211,18 @@ end
     classify_lattice_triangles_integral_degree(::Val{K}, ::Val{μ}, depth :: Int, T :: Type{<:Integer} = BigInt) where {K, μ}
 
 Return all LDP triangles (= fake weighted projective planes) with integral
-degree `K` and class group torsion order `μ`, up to a given depth in the Markov
-tree. Essentially, this returns the triangles of the series (K-μ-*) according
-to the notation of Theorem 1.1 of [HaKi24](@cite). Allowed values of `K` are
-1, 2, 3, 4, 5, 6, 8 and 9. Allowed values of `μ` are all integers such that
-`μ * K` is 5, 6, 8 or 9.
+degree ``K`` and class group torsion order ``\mu``, up to a given depth in the Markov
+tree. Essentially, this returns the triangles of the series (``K``-``\mu``-*) according
+to the notation of Theorem 1.1 of [HaKi24](@cite). Allowed values of ``K`` are
+``1``, ``2``, ``3``, ``4``, ``5``, ``6``, ``8`` and ``9``. Allowed values of ``\mu`` are all integers such that
+``\mu \cdot K`` is ``5``, ``6``, ``8`` or ``9``.
 
 # Example:
 
-Compute all LDP triangles of degree 1 and class group torsion order 9, up to
-Markov depth 5. These consist of the three series (1-9-2), (1-9-5) and (1-9-8)
+Compute all LDP triangles of degree ``1`` and class group torsion order ``9``, up to
+Markov depth ``5``. These consist of the three series (``1``-``9``-``2``), (``1``-``9``-``5``) and (``1``-``9``-``8``)
 from Theorem 1.1 of [HaKi24](@cite). Note that for depths zero and one (which
-correspond to solution triples (1,1,1) and (1,1,4) in the Markov tree), the
+correspond to solution triples ``(1,1,1)`` and ``(1,1,4)`` in the Markov tree), the
 series overlap, hence there are only one resp. two triangles in this case,
 which is also mentioned in the Theorem. After that, the number of triangles
 doubles with each additional step.
@@ -252,14 +252,14 @@ end
     classify_lattice_triangles_integral_degree(::Val{K}, depth :: Int, T :: Type{<:Integer} = BigInt) where {K}
 
 Return all LDP triangles (= fake weighted projective planes) with integral
-degree `K`, up to a given depth in the Markov tree. Essentially, this returns
-the triangles of the series (K - * - *) according to the notation of Theorem 1.1 of
-[HaKi24](@cite). Allowed values of `K` are 1, 2, 3, 4, 5, 6, 8 and 9.
+degree ``K``, up to a given depth in the Markov tree. Essentially, this returns
+the triangles of the series (``K`` - * - *) according to the notation of Theorem 1.1 of
+[HaKi24](@cite). Allowed values of ``K`` are ``1``, ``2``, ``3``, ``4``, ``5``, ``6``, ``8`` and ``9``.
 
 # Example:
 
-Print the numbers of LDP triangles with integral degree `K`, for all possible
-values of `K`, up to depth 10.
+Print the numbers of LDP triangles with integral degree ``K``, for all possible
+values of ``K``, up to depth ``10``.
 
 ```jldoctest
 julia> [length.(classify_lattice_triangles_integral_degree(Val(K), 10)) for K in [1,2,3,4,5,6,8,9]]
@@ -325,7 +325,7 @@ end
 
 Return all LDP triangles (= fake weighted projective planes) with integral
 degree, up to a given depth in the Markov tree. This returns the union of all
-24 series classified in Theorem 1.1 of [HaKi24](@cite).
+``24`` series classified in Theorem 1.1 of [HaKi24](@cite).
 
 """
 function classify_lattice_triangles_integral_degree(depth :: Int, T :: Type{<:Integer} = BigInt)

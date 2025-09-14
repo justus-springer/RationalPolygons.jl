@@ -237,21 +237,20 @@ Hausen and Király [HaKi24](@cite) classified fake weighted projective planes
 having integral degree (=canonical self intersection). In terms of polygons,
 these can be described as LDP triangles such that twice the euclidean area of
 its dual is an integer. The attained values of this integer (which is the degree
-of the associated fake weighted projective plane) are the integers from ``1`` to
-``9``, excluding ``7``. In total, there are 24 infinite series of these
-triangles, where each of them is parameterized by the solution set of a squared
-Markov type equation (see Theorem 1.1 of [HaKi24](@cite)). These solution sets
-can be described as infinite binary trees with a unique root.
-`RationalPolygons.jl` uses this description to implement a classification
-algorithm for LDP triangles with integral degree. To make this classification
-finite, one has to provide a maximal depth to which the solution trees are
-traversed.
+of the associated fake weighted projective plane) are the integers ``\{1, 2, 3,
+4, 5, 6, 8, 9\}``. In total, there are ``24`` infinite series of these triangles,
+where each of them is parameterized by the solution set of a squared Markov type
+equation (see Theorem 1.1 of [HaKi24](@cite)). These solution sets can be
+described as infinite binary trees with a unique root. `RationalPolygons.jl`
+uses this description to implement a classification algorithm for LDP triangles
+with integral degree. To make this classification finite, one has to provide a
+maximal depth to which the solution trees are traversed.
 
-All methods used for this classification come with a parameter `T <: Integer`,
-which is the integer type to be used. Since the entries of the solution triples
-of squared Markov type equations grow very quickly with increasing depth, it is
-recommended to use `BigInt` here instead of fixed-size integer types (`Int64`
-overflows already for `depth = 4`).
+As with our other classifications, all functions come with a parameter `T <:
+Integer`, which is the integer type to be used. Since the entries of the
+solution triples of squared Markov type equations grow very quickly with
+increasing depth, it is recommended to use `BigInt` here instead of fixed-size
+integer types (`Int64` overflows already for `depth = 4`).
 
 ```@docs
 degree(w :: SVector{3})
