@@ -144,6 +144,13 @@ function gorenstein_index(P :: RationalPolygon{T,N}) where {N,T <: Integer}
     return g
 end
 
+@doc raw"""
+    degree_matrix(P :: RationalPolygon{T,N}) where {N, T <: Integer}
+
+Return a tuple ``(Q_0, Q_1)`` where ``Q_0`` is the free part and ``Q_1``
+the torsion part of the degree matrix associated to ``P``.
+
+"""
 function degree_matrix(P :: RationalPolygon{T,N}) where {N, T <: Integer}
     S, U, _ = snf_with_transform(transpose(vertex_matrix(P)))
     d = S[2,2] # equals multiplicity(P)
@@ -152,10 +159,81 @@ function degree_matrix(P :: RationalPolygon{T,N}) where {N, T <: Integer}
     return Q_free, Q_torsion
 end
 
+
+@doc raw"""
+    degree_matrix_free_part(P :: RationalPolygon)
+
+Return the free part of the degree matrix associated to ``P``.
+
+# Example
+
+```jldoctest
+julia> P = convex_hull(LatticePoint{Int}[(1,0), (2,5), (-4,-5), (-1,-5)])
+Rational polygon of rationality 1 with 4 vertices.
+
+julia> degree_matrix_free_part(P)
+2×4 StaticArraysCore.SMatrix{2, 4, Int64, 8} with indices SOneTo(2)×SOneTo(4):
+ 1  -1  3  0
+ 1   0  2  1
+```
+
+"""
 degree_matrix_free_part(P :: RationalPolygon) = degree_matrix(P)[1]
 
+
+@doc raw"""
+    degree_matrix_torsion_part(P :: RationalPolygon)
+
+Return the torsion part of the degree matrix associated to ``P``.
+If ``P`` has ``N`` vertices and has multiplicity ``\mu``, the result is a static vector of length ``N`` whose 
+entries are all between ``0`` and ``\mu-1``.
+
+# Example
+
+```jldoctest
+julia> P = convex_hull(LatticePoint{Int}[(1,0), (2,5), (-4,-5), (-1,-5)])
+Rational polygon of rationality 1 with 4 vertices.
+
+julia> multiplicity(P)
+5
+
+julia> degree_matrix_torsion_part(P)
+4-element StaticArraysCore.SVector{4, Int64} with indices SOneTo(4):
+ 4
+ 0
+ 1
+ 0
+```
+
+"""
 degree_matrix_torsion_part(P :: RationalPolygon) = degree_matrix(P)[2]
 
+
+@doc raw"""
+    gorenstein_coefficients(P :: RationalPolygon{T,N})
+
+Return the Gorenstein coefficients of an LDP polygon with ``N`` vertices.
+This is an integral matrix ``A = (a_{ij}) \in \ZZ^{N \times (N-2)}`` such that
+``\iota w = \sum_{j=1}^{N-2} a_{ij} w_{j+i-1}``, where ``\iota`` is the
+Gorenstein index, ``w_i`` are the columns of the free part of the degree matrix,
+and ``w = w_1 + \dots + w_N`` is the class of the anticanonical divisor.
+
+# Example
+
+```jldoctest
+julia> P = convex_hull(LatticePoint{Int}[(1,0), (2,5), (-4,-5), (-1,-5)])
+Rational polygon of rationality 1 with 4 vertices.
+
+julia> gorenstein_coefficients(P)
+4×2 StaticArraysCore.SMatrix{4, 2, Int64, 8} with indices SOneTo(4)×SOneTo(2):
+ 20   5
+ 15  10
+  5  10
+  5  15
+```
+
+
+"""
 function gorenstein_coefficients(P :: RationalPolygon{T,N}) where {T <: Integer, N}
     Q = degree_matrix_free_part(P)
     g = gorenstein_index(P)
@@ -172,6 +250,26 @@ end
 gorenstein_matrix(ι :: T, A :: SMatrix{N,M,T}) where {T <: Integer, N, M} =
 SMatrix{N,N,T}([(mod(j-i+1,1:N) ≤ N-2 ? ι - A[i,mod(j-i+1,1:N)] : ι) for i = 1:N, j = 1:N])
 
+@doc raw"""
+    gorenstein_matrix(P :: RationalPolygon{T,N}) where {T <: Integer, N}
+
+Return the Gorenstein matrix of an LDP polygon.
+
+# Example
+
+```jldoctest
+julia> P = convex_hull(LatticePoint{Int}[(1,0), (2,5), (-4,-5), (-1,-5)])
+Rational polygon of rationality 1 with 4 vertices.
+
+julia> gorenstein_matrix(P)
+4×4 StaticArraysCore.SMatrix{4, 4, Int64, 16} with indices SOneTo(4)×SOneTo(4):
+ -15    0   5   5
+   5  -10  -5   5
+   5    5   0  -5
+ -10    5   5   0
+```
+
+"""
 gorenstein_matrix(P :: RationalPolygon{T,N}) where {T <: Integer, N} =
 gorenstein_matrix(gorenstein_index(P), gorenstein_coefficients(P))
 
