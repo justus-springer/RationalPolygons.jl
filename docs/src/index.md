@@ -45,12 +45,11 @@ The rest of this appendix is organized as follows: In Section
 ``\ref{doc:2D-Geometry}``, we go over some basic functions for two-dimensional
 euclidean geometry over the rationals, such as computing the convex hull and
 intersecting lines. Section ``\ref{doc:Polygons}`` covers the type of rational
-polygons as well as basic properties and the normal form. Section
-``\ref{doc:LDP-Polygons}`` is about LDP polygons and their relation to toric del
-Pezzo surfaces. In Section ``\ref{doc:Subpolygons}``, we discuss computation
-subpolygons, following the approach from Section ``\ref{subsec:subpolygons}``.
-Finally, Section ``\ref{doc:Classifications}`` covers implementations of the
-classification algorithms from Chapter ``\ref{chp:rational_polygons}``, Sections
+polygons as well as basic properties and the normal form. In Section
+``\ref{doc:Subpolygons}``, we discuss computation subpolygons, following the
+approach from Section ``\ref{subsec:subpolygons}``. Finally, Section
+``\ref{doc:Classifications}`` covers implementations of the classification
+algorithms from Chapter ``\ref{chp:rational_polygons}``, Sections
 ``\ref{sec:ldp_triangles_classification_by_picard_index}`` and
 ``\ref{sec:ldp_polygons_classifications_by_gorenstein_index}``, as well as
 various classification algorithms by other authors.

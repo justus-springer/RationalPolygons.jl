@@ -1,6 +1,6 @@
 
 @doc raw"""
-    classify_maximal_polygons_m1p1(k :: T, i :: Int)
+    classify_maximal_polygons_m1p1(k :: T, i :: Int) where {T <: Integer}
 
 Return all maximal `k`-rational polygons with `i` interior lattice points
 that can be realized in ``\mathbb{R} \times [-1,1]``.

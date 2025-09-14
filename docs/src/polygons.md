@@ -28,9 +28,12 @@ RationalPolygon
 The rest of this section is organized as follows. In Subsection
 ``\ref{doc:Constructors}``, we describe different methods of constructing a
 rational polygon. Subsection ``\ref{doc:Basic-Properties}`` is about basic
-properties. In Subsection ``\ref{doc:Ehrhart-Theory}``, we discuss various
-ways of counting lattice points as well as Ehrhart theory. Subsection
-``\ref{doc:Normal-forms-and-automorphism-groups}`` is about unimodular and
+properties. In Subsection ``\ref{doc:Ehrhart-Theory}``, we discuss various ways
+of counting lattice points as well as Ehrhart theory. Subsection
+``\ref{doc:LDP-polygons-and-toric-surfaces}`` is about properties of LDP
+polygons that correspond to meaningful invariants of their associated toric del
+Pezzo surfaces. In Subsection
+``\ref{doc:Normal-forms-and-automorphism-groups}``, we discuss unimodular and
 affine unimodular normal forms. Finally, Subsection ``\ref{doc:Lattice-width}``
 is about lattice width and related concepts.
 
@@ -150,6 +153,33 @@ ehrhart_quasipolynomial
 ehrhart_quasipolynomial_periods
 ehrhart_quasipolynomial_period
 is_quasiintegral
+```
+
+## LDP polygons and toric surfaces
+
+An LDP polygon is a lattice polygon with primitive vertices containing the
+origin in its interior. LDP polygons correspond to toric log del Pezzo surfaces.
+In this package, we call more generally a ``k``-rational polygon _LDP_, if it
+contains the origin in its interior and its ``k``-fold multiple has primitive
+vertices. With this definition, the ``k``-rational LDP polygons with exactly one
+interior lattice point correspond to the toric del Pezzo surfaces with at most
+``\frac{1}{k}``-log canonical singularities. Here, we list some properties of
+LDP polygons that correspond to meaningful invariants of the associated toric
+del Pezzo surface. For more background on LDP polygons, see Section ``\ref{sec:ldp_polygons_toric_log_del_pezzo_surfaces}``.
+
+```@docs
+contains_origin_in_interior
+is_primitive(P :: RationalPolygon{T,N}) where {N,T <: Integer}
+is_ldp
+multiplicity(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
+multiplicity(P :: RationalPolygon{T,N}) where {N,T <: Integer}
+is_smooth
+picard_index
+gorenstein_index
+log_canonicity
+toric_prime_divisor_self_intersection
+toric_prime_divisor_adjacent_intersection
+degree(P :: RationalPolygon)
 ```
 
 

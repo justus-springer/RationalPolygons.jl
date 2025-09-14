@@ -59,13 +59,13 @@ classify_polygons_genus_one
 
 We can instruct [`classify_polygons_genus_one`](@ref) to only output ``k``-rational
 polygons with primitive vertices. These are exactly the almost ``k``-hollow LDP
-polygons and they correspond to ``\frak{1}{k}``-log canonical toric del Pezzo surfaces.
+polygons and they correspond to ``\frac{1}{k}``-log canonical toric del Pezzo surfaces.
 In particular, we can reproduce the classification of the ``48032`` almost ``3``-hollow
-LDP polygons (``\frak{1}{3}``-log canonical toric del Pezzo surfaces) from Theorem 4.11
-of [HaHaSp25](@cite). See also Table 6 of [BS24_1](@cite) for the classification up
+LDP polygons (``\frac{1}{3}``-log canonical toric del Pezzo surfaces) from Theorem 4.11
+of [HaHaSp25](@cite). See also Table ``\ref{class:ldp_polygons}`` for the classification up
 to ``k = 6``.
 
-```julia
+```jlcon
 julia> Pss = [classify_polygons_genus_one(k; primitive=true) for k = 1 : 3];
 
 julia> numbers_of_polygons = length.(Pss)

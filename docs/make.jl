@@ -46,7 +46,6 @@ elseif format == "thesis"
             "Home" => "index.md",
             "2D Geometry" => "2dgeometry.md",
             "Rational Polygons" => "polygons.md",
-            "LDP polygons and toric surfaces" => "ldp.md",
             "Subpolygons" => "subpolygons.md",
             "Classifications" => "classifications.md",
         ],

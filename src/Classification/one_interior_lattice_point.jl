@@ -347,7 +347,7 @@ Compute all ``k``-rational polygons with exactly one interior lattice point. The
 
 Reproduce the classifcation of all 5145 half-integral polygons with exactly one
 interior lattice point. It first computes all maximal polygons with
-`classify_maximal_polygons_genus_one` and then generates all their subpolygons.
+[`classify_maximal_polygons_genus_one`](@ref) and then generates all their subpolygons.
 
 ```jldoctest
 julia> classify_polygons_genus_one(2; logging=true);
