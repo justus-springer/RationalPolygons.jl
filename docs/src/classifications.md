@@ -117,12 +117,12 @@ classify_quadrilaterals_by_gorenstein_index
 
 ## Lattice polygons by number of lattice points
 
-R.J. Koelman [Koe91](@cite) gave an algorithm to classify lattice polygons with
-a given number of lattice points and ran it up to ``42`` lattice points, Table
+Koelman [Koe91](@cite) gave an algorithm to classify lattice polygons with a
+given number of lattice points and ran it up to ``42`` lattice points, Table
 4.4.3 of [Koe91](@cite). We have implemented their algorithm here, which
-successfully reproduces their numbers. See also
-[A371917](https://oeis.org/A371917) on OEIS for the numbers up to ``112``
-lattice points.
+successfully reproduces their numbers. See also Section
+``\ref{sec:general_case}`` and [A371917](https://oeis.org/A371917) on OEIS for
+the numbers up to ``112`` lattice points.
 
 ```@docs
 height_one_points

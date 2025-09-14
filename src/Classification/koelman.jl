@@ -1,8 +1,8 @@
 @doc raw"""
     height_one_points(P :: RationalPolygon)
 
-Given a lattice polygon `P`, return all lattice points that have lattice height
-one with respect to some edge of `P`. Equivalently, return the set of boundary
+Given a lattice polygon ``P``, return all lattice points that have lattice height
+one with respect to some edge of ``P``. Equivalently, return the set of boundary
 lattice points of `move_out_edges(P)`.
 
 """
@@ -31,7 +31,7 @@ end
     single_point_extensions(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
 
 Return all lattice polygons that can be obtained by adding a single height one
-point to a polygon of `Ps`, up to affine equivalence.
+point to a polygon of `Ps`, up to affine unimodular equivalence.
 
 """
 function single_point_extensions(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
@@ -87,8 +87,8 @@ end
 @doc raw"""
     abstract type KoelmanStorage{T <: Integer} end
 
-Abstract supertype of `InMemoryKoelmanStorage` and `HDFKoelmanStorage`. Both
-implement `classify_next_number_of_lattice_points`, which performs a single
+Abstract supertype of [`InMemoryKoelmanStorage`](@ref) and [`HDFKoelmanStorage`](@ref). Both
+implement [`classify_next_number_of_lattice_points`](@ref), which performs a single
 step in Koelman's classification of lattice polygons.
 
 """
@@ -163,7 +163,7 @@ classify_polygons_by_number_of_lattice_points(InMemoryKoelmanStorage{T}(), max_n
 @doc raw"""
     struct HDFKoelmanStoragePreferences{T <: Integer}   
 
-A struct holding preferences for Koelman's classification using the HDF5 file format. It has four fields:
+A struct holding preferences for Koelman's classification using the HDF5 file format. It has the following fields:
 
 - `swmr :: Bool`: Whether to use single-reader-multiple-writer mode for HDF5.
     Defaults to `true`.
@@ -171,10 +171,10 @@ A struct holding preferences for Koelman's classification using the HDF5 file fo
     vertices to be expected in the classification. This has to be set since every
     HDF5 file generated will have a dataset `numbers_of_polygons` storing the
     number of polygons for each number of vertices and the size of this dataset
-    needs to be set beforehand. Defaults to `100`, which should be more than enough for any
+    needs to be set beforehand. Defaults to ``100``, which should be more than enough for any
     feasable computation.
 - `block_size :: Int`: How many polygons should be read into memory at once
-    during the extension process. Defaults to `10^6`.
+    during the extension process. Defaults to ``10^6``.
 
 """
 struct HDFKoelmanStoragePreferences{T <: Integer}
@@ -198,8 +198,8 @@ A struct for managing classification results of Koelman's classification of latt
 
 - `preferences :: HDFKoelmanStoragePreferences{T}`
 - `directory_path :: String`: The directory where the HDF5 files will be generated.
-- `last_completed_number_of_lattice_points :: Int`: The last completed step of the classification. Initially, this will be `3`.
-- `total_count :: Int`
+- `last_completed_number_of_lattice_points :: Int`: The last completed step of the classification. Initially, this will be ``3``.
+- `total_count :: Int`: The total number of polygons found so far.
 
 """
 mutable struct HDFKoelmanStorage{T <: Integer} <: KoelmanStorage{T}
@@ -362,17 +362,17 @@ julia> classify_polygons_by_number_of_lattice_points(st, 42; logging=true);
 
 Reproduce Koelman's classification and store the output to HDF5 files.
 
-```julia
+```jlcon
 julia> st = HDFKoelmanStorage{Int}("/tmp");
 
 julia> classify_polygons_by_number_of_lattice_points(st, 42);
 ```
 
-The result will be HDF5 files named "l1.h5, l2.h5, ...", each containing one
-dataset of polygons for fixed number of vertices as well as a dataset
-"numbers\_of\_polygons" holding their numbers.
+The result will be HDF5 files named `l1.h5`, `l2.h5` etc, each containing one
+dataset of polygons with fixed number of vertices as well as a dataset
+`numbers_of_polygons` holding their numbers.
 
-```julia
+```jlcon
 julia> using HDF5
 
 julia> f = h5open("/tmp/test/l42.h5", "r")
