@@ -104,8 +104,8 @@ classify_lattice_triangles_by_picard_index
 
 ## LDP quadrangles by Gorenstein index
 
-The following is a classification of LDP quadrangles by Gorenstein index.
-A reference explaining the approach used will be added in the future.
+We provide an implementation of the classification of LDP quadrangles by
+Gorenstein index described in Subsection ``\ref{subsec:gorenstein_classification_rho_2}``.
 
 ```@docs
 modified_unit_fraction_solutions

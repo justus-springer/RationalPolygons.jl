@@ -1,9 +1,22 @@
 @doc raw"""
     modified_unit_fraction_solutions(r :: T, s :: T, c :: T, d :: T) where {T <: Integer}
-    
+    modified_unit_fraction_solutions(q :: Rational{T}, c :: T, d :: T) where {T <: Integer}
+        
 Return all integral solutions ``(x,y) \in \mathbb{Z}^2_{\geq 1}`` to the
-equation ``r/s = 1/x + 1/y - c/(d*y)``. Returns an error if there are
-infinitely many solutions, which happens if and only if ``c = d``.
+equation ``q = \frac{r}{s} = \frac{1}{x} + \frac{1}{y} - \frac{c}{dy}`` (see Lemma
+``\ref{lem:modified_unit_fraction_equation_finite_solutions}``). 
+Returns an error if there are infinitely many solutions, which happens if and only if ``c = d``.
+
+# Example
+
+```jldoctest
+julia> modified_unit_fraction_solutions(1//5, 2, 5)
+4-element Vector{Tuple{Int64, Int64}}:
+ (6, 18)
+ (8, 8)
+ (20, 4)
+ (10, 6)
+```
 
 """
 function modified_unit_fraction_solutions(r :: T, s :: T, c :: T, d :: T) where {T <: Integer}
@@ -40,8 +53,8 @@ modified_unit_fraction_solutions(numerator(q), denominator(q), c, d)
 @doc raw"""
     gorenstein_coefficients_to_degree_matrix_minors(ι :: T, A :: SMatrix{4,2,T,8}) where {T <: Integer}
 
-Compute all minors of the Fano ι-Gorenstein matrix Q associated with
-the Gorenstein coefficients A.
+Compute all minors of the Fano ``\iota``-Gorenstein matrix ``Q`` associated with
+the Gorenstein coefficients ``A``.
 
 """
 function gorenstein_coefficients_to_degree_matrix_minors(ι :: T,
@@ -74,7 +87,7 @@ SMatrix{4,2,T,8}(A[mod(3-i, 1:4), mod(3-j, 1:2)] for i = 1 : 4, j = 1 : 2)
     gorenstein_coefficients_normal_form(A :: SMatrix{4,2,T,8}) where {T <: Integer}
 
 Bring Gorenstein coefficients ``A \in \mathbb{Z}^{2 \times 4}`` into normal form,
-see Definition ?? of ??.
+see Definition ``\ref{def:gorenstein_coefficients_equivalence}``.
 
 """
 function gorenstein_coefficients_normal_form(A :: SMatrix{4,2,T,8}) where {T <: Integer}
@@ -92,9 +105,10 @@ end
     classify_gorenstein_coefficients(ι :: T, ::Val{t})
     classify_gorenstein_coefficients(ι :: T)
 
-Classify Gorenstein coefficients associated to Fano ι-Gorenstein matrices.
+Classify Gorenstein coefficients associated to Fano ``\iota``-Gorenstein matrices.
 Optionally takes in a `Val{t}` argument, where `t` can be 1, 2, 3 or 4.
-In this case, only the Gorenstein coefficients of type `t` are classified.
+In this case, only the Gorenstein coefficients of type `t` are classified, see
+Definition ``\ref{def:gorenstein_coefficients_types}``
 
 """
 function classify_gorenstein_coefficients(ι :: T, ::Val{1}) where {T <: Integer}
@@ -253,6 +267,13 @@ classify_gorenstein_coefficients(ι, Val(0))
 
 divisors(n :: Integer) = filter(k -> n % k == 0, 1 : abs(n))
 
+@doc raw"""
+    classify_quadrilaterals_by_gorenstein_index(ι :: T, As :: Set{SMatrix{4,2,T}}) where {T <: Integer}
+
+Return all LDP quadrilaterals with Gorenstein index ``\iota`` whose Gorenstein coefficients
+are among the given set `As`.
+
+"""
 function classify_quadrilaterals_by_gorenstein_index(ι :: T, As :: Set{SMatrix{4,2,T}}) where {T <: Integer}
 
     result = Set{RationalPolygon{T,4,8}}()
@@ -320,7 +341,7 @@ classify_quadrilaterals_by_gorenstein_index(ι, classify_gorenstein_coefficients
 @doc raw"""
     classify_quadrilaterals_by_gorenstein_index(ι :: Integer)
 
-Return all LDP quadrilaterals with Gorenstein index ι.
+Return all LDP quadrilaterals with Gorenstein index ``\iota``.
 
 # Example:
 
