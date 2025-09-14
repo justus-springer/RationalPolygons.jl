@@ -2,7 +2,7 @@
 @doc raw"""
     classify_maximal_lattice_polygons_with_collinear_interior_points(i :: Int, T :: Type{<:Integer} = Int)
 
-Return all maximal lattice polygons with `i` collinear interior lattice
+Return all maximal lattice polygons with ``i`` collinear interior lattice
 points.
 
 """
@@ -19,7 +19,7 @@ end
 @doc raw"""
     classify_maximal_lattice_polygons_with_two_dimensional_empty_fine_interior(i :: Int, T :: Type{<:Integer} = Int)
 
-Return all maximal lattice polygons with `i` interior lattice points, where the
+Return all maximal lattice polygons with ``i`` interior lattice points, where the
 convex hull of these points is a two-dimensional lattice polygon without
 interior lattice points.
 
@@ -61,8 +61,8 @@ end
 @doc raw"""
     abstract type CastryckStorage{T <: Integer} end   
 
-Abstract supertype of `InMemoryCastryckStorage` and `HDFCastryckStorage`. Both
-implement `classify_next_genus`, which performs a single step in Castryck's
+Abstract supertype of [`InMemoryCastryckStorage`](@ref) and [`HDFCastryckStorage`](@ref). Both
+implement [`classify_next_genus`](@ref), which performs a single step in Castryck's
 classification of lattice polygons.
 
 """
@@ -76,10 +76,10 @@ A struct holding classification results of Castryck's classification of lattice
 polygons by number of interior lattice points. It has the following fields:
 
 - `maximum_genus :: Int`: An upper bound for the maximum number of lattice points that the
-   classification should run to. Defaults to `100`.
+   classification should run to. Defaults to ``100``.
 - `maximal_polygons :: Vector{Vector{RationalPolygon{T}}}`,
 - `all_polygons :: Vector{Vector{RationalPolygon{T}}}`,
-- `total_count :: Int`.
+- `total_count :: Int`: The total number of polygons found so far.
 
 """
 mutable struct InMemoryCastryckStorage{T <: Integer} <: CastryckStorage{T}
@@ -185,21 +185,22 @@ end
 @doc raw"""
     struct HDFCastryckStoragePreferences{T <: Integer}
 
-A struct holding preferences for Castryck's classification using the HDF5 file format. It has four fields:
+A struct holding preferences for Castryck's classification using the HDF5 file format.
+It has the following fields:
 
 - `swmr :: Bool`: Whether to use single-reader-multiple-writer mode for HDF5.
     Defaults to `true`.
 - `maximum_genus :: Int`: An upper bound for the maximal number of interior
-    lattice points to which the classification should be run. Defaults to `100`.
+    lattice points to which the classification should be run. Defaults to ``100``.
 - `maximum_number_of_vertices :: Int`: An upper bound for the maximal number of
     vertices to be expected in the classification. This has to be set since every
     HDF5 file generated will have a dataset `numbers_of_polygons` storing the
     number of polygons for each number of vertices and the size of this dataset
-    needs to be set beforehand. Defaults to `100`, which should be more than enough for any
+    needs to be set beforehand. Defaults to ``100``, which should be more than enough for any
     feasable computation.
 - `block_size :: Int`: How many polygons should be read into memory at once
     during the computation of subpolygons and the moving-out process. Defaults to
-    `10^6`.
+    ``10^6``.
 
 
 """
@@ -226,8 +227,8 @@ A struct for managing classification results of Castryck's classification of lat
 
 - `preferences :: HDFCastryckStoragePreferences{T}`
 - `directory_path :: String`: The directory where the HDF5 files will be generated.
-- `last_completed_genus :: Int`: The last completed step of the classification. Initially, this will be `0`.
-- `total_count :: Int`
+- `last_completed_genus :: Int`: The last completed step of the classification. Initially, this will be ``0``.
+- `total_count :: Int`: the total number of polygons found so far.
 
 """
 mutable struct HDFCastryckStorage{T <: Integer} <: CastryckStorage{T}
@@ -387,7 +388,7 @@ points, up to `max_genus`.
 # Example:
 
 Reproduce Castryck's classification in memory, see Table 1 of [Cas12](@cite) or
-A322343 on OEIS. This should not take longer than a few minutes on modern
+[A322343](https://oeis.org/A322343) on OEIS. This should not take longer than a few minutes on modern
 hardware.
 
 ```julia
@@ -500,7 +501,7 @@ This will create two directories `all` and `maximal` in the target directory
 and populate them with HDF5 files `i1.h5`, `i2.h5`, etc., containing the polygons.
 The files in `maximal` contain datasets ordered by number of vertices. The
 files in `all` contain groups ordered by area, which contain datasets ordered
-by number of vertices. Every h5 file additionally contains a dataset
+by number of vertices. Every HDF5 file additionally contains a dataset
 `numbers_of_polygons`.
 
 ```julia
