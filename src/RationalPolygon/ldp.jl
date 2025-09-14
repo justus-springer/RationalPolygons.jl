@@ -215,7 +215,8 @@ Return the Gorenstein coefficients of an LDP polygon with ``N`` vertices.
 This is an integral matrix ``A = (a_{ij}) \in \ZZ^{N \times (N-2)}`` such that
 ``\iota w = \sum_{j=1}^{N-2} a_{ij} w_{j+i-1}``, where ``\iota`` is the
 Gorenstein index, ``w_i`` are the columns of the free part of the degree matrix,
-and ``w = w_1 + \dots + w_N`` is the class of the anticanonical divisor.
+and ``w = w_1 + \dots + w_N`` is the class of the anticanonical divisor. See
+Definition ``\ref{def:gorenstein_coefficients}``.
 
 # Example
 
@@ -252,7 +253,7 @@ SMatrix{N,N,T}([(mod(j-i+1,1:N) ≤ N-2 ? ι - A[i,mod(j-i+1,1:N)] : ι) for i =
 @doc raw"""
     gorenstein_matrix(P :: RationalPolygon{T,N}) where {T <: Integer, N}
 
-Return the Gorenstein matrix of an LDP polygon.
+Return the Gorenstein matrix of an LDP polygon. See Definition ``\ref{def:gorenstein_matrix}``.
 
 # Example
 
