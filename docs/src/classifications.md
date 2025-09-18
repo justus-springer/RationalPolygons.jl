@@ -248,7 +248,7 @@ A reference explaining the approach used will be added in the future.
 
 ```@docs
 modified_unit_fraction_solutions
-gorenstein_coefficients_to_degree_matrix_minors
+gorenstein_coefficients_to_grading_matrix_minors
 classify_gorenstein_coefficients
 gorenstein_coefficients_normal_form
 classify_quadrilaterals_by_gorenstein_index

@@ -145,13 +145,13 @@ function gorenstein_index(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 end
 
 @doc raw"""
-    degree_matrix(P :: RationalPolygon{T,N}) where {N, T <: Integer}
+    grading_matrix(P :: RationalPolygon{T,N}) where {N, T <: Integer}
 
 Return a tuple ``(Q_0, Q_1)`` where ``Q_0`` is the free part and ``Q_1``
 the torsion part of the degree matrix associated to ``P``.
 
 """
-function degree_matrix(P :: RationalPolygon{T,N}) where {N, T <: Integer}
+function grading_matrix(P :: RationalPolygon{T,N}) where {N, T <: Integer}
     S, U, _ = snf_with_transform(transpose(vertex_matrix(P)))
     d = S[2,2] # equals multiplicity(P)
     Q_free = SMatrix{N-2,N,T}(U[3:end,:])
@@ -161,7 +161,7 @@ end
 
 
 @doc raw"""
-    degree_matrix_free_part(P :: RationalPolygon)
+    grading_matrix_free_part(P :: RationalPolygon)
 
 Return the free part of the degree matrix associated to ``P``.
 
@@ -171,18 +171,18 @@ Return the free part of the degree matrix associated to ``P``.
 julia> P = convex_hull(LatticePoint{Int}[(1,0), (2,5), (-4,-5), (-1,-5)])
 Rational polygon of rationality 1 with 4 vertices.
 
-julia> degree_matrix_free_part(P)
+julia> grading_matrix_free_part(P)
 2×4 StaticArraysCore.SMatrix{2, 4, Int64, 8} with indices SOneTo(2)×SOneTo(4):
  1  -1  3  0
  1   0  2  1
 ```
 
 """
-degree_matrix_free_part(P :: RationalPolygon) = degree_matrix(P)[1]
+grading_matrix_free_part(P :: RationalPolygon) = grading_matrix(P)[1]
 
 
 @doc raw"""
-    degree_matrix_torsion_part(P :: RationalPolygon)
+    grading_matrix_torsion_part(P :: RationalPolygon)
 
 Return the torsion part of the degree matrix associated to ``P``.
 If ``P`` has ``N`` vertices and has multiplicity ``\mu``, the result is a static vector of length ``N`` whose 
@@ -197,7 +197,7 @@ Rational polygon of rationality 1 with 4 vertices.
 julia> multiplicity(P)
 5
 
-julia> degree_matrix_torsion_part(P)
+julia> grading_matrix_torsion_part(P)
 4-element StaticArraysCore.SVector{4, Int64} with indices SOneTo(4):
  4
  0
@@ -206,7 +206,7 @@ julia> degree_matrix_torsion_part(P)
 ```
 
 """
-degree_matrix_torsion_part(P :: RationalPolygon) = degree_matrix(P)[2]
+grading_matrix_torsion_part(P :: RationalPolygon) = grading_matrix(P)[2]
 
 
 @doc raw"""
@@ -235,7 +235,7 @@ julia> gorenstein_coefficients(P)
 
 """
 function gorenstein_coefficients(P :: RationalPolygon{T,N}) where {T <: Integer, N}
-    Q = degree_matrix_free_part(P)
+    Q = grading_matrix_free_part(P)
     g = gorenstein_index(P)
     w = g * sum([Q[:, i] for i = 1 : N])
     As = SVector{N-2,T}[]
