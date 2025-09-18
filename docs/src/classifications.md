@@ -109,7 +109,7 @@ Gorenstein index described in Subsection ``\ref{subsec:gorenstein_classification
 
 ```@docs
 modified_unit_fraction_solutions
-gorenstein_coefficients_to_degree_matrix_minors
+gorenstein_coefficients_to_grading_matrix_minors
 classify_gorenstein_coefficients
 gorenstein_coefficients_normal_form
 classify_quadrilaterals_by_gorenstein_index

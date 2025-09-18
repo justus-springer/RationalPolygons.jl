@@ -173,9 +173,9 @@ is_primitive(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 is_ldp
 multiplicity(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
 multiplicity(P :: RationalPolygon{T,N}) where {N,T <: Integer}
-degree_matrix_free_part
-degree_matrix_torsion_part
-degree_matrix
+grading_matrix_free_part
+grading_matrix_torsion_part
+grading_matrix
 is_smooth
 picard_index
 gorenstein_index
