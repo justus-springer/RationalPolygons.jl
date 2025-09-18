@@ -51,13 +51,13 @@ modified_unit_fraction_solutions(numerator(q), denominator(q), c, d)
 
 
 @doc raw"""
-    gorenstein_coefficients_to_degree_matrix_minors(ι :: T, A :: SMatrix{4,2,T,8}) where {T <: Integer}
+    gorenstein_coefficients_to_grading_matrix_minors(ι :: T, A :: SMatrix{4,2,T,8}) where {T <: Integer}
 
 Compute all minors of the Fano ``\iota``-Gorenstein matrix ``Q`` associated with
 the Gorenstein coefficients ``A``.
 
 """
-function gorenstein_coefficients_to_degree_matrix_minors(ι :: T,
+function gorenstein_coefficients_to_grading_matrix_minors(ι :: T,
         A :: SMatrix{4,2,T,8}) where {T <: Integer}
 
     # The gorenstein matrix
@@ -280,7 +280,7 @@ function classify_quadrilaterals_by_gorenstein_index(ι :: T, As :: Set{SMatrix{
 
     for A in As
 
-        m12, m13, m14, m23, m24, m34 = gorenstein_coefficients_to_degree_matrix_minors(ι,A)
+        m12, m13, m14, m23, m24, m34 = gorenstein_coefficients_to_grading_matrix_minors(ι,A)
 
         # check necessary condition for almost freeness
         gcd(m34, m14, m24) == 1 || continue

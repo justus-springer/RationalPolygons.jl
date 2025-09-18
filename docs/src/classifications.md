@@ -262,4 +262,3 @@ classify_squared_markov_type_equation_solutions
 fake_weight_vectors_to_triangles
 classify_lattice_triangles_integral_degree
 ```
-

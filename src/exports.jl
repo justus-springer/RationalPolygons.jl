@@ -47,9 +47,9 @@ export convex_hull
 export create_polygon_dataset
 export CyclicGroup
 export degree
-export degree_matrix
-export degree_matrix_free_part
-export degree_matrix_torsion_part
+export grading_matrix
+export grading_matrix_free_part
+export grading_matrix_torsion_part
 export det
 export DihedralGroup
 export dim
@@ -72,7 +72,7 @@ export filter_ldp_polygons
 export generic_lattice_points
 export gorenstein_coefficients
 export gorenstein_coefficients_normal_form
-export gorenstein_coefficients_to_degree_matrix_minors
+export gorenstein_coefficients_to_grading_matrix_minors
 export gorenstein_index
 export gorenstein_index
 export gorenstein_matrix
