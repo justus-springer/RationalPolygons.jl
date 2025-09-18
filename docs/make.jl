@@ -56,6 +56,9 @@ elseif format == "thesis"
 
     txt = read(filename, String)
 
+    # Add chapter heading
+    txt = "\\chapter{RationalPolygons.jl}\n\\label{apx:julia_rational_polygons}\n" * txt
+
     # Add Tex root directive
     txt = "%!TEX root = thesis.tex\n\n" * txt
 
