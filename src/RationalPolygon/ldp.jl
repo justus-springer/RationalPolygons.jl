@@ -326,7 +326,7 @@ toric_prime_divisor_adjacent_intersection(P :: RationalPolygon{T,N}, i :: Int) w
 @doc raw"""
     degree(P :: RationalPolygon)
 
-For LDP polygons, return the self intersection number of an anticanonocal
+For LDP polygons, return the self intersection number of an anticanonical
 divisor of the associated toric surface.
 
 # Example:

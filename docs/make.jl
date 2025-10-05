@@ -68,8 +68,8 @@ elseif format == "thesis"
     # Fix citations
     txt = replace(txt, r"\[\\hyperref\[doc:(\w+)\]\{\d+\}\]" => s"\\cite{\1}")
     
-    # Remove line breaks before examples
-    txt = replace(txt, r"\n+(\textbf{Example})" => s"\n\1")
+    # Remvoe line breaks before equations
+    txt = replace(txt, r"\n+(\\begin\{equation\*\})" => s"\n\1")
 
     # Remove math mode for references and add tilde
     txt = replace(txt, r" \\\( (\\ref\{\S+\}) \\\)" => s"~\1")

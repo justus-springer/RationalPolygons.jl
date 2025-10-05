@@ -181,6 +181,7 @@ picard_index
 gorenstein_index
 gorenstein_coefficients
 gorenstein_matrix
+discrepancies
 log_canonicity
 toric_prime_divisor_self_intersection
 toric_prime_divisor_adjacent_intersection
