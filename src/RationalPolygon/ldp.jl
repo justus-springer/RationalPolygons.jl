@@ -216,7 +216,7 @@ This is an integral matrix ``A = (a_{ij}) \in \ZZ^{N \times (N-2)}`` such that
 ``\iota w = \sum_{j=1}^{N-2} a_{ij} w_{j+i-1}``, where ``\iota`` is the
 Gorenstein index, ``w_i`` are the columns of the free part of the degree matrix,
 and ``w = w_1 + \dots + w_N`` is the class of the anticanonical divisor. See
-Definition ``\ref{def:gorenstein_coefficients}``.
+Construction ``\ref{cns:picard_group_of_free_part_grading_matrix}``.
 
 # Example
 
