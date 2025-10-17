@@ -4,15 +4,14 @@ In `RationalPolygons.jl`, we represent a polygon ``P \subseteq \mathbb{R}^2`` by
 two pieces of data: An integral matrix ``V \in \mathbb{Z}^{2\times N}``, called
 the _vertex matrix_ and an integer ``k \in \mathbb{Z}``, called the
 _rationality_. The associated polygon has as vertices the columns of ``V``
-divided by ``k``. To represent ``V``, we use a [static
-matrix](https://juliaarrays.github.io/StaticArrays.jl/stable/), which are faster
+divided by ``k``. To represent ``V``, we use static matrices, which are faster
 than Julia's internal matrices for many common operations. However, this implies
-that the type `RationalPolygon` will depend on the number of vertices `N` as a
-type parameter, which affects Julia's dispatch mechanism at runtime. As long as
-the number of distinct values of `N` occurring during a computation remains
+that the type `RationalPolygon` depends on the number of vertices ``N`` as a type
+parameter, which affects Julia's dispatch mechanism at runtime. As long as the
+number of distinct values of ``N`` occurring during a computation remains
 relatively small, this should not cause performance issues.
 
-There are two ways in which our encoding of rational polygons is not unique:
+There are two ways in which this encoding of rational polygons is not unique:
 First, scaling ``V`` and ``k`` by the same factor does not change the polygon,
 e.g. ``(V,k)`` describes the same polygon as ``(2V,2k)``. Even though they are
 mathematically the same polygon, `RationalPolygon.jl` views them as different
@@ -54,7 +53,7 @@ empty_polygon
 
 We provide basic properties and checks for rational polygons. Note that indices
 corresponding to vertices are always considered cyclic, i.e. the ``N+1``-th vertex
-of a polygon with ``N`` vertices cycles back to its first vertex.
+of a polygon with ``N`` vertices equals its first vertex.
 
 ```@docs
 number_of_vertices
@@ -112,10 +111,8 @@ Ehrhart coefficients:
 ```
 
 If ``P`` is integral, we have ``k=1`` and its Ehrhart quasipolynomial is a
-regular polynomial of degree 2. In general, the periods of ``a`` and ``b`` are
-divisors of ``k``. If they are strictly smaller than ``k``, we speak of
-_quasiperiod collapse_. A rational polygon is called _quasiintegral_ if the
-periods of ``a`` and ``b`` are both 1, hence it has an Ehrhart polynomial.
+regular polynomial of degree two. In general, the periods of ``a`` and ``b`` are
+divisors of ``k``.
 
 `RationalPolygons.jl` comes with many methods for counting the (interior,
 boundary) lattice points of a rational polygon as well as computing its
@@ -216,10 +213,11 @@ affine_automorphism_group
 
 ## Lattice width
 
-We provide functions to compute the lattice width as well as all direction vectors
-in which the lattice width is attained. Furthermore, we implement the concept of
-_lattice width data_ following [Boh23](@cite), which captures information about
-the slicing lengths of a polygon with respect to given direction vectors.
+We provide functions to compute the lattice width as well as all direction
+vectors in which the lattice width is attained. Furthermore, we implement the
+concept of _lattice width data_ following Bohnert [Boh23](@cite), which captures
+information about the slicing lengths of a polygon with respect to given
+direction vectors.
 
 ```@docs
 width
@@ -253,7 +251,7 @@ per line like this:
 
 This text-based format has the advantage of being easy to understand and use.
 However, storing polygons as ASCII strings is not very space-efficient, as they
-contain lots of redundant control characters. Hence we provide another way to
+contain many redundant control characters. Hence we provide another way to
 store polygons in binary and compressed form, which uses the HDF5 file format.
 This is more suitable for large datasets. For an example session, see
 [`write_polygon_dataset`](@ref).

@@ -39,7 +39,7 @@ AffineHalfplane(nv, b)
     affine_halfplane(L :: Line{T}) where {T <: Integer}
 
 Return the affine halfplane associated to a line. The halfplane is
-understood to consist of those points to the left of the line `L`, looking in
+understood to consist of those points to the left of the line ``L``, looking in
 the direction given by `direction_vector(L)`.
 
 """
@@ -52,8 +52,8 @@ end
 @doc raw"""
     affine_halfplane(p :: Point{T}, q :: Point{T}) where {T <: Integer}
 
-Return the affine halfplane associated to the line going through the points `p`
-and `q`.
+Return the affine halfplane associated to the line going through the points ``p``
+and ``q``.
 
 """
 affine_halfplane(p :: Point{T}, q :: Point{T}) where {T <: Integer} =
@@ -63,7 +63,7 @@ affine_halfplane(line_through_points(p,q))
 @doc raw"""
     normal_vector(H :: AffineHalfplane{T}) where {T <: Integer}
 
-Return the normal vector of `H`.
+Return the normal vector of ``H``.
 
 """
 normal_vector(H :: AffineHalfplane{T}) where {T <: Integer} = H.normal_vector
@@ -72,7 +72,7 @@ normal_vector(H :: AffineHalfplane{T}) where {T <: Integer} = H.normal_vector
 @doc raw"""
     translation(H :: AffineHalfplane{T}) where {T <: Integer}
 
-Return the affine translation of `H`.
+Return the affine translation of ``H``.
 
 """
 translation(H :: AffineHalfplane{T}) where {T <: Integer} = H.translation
@@ -95,7 +95,7 @@ end
 @doc raw"""
     Base.in(x :: Point{T}, H :: AffineHalfplane{T}) where {T <: Integer}
 
-Check whether a point `x` lies in the halfplane `H`.
+Check whether a point ``x`` lies in the halfplane ``H``.
 
 # Example:
 
@@ -114,7 +114,7 @@ end
 @doc raw"""
     contains_in_interior(x :: Point{T}, H :: AffineHalfplane{T}) where {T <: Integer}
 
-Check whether a point `x` lies in the interior of `H`.
+Check whether a point ``x`` lies in the interior of ``H``.
 
 # Example:
 
@@ -142,7 +142,7 @@ end
 @doc raw"""
     Base.issubset(H1 :: AffineHalfplane{T}, H2 :: AffineHalfplane{T}) where {T <: Integer}
 
-Check whether `H1` is a subset of `H2`.
+Check whether ``H_1`` is a subset of ``H_2``.
 
 """
 function Base.issubset(H1 :: AffineHalfplane{T}, H2 :: AffineHalfplane{T}) where {T <: Integer}
@@ -154,7 +154,7 @@ end
 @doc raw"""
     direction_vector(H :: AffineHalfplane{T}) where {T <: Integer}
 
-Return the direction vector of the line associated to `H`.
+Return the direction vector of the line associated to ``H``.
 
 """
 function direction_vector(H :: AffineHalfplane{T}) where {T <: Integer}
@@ -166,7 +166,7 @@ end
 @doc raw"""
     base_point(H :: AffineHalfplane{T}) where {T <: Integer}
 
-Return a point on the line associated to `H`.
+Return a point on the line associated to ``H``.
 
 """
 function base_point(H :: AffineHalfplane{T}) where {T <: Integer}
@@ -182,7 +182,7 @@ end
 @doc raw"""
     line(H :: AffineHalfplane{T}) where {T <: Integer}
 
-Return the line associated to `H`.
+Return the line associated to ``H``.
 
 """
 line(H :: AffineHalfplane{T}) where {T <: Integer} = Line(base_point(H), direction_vector(H))
@@ -191,7 +191,7 @@ line(H :: AffineHalfplane{T}) where {T <: Integer} = Line(base_point(H), directi
 @doc raw"""
     pseudo_angle(H :: AffineHalfplane{T}) where {T <: Integer}
 
-Return the pseudo angle of the normal vector of `H`.
+Return the pseudo angle of the normal vector of ``H``.
 
 """
 pseudo_angle(H :: AffineHalfplane{T}) where {T <: Integer} = pseudo_angle(normal_vector(H))
@@ -200,7 +200,7 @@ pseudo_angle(H :: AffineHalfplane{T}) where {T <: Integer} = pseudo_angle(normal
 @doc raw"""
     isless(H1 :: AffineHalfplane, H2 :: AffineHalfplane)
 
-Test whether `H1` comes before `H2`, where we order them first by the angle of
+Test whether ``H_1`` comes before ``H_2``, where we order them first by the angle of
 their normal vector and then by their affine translation.
 
 """

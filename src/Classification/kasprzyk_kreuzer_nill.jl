@@ -43,7 +43,7 @@ end
 @doc raw"""
     choose_next_vertex(ldps :: Vector{<:PartialLDP{T,N}}, index :: T) where {N, T <: Integer}
 
-Perform a single step in the classification of lattice polygons by Gorenstein
+Perform a single step in the classification of LDP polygons by Gorenstein
 index as in step (2) of Algorithm 6.3 of [KKN10](@cite).
 
 """
@@ -103,13 +103,13 @@ end
 @doc raw"""
     classify_lattice_polygons_by_gorenstein_index(index :: T; logging :: Bool = false) where {T <: Integer}
 
-Return all lattice polygons with given Gorenstein index, using the Algorithm
+Return all LDP polygons with given Gorenstein index, using the Algorithm
 described in [KKN10](@cite).
 
 # Example:
 
-There are 91 LDP polygons of Gorenstein index four: 13 triangles, 48
-quadrilaterals, 29 pentagons and one hexagon.
+There are ``91`` LDP polygons of Gorenstein index four: ``13`` triangles, ``48``
+quadrilaterals, ``29`` pentagons and one hexagon.
 
 ```jldoctest
 julia> Pss = classify_lattice_polygons_by_gorenstein_index(4);

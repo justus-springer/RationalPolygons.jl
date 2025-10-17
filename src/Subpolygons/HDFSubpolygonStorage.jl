@@ -8,21 +8,21 @@ following fields:
 - `primitive :: Bool`: Whether only subpolygons with primitive vertices should
    be computed. The default is `false`.
 - `use_affine_normal_form :: Bool`: Whether to use [`affine_normal_form`](@ref)
-    or [`unimodular_normal_form`](@ref). The default is `true`, i.e. affine normal
+    or [`unimodular_normal_form`](@ref). The default is `true`, which means affine normal
     form.
 - `only_equal_number_of_interior_lattice_points :: Bool`: Whether only
     subpolygons having the same number of interior lattice points as the starting
     polygons should be computed. The default is `false`.
 - `exclude_very_thin_polygons`: Whether polygons that can be realized in ``\mathbb{R} \times [0,1]`` should be excluded. This is only relevant for polygons with no interior lattice points. The default is `false`.
 - `block_size :: Int`: How many polygons should be read into memory at once
-    during the shaving process. Defaults to `10^6`.
+    during the shaving process. Defaults to ``10^6``.
 - `maximum_number_of_vertices :: Int`: An upper bound for the maximal number of
     vertices to be expected in the computation. This has to be set since every
     HDF5 file generated will have a dataset `numbers_of_polygons` storing the
     number of polygons for each number of vertices and the size of this dataset
-    needs to be set beforehand. Defaults to `100`, which should be more than enough for any
+    needs to be set beforehand. Defaults to ``100``, which should be more than enough for any
     feasible computation.
-- `swmr :: Bool`: Whether to use single-reader-multiple-writer mode for HDF5.
+- `swmr :: Bool`: Whether to use single-writer-multiple-reader mode for HDF5.
     Defaults to `true`.
 
 """
@@ -66,7 +66,7 @@ file format. It has the following fields:
    to avoid needing to read in polygons that have been written out in the past,
    which saves a lot of time.
 - `last_completed_area :: T`: The last area that has been completed. This
-   counts down from the maximum area of the starting polygons to `1`.
+   counts down from the maximum area of the starting polygons to one.
 - `total_count :: Int`
 
 """

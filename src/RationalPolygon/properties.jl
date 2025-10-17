@@ -2,7 +2,7 @@
 @doc raw"""
     affine_halfplane(P :: RationalPolygon, i :: Int)
 
-Return the `i`-th describing halfplane of `P`.
+Return the ``i``-th describing halfplane of ``P``.
 
 """
 affine_halfplane(P :: RationalPolygon{T,N}, i :: Int) where {N,T <: Integer} =
@@ -12,7 +12,7 @@ affine_halfplane(line_through_points(P[i], P[i+1]))
 @doc raw"""
     affine_halfplanes(P :: RationalPolygon)
 
-Return the describing halfplanes of `P`.
+Return the describing halfplanes of ``P``.
 
 """
 affine_halfplanes(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
@@ -22,7 +22,20 @@ affine_halfplanes(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
 @doc raw"""
     Base.in(x :: Point{T}, P :: RationalPolygon{T}) where {T <: Integer}
 
-Check whether a point `x` is contained in the polygon `P`.
+Check whether a point ``x`` is contained in the polygon ``P``.
+
+# Example:
+
+```jldoctest
+julia> P = convex_hull(LatticePoint{Int}[(1,0),(0,1),(-1,-1)])
+Rational polygon of rationality 1 with 3 vertices.
+
+julia> Point(0,0) ∈ P
+true
+
+julia> Point(1//2, 1//2) ∈ P
+true
+```
 
 """
 Base.in(x :: Point{T}, P :: RationalPolygon{T,N}) where {N,T <: Integer} =
@@ -32,7 +45,20 @@ all(H -> x ∈ H, affine_halfplanes(P))
 @doc raw"""
     contains_in_interior(x :: Point{T}, P :: RationalPolygon{T}) where {T <: Integer}
 
-Check whether a point `x` is contained in the interior of `P`.
+Check whether a point ``x`` is contained in the interior of ``P``.
+
+# Example:
+
+```jldoctest
+julia> P = convex_hull(LatticePoint{Int}[(1,0),(0,1),(-1,-1)])
+Rational polygon of rationality 1 with 3 vertices.
+
+julia> contains_in_interior(Point(0,0), P)
+true
+
+julia> contains_in_interior(Point(1//2,1//2), P)
+false
+```
 
 """
 contains_in_interior(x :: Point{T}, P :: RationalPolygon{T,N}) where {N,T <: Integer} =
@@ -42,8 +68,8 @@ all(H -> contains_in_interior(x, H), affine_halfplanes(P))
 @doc raw"""
     dim(P :: RationalPolygon)
 
-Return the dimension of `P`. For empty polygons, this returns -1. Otherwise,
-it returns 0, 1 or 2.
+Return the dimension of ``P``. For empty polygons, this returns ``-1``. Otherwise,
+it returns ``0``, ``1`` or ``2``.
 
 """
 dim(P :: RationalPolygon{T,0}) where {T <: Integer} = -1
@@ -55,7 +81,7 @@ dim(P :: RationalPolygon{T,N}) where {N,T <: Integer}  = 2
 @doc raw"""
     dimension_of_interior_integer_hull(P :: RationalPolygon)   
 
-Return the dimension of the convex hull of the interior lattice points of `P`.
+Return the dimension of the convex hull of the interior lattice points of ``P``.
 
 """
 dimension_of_interior_integer_hull(P :: RationalPolygon) =
@@ -65,9 +91,9 @@ dim(interior_integer_hull(P))
 @doc raw"""
     normalized_area(P :: RationalPolygon)
 
-Return the normalized area of a `k`-rational polygon, i.e. `2k^2` times its
+Return the normalized area of a ``k``-rational polygon, i.e. ``2k^2`` times its
 euclidean area. The result is always an integer, counting the number of
-standard `k`-rational triangles contained in `P`.
+standard ``k``-rational triangles contained in ``P``.
 
 """
 function normalized_area(P :: RationalPolygon{T,N}) where {N,T <: Integer}
@@ -90,6 +116,22 @@ euclidean_area(P :: RationalPolygon) = normalized_area(P) // (2 * rationality(P)
 
 Check whether a rational polygon is maximal among all polygons sharing
 the same rationality and number of interior lattice points.
+
+# Example:
+
+```jldoctest
+julia> P = convex_hull(LatticePoint{Int}[(0,0),(3,0),(0,3)])
+Rational polygon of rationality 1 with 3 vertices.
+
+julia> is_maximal(P)
+true
+
+julia> Q = convex_hull(LatticePoint{Int}[(0,0),(2,0),(2,1),(0,3)])
+Rational polygon of rationality 1 with 4 vertices.
+
+julia> is_maximal(Q)
+false
+```
 
 """
 function is_maximal(P :: RationalPolygon{T,N}) where {N,T <: Integer}
@@ -115,8 +157,8 @@ end
 @doc raw"""
     move_out_edges(P :: RationalPolygon)
 
-Given a `k`-rational polygon `P`, return the polygon obtained by moving out all
-edges by `1 // k`.
+Given a ``k``-rational polygon ``P``, return the polygon ``P^{(-1)}`` obtained by moving out all
+edges by ``\frac{1}{k}``. See Subsection ``\ref{subsec:maximal_polygons}``.
 
 """
 function move_out_edges(P :: RationalPolygon{T,N}) where {N,T <: Integer}

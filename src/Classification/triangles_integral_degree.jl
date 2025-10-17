@@ -2,7 +2,7 @@
     degree(w :: SVector{3})
 
 Return the degree of a fake weighted projective plane with given fake
-weight vector ``w=(w_1, w_2, w_3)``. This is given by the formula ``(w_1 + w_2 + w_3) / (w_1 w_2 w_3)``,
+weight vector ``w``. This is given by the formula ``(w_1 + w_2 + w_3) / (w_1 w_2 w_3)``,
 see for instance Proposition 3.7 of [HaKi24](@cite).
 
 """
@@ -26,7 +26,7 @@ SVector{3,T}(multiplicity(P,2), multiplicity(P,3), multiplicity(P,1))
 Given solution triples `us` of a squared Markov type equation, return all
 solution triples that can be obtained from `us` by applying at most `depth`
 many mutations. This function returns a vector of length `depth+1`, containing
-for each level `i = 0 : depth` the set of solution triples after exactly `i`
+for each level ``i`` from ``0`` to `depth` the set of solution triples after exactly ``i``
 mutation steps.
 
 # Example:
@@ -219,8 +219,8 @@ to the notation of Theorem 1.1 of [HaKi24](@cite). Allowed values of ``K`` are
 
 # Example:
 
-Compute all LDP triangles of degree ``1`` and class group torsion order ``9``, up to
-Markov depth ``5``. These consist of the three series (``1``-``9``-``2``), (``1``-``9``-``5``) and (``1``-``9``-``8``)
+Compute all LDP triangles of degree one and class group torsion order nine up to
+Markov depth five. These consist of the three series (``1``-``9``-``2``), (``1``-``9``-``5``) and (``1``-``9``-``8``)
 from Theorem 1.1 of [HaKi24](@cite). Note that for depths zero and one (which
 correspond to solution triples ``(1,1,1)`` and ``(1,1,4)`` in the Markov tree), the
 series overlap, hence there are only one resp. two triangles in this case,

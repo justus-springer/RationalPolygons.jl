@@ -1,7 +1,7 @@
 @doc raw"""
     contains_origin_in_interior(P :: RationalPolygon)
 
-Check whether `P` contains the origin in its interior.
+Check whether ``P`` contains the origin in its interior.
 
 """
 contains_origin_in_interior(P :: RationalPolygon{T}) where {T <: Integer} =
@@ -22,7 +22,7 @@ all(i -> is_primitive(scaled_vertex(P,i)), 1 : N)
 @doc raw"""
     is_ldp(P :: RationalPolygon)
 
-Check whether `P` is LDP, i.e. is primitive and contains the origin
+Check whether ``P`` is LDP, i.e. is primitive and contains the origin
 in its interior.
 
 """
@@ -43,7 +43,19 @@ filter(i -> is_special_facet(P,i), 1 : N)
 @doc raw"""
     dual(P :: RationalPolygon{T}) where {T <: Integer}
 
-Return the dual of a polygon `P`. Throws an error if `P` does not contain the origin in its interior.
+Return the dual of a polygon ``P``. Throws an error if ``P`` does not contain the origin in its interior.
+
+# Example:
+
+```jldoctest
+julia> P = convex_hull(LatticePoint{Int}[(-1,-1),(1,0),(0,1)])
+Rational polygon of rationality 1 with 3 vertices.
+
+julia> vertex_matrix(dual(P))
+2×3 SMatrix{2, 3, Int64, 6} with indices SOneTo(2)×SOneTo(3):
+ -2   1  1
+  1  -2  1
+```
 
 """
 function dual(P :: RationalPolygon{T}) where {T <: Integer}
@@ -56,10 +68,11 @@ end
 @doc raw"""
     multiplicity(P :: RationalPolygon{T}, i :: Int) where {T <: Integer}
 
-The index of the sublattice spanned by the `i`-th and `i+1`-th scaled vertex of
-`P` (i.e. the determinant of those two vertices). For LDP polygons, this equals
+The index of the sublattice spanned by the ``i``-th and ``i+1``-th scaled vertex of
+``P`` (i.e. the determinant of those two vertices). For LDP polygons, this equals
 the order of the local class group associated with the toric fixed point
-associated to the `i`-th and `i+1`-th ray.
+associated to the ``i``-th and ``i+1``-th ray. See Definition ``\ref{def:ldp_polygon_multiplicity}``
+and Proposition ``\ref{prp:ldp_polygon_local_multiplicy_grading_matrix}``.
 
 """
 multiplicity(P :: RationalPolygon{T}, i :: Int) where {T <: Integer} =
@@ -69,9 +82,10 @@ det(scaled_vertex(P,i), scaled_vertex(P,i+1))
 @doc raw"""
     multiplicity(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 
-The order of the sublattice spanned by the scaled vertices of `P`. For LDP
+The order of the sublattice spanned by the scaled vertices of ``P``. For LDP
 polygons, this equals the order of the torsion part of the divisor class group
-of the associated toric surface.
+of the associated toric surface. See Definition ``\ref{def:ldp_polygon_multiplicity}``
+and Proposition ``\ref{prp:class_group_splitting}``.
 
 """
 multiplicity(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
@@ -81,9 +95,9 @@ gcd([multiplicity(P,i) for i = 1 : N])
 @doc raw"""
     is_smooth(P :: RationalPolygon, i :: Int)
 
-Check whether the cone spanned by the `i`-th and `i+1`-th vertex of `P` is
+Check whether the cone spanned by the ``i``-th and ``i+1``-th vertex of ``P`` is
 regular, i.e. generates the entire lattice. For LDP polygons, this means that
-the toric fixed point associated to the `i`-th and `i+1`-th ray is smooth.
+the toric fixed point associated to the ``i``-th and ``i+1``-th ray is smooth.
 
 """
 is_smooth(P :: RationalPolygon, i :: Int) =
@@ -93,7 +107,7 @@ multiplicity(P, i) == 1
 @doc raw"""
     is_smooth(P :: RationalPolygon)
 
-Check whether all cones of the face fan of `P` are regular. For LDP polygons,
+Check whether all cones of the face fan of ``P`` are regular. For LDP polygons,
 this means that the associated toric surface is smooth.
 
 """
@@ -104,7 +118,7 @@ all(i -> is_smooth(P, i), 1 : N)
 @doc raw"""
     picard_index(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 
-The product of all local multiplicities of `P` divided by the global
+The product of all local multiplicities of ``P`` divided by the global
 multiplicity. For LDP polygons, this equals the index of the Picard group inside
 the divisor class group of the associated toric surface, see Theorem ``\ref{thm:picard_index_formula_ldp_polygons}``
 
@@ -118,10 +132,10 @@ gorenstein_index(v :: LatticePoint{T}, w :: LatticePoint{T}) where {T <: Integer
 @doc raw"""
     gorenstein_index(P :: RationalPolygon{T}, i :: Int)
 
-The multiplicity of `P` divided by `gcd(w[2] - v[2], v[1] - w[1])`, where `v`
-and `w` are the `i`-th and `i+1`-th scaled vertices of `P` respectively. For
+The multiplicity of ``P`` divided by `gcd(w[2] - v[2], v[1] - w[1])`, where ``v``
+and ``w`` are the ``i``-th and ``i+1``-th scaled vertices of ``P`` respectively. For
 LDP polygons, this equals the local Gorenstein at the toric fixed point
-associated to the `i`-th and `i+1`-th ray of `P`, see Proposition ``\ref{prp:gorenstein_index_formula}``
+associated to the ``i``-th and ``i+1``-th ray of ``P``, see Proposition ``\ref{prp:gorenstein_index_formula}``
 
 """
 gorenstein_index(P :: RationalPolygon{T}, i :: Int) where {T <: Integer} =
@@ -131,7 +145,7 @@ gorenstein_index(scaled_vertex(P,i), scaled_vertex(P,i+1))
 @doc raw"""
     gorenstein_index(P :: RationalPolygon{T}) where {T <: Integer}
 
-The least common multiple of the local Gorenstein indices of `P`. For LDP
+The least common multiple of the local Gorenstein indices of ``P``. For LDP
 polygons, this equals the Gorenstein index of the associated toric surface.
 
 """
@@ -147,7 +161,7 @@ end
     grading_matrix(P :: RationalPolygon{T,N}) where {N, T <: Integer}
 
 Return a tuple ``(Q_0, Q_1)`` where ``Q_0`` is the free part and ``Q_1``
-the torsion part of the degree matrix associated to ``P``.
+the torsion part of the grading matrix associated to ``P``.
 
 """
 function grading_matrix(P :: RationalPolygon{T,N}) where {N, T <: Integer}
@@ -162,9 +176,9 @@ end
 @doc raw"""
     grading_matrix_free_part(P :: RationalPolygon)
 
-Return the free part of the degree matrix associated to ``P``.
+Return the free part of the grading matrix associated to ``P``.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> P = convex_hull(LatticePoint{Int}[(1,0), (2,5), (-4,-5), (-1,-5)])
@@ -183,11 +197,11 @@ grading_matrix_free_part(P :: RationalPolygon) = grading_matrix(P)[1]
 @doc raw"""
     grading_matrix_torsion_part(P :: RationalPolygon)
 
-Return the torsion part of the degree matrix associated to ``P``.
+Return the torsion part of the grading matrix associated to ``P``.
 If ``P`` has ``N`` vertices and has multiplicity ``\mu``, the result is a static vector of length ``N`` whose 
 entries are all between ``0`` and ``\mu-1``.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> P = convex_hull(LatticePoint{Int}[(1,0), (2,5), (-4,-5), (-1,-5)])
@@ -214,11 +228,11 @@ grading_matrix_torsion_part(P :: RationalPolygon) = grading_matrix(P)[2]
 Return the Gorenstein coefficients of an LDP polygon with ``N`` vertices.
 This is an integral matrix ``A = (a_{ij}) \in \ZZ^{N \times (N-2)}`` such that
 ``\iota w = \sum_{j=1}^{N-2} a_{ij} w_{j+i-1}``, where ``\iota`` is the
-Gorenstein index, ``w_i`` are the columns of the free part of the degree matrix,
+Gorenstein index, ``w_i`` are the columns of the free part of the grading matrix,
 and ``w = w_1 + \dots + w_N`` is the class of the anticanonical divisor. See
 Construction ``\ref{cns:picard_group_of_free_part_grading_matrix}``.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> P = convex_hull(LatticePoint{Int}[(1,0), (2,5), (-4,-5), (-1,-5)])
@@ -255,7 +269,7 @@ SMatrix{N,N,T}([(mod(j-i+1,1:N) ≤ N-2 ? ι - A[i,mod(j-i+1,1:N)] : ι) for i =
 
 Return the Gorenstein matrix of an LDP polygon. See Definition ``\ref{def:gorenstein_matrix}``.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> P = convex_hull(LatticePoint{Int}[(1,0), (2,5), (-4,-5), (-1,-5)])
@@ -289,7 +303,8 @@ minimum(log_canonicities(P,i))
 Given a ``k``-rational polygon ``P``, return the maximal rational number ``0 < \varepsilon \leq 1``
 such that ``\varepsilon*P`` contains only one ``k``-rational point in its interior (the
 origin). For an LDP polygon, this equals the maximal rational number ``0 < \varepsilon \leq 1``
-such that the associated toric surface is ``\varepsilon``-log canonical.
+such that the associated toric surface is ``\varepsilon``-log canonical. See
+Definition ``\ref{def:ldp_polygon_log_canonical}``.
 
 """
 log_canonicity(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
@@ -299,10 +314,10 @@ minimum([log_canonicity(P,i) for i = 1 : N])
 @doc raw"""
     toric_prime_divisor_self_intersection(P :: RationalPolygon, i :: Int)
 
-Writing `u`, `v` and `w` for the `i-1`-th, `i`-th and `i+1`-th scaled vertex of
-`P` respectively, return `det(w,u) // (det(u,v) * det(v,w))`. For LDP polygons,
-this equals the self intersection number of the `i`-th toric prime divisor, see
-e.g. Summary 3.2 of [HaHaSp25](@cite).
+Writing ``u``, ``v`` and ``w`` for the ``i-1``-th, ``i``-th and ``i+1``-th scaled vertex of
+``P`` respectively, return ``\frac{det(w,u)}{det(u,v) det(v,w)}``. For LDP polygons,
+this equals the self intersection number of the ``i``-th toric prime divisor. See
+Definition ``\ref{def:ldp_polygon_intersection_numbers}``.
 
 """
 function toric_prime_divisor_self_intersection(P :: RationalPolygon{T,N}, i :: Int) where {N, T <: Integer}
@@ -314,9 +329,9 @@ end
 @doc raw"""
     toric_prime_divisor_adjacent_intersection(P :: RationalPolygon, i :: Int)
 
-Writing `v` and `w` for the `i`-th and `i+1`-th scaled vertex of `P`, return `1
-// det(v,w)`. For LDP polygons, this equals the intersection number between the
-`i`-th and `i+1`-th toric prime divisors.
+Writing ``v`` and ``w`` for the ``i``-th and ``i+1``-th scaled vertex of ``P``, return
+``\frac{1}{\mathrm{det}(v,w)}``. For LDP polygons, this equals the intersection number between the
+``i``-th and ``i+1``-th toric prime divisors. See Definition ``\ref{def:ldp_polygon_intersection_numbers}``.
 
 """
 toric_prime_divisor_adjacent_intersection(P :: RationalPolygon{T,N}, i :: Int) where {N, T <: Integer} =
@@ -327,7 +342,7 @@ toric_prime_divisor_adjacent_intersection(P :: RationalPolygon{T,N}, i :: Int) w
     degree(P :: RationalPolygon)
 
 For LDP polygons, return the self intersection number of an anticanonical
-divisor of the associated toric surface.
+divisor of the associated toric surface. See Definition ``\ref{def:ldp_polygon_intersection_numbers}``.
 
 # Example:
 

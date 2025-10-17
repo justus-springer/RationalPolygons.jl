@@ -14,7 +14,7 @@ abstract type IntersectionBehaviour{T <: Integer} end
     IntersectInPoint{T <: Integer}
 
 The intersection behaviour of two lines intersecting in a unique point. This
-struct has a single field `p`, which is the intersection point.
+struct has a single field ``p``, which is the intersection point.
 
 """
 struct IntersectInPoint{T <: Integer} <: IntersectionBehaviour{T}
@@ -43,9 +43,9 @@ struct LinesAreEqual{T <: Integer} <: IntersectionBehaviour{T} end
 @doc raw"""
     intersection_behaviour(L1 :: Line{T}, L2 :: Line{T}) where {T <: Integer}
 
-Given two lines in 2D rational space, return the intersection behaviour of the
+Given two lines in two-dimensional rational space, return the intersection behaviour of the
 two lines: Possible values are `LinesAreEqual()`, `NoIntersection()` and
-`IntersectInPoint(p)` where `p` is the unique intersection point.
+`IntersectInPoint(p)` where ``p`` is the unique intersection point.
 
 """
 function intersection_behaviour(L1 :: Line{T}, L2 :: Line{T}) where {T <: Integer}
@@ -66,7 +66,7 @@ end
 @doc raw"""
     intersection_point(L1 :: Line{T}, L2 :: Line{T}) where {T <: RationalUnion}
 
-Return the intersection point of two lines in 2D rational space. Throws an
+Return the intersection point of two lines in two-dimensional rational space. Throws an
 error if the lines do not intersect uniquely.
 
 """

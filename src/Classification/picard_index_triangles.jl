@@ -4,7 +4,7 @@
 Return all quadruples ``(\mu, w_1, w_2, w_3)`` such that ``p = \mu^2 w_1 w_2 w_3``
 and ``w_1 \leq w_2 \leq w_3``.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> quadruple_decompositions(24)
@@ -39,11 +39,11 @@ end
 @doc raw"""
     classify_lattice_triangles_by_picard_index(p :: T) where {T <: Integer}
 
-Return all lattice triangles with Picard index `p`.
+Return all LDP triangles with Picard index ``p``.
 
 # Example:
 
-There are two lattice triangles with Picard index 6:
+There are two LDP triangles with Picard index six:
 
 ```jldoctest
 julia> classify_lattice_triangles_by_picard_index(6)
@@ -114,7 +114,7 @@ Perform the classification of LDP triangles up to
 
 # Example:
 
-Reproduce the classification up to Picard index 10000, see also
+Reproduce the classification up to Picard index ``10000``, see also
 Theorem 1.2 of [Spr25](@cite).
 
 ```jldoctest
@@ -157,7 +157,7 @@ end
 A struct holding preferences for the classification of LDP triangles
 by Picard index using the HDF5 file format. It has the following fields:
 
-- `swmr :: Bool`: Whether to use single-reader-multiple-writer mode for HDF5. Defaults to `true`.
+- `swmr :: Bool`: Whether to use single-writer-multiple-reader mode for HDF5. Defaults to `true`.
 - `step_size :: Int`: The step size for multithreaded classification in terms of the Picard index. Defaults to ``10^4``.
 - `maximum_picard_index :: Int`: The maximum Picard index to be classified. Defaults to ``10^7``.
 
@@ -184,7 +184,7 @@ by Picard index using the HDF5 file format. It has the following fields:
 
 - `preferences :: HDFPicardIndexStoragePreferences{T}`
 - `file_path :: String`: The path of the HDF file to be generated.
-- `last_completed_picard_index :: Int`: The last completed step of the classification. Initially, this will be `0`.
+- `last_completed_picard_index :: Int`: The last completed step of the classification. Initially, this will be ``0``.
 - `total_count :: Int`: The total number of triangles found so far.
 
 """
@@ -218,8 +218,8 @@ end
 @doc raw"""
     classify_lattice_triangles_by_picard_index(st :: HDFPicardIndexStorage{T}, max_picard_index :: T; logging :: Bool = false) where {T <: Integer}
 
-Perform the classification of LDP triangles up go
-`max_picard_index`, storing the results in an HDF5 file
+Perform the classification of LDP triangles up to
+`max_picard_index`, storing the results in an HDF5 file.
 
 """
 function classify_lattice_triangles_by_picard_index(st :: HDFPicardIndexStorage{T}, max_picard_index :: T; logging :: Bool = false) where {T <: Integer}

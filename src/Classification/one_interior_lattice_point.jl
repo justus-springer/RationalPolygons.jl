@@ -133,7 +133,7 @@ end
     classify_maximal_polygons_genus_one_m2p2(k :: T, q :: Int) where {T <: Integer}
 
 Return all maximal ``k``-rational polygons with exactly one interior lattice
-point that can be realized in ``\mathbb{R} \times [-2,2]`` that have non-empty
+point that can be realized in ``\mathbb{R} \times [-2,2]`` and that have non-empty
 intersection with the ``q``-th classification box, where ``1 \leq q \leq 3``. If
 `primitive = true` is passed, then only primitive polygons (i.e. LDP polygons)
 are returned.
@@ -279,13 +279,14 @@ end
 @doc raw"""
     classify_maximal_polygons_genus_one(k :: T) where {T <: Integer}
 
-Return all maximal ``k``-rational polygons with exactly one interior lattice
+Return all ``k``-maximal polygons with exactly one interior lattice
 point. If `primitive = true` is passed, then only primitive polygons (i.e. LDP
 polygons) are returned.
 
 # Example:
 
-Compute the numbers of polygons for ``k \leq 3``.
+We compute the numbers of polygons for ``k \leq 3``. See also Classification
+``\ref{class:maximal_polygons_one_interior_lattice_points}``.
 
 ```jldoctest
 julia> length.(classify_maximal_polygons_genus_one.(1:3))
@@ -345,9 +346,9 @@ Compute all ``k``-rational polygons with exactly one interior lattice point. The
 
 # Example:
 
-Reproduce the classifcation of all 5145 half-integral polygons with exactly one
-interior lattice point. It first computes all maximal polygons with
-[`classify_maximal_polygons_genus_one`](@ref) and then generates all their subpolygons.
+We reproduce the classification of all ``5145`` half-integral polygons with exactly one
+interior lattice point. It works by first computing all maximal polygons with
+[`classify_maximal_polygons_genus_one`](@ref) and then generating all their subpolygons.
 
 ```jldoctest
 julia> classify_polygons_genus_one(2; logging=true);

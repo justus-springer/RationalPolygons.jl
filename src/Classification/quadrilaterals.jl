@@ -7,7 +7,7 @@ equation ``q = \frac{r}{s} = \frac{1}{x} + \frac{1}{y} - \frac{c}{dy}`` (see Lem
 ``\ref{lem:modified_unit_fraction_equation_finite_solutions}``). 
 Returns an error if there are infinitely many solutions, which happens if and only if ``c = d``.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> modified_unit_fraction_solutions(1//5, 2, 5)
@@ -106,9 +106,9 @@ end
     classify_gorenstein_coefficients(ι :: T)
 
 Classify Gorenstein coefficients associated to Fano ``\iota``-Gorenstein matrices.
-Optionally takes in a `Val{t}` argument, where `t` can be 1, 2, 3 or 4.
-In this case, only the Gorenstein coefficients of type `t` are classified, see
-Definition ``\ref{def:gorenstein_coefficients_types}``
+Optionally takes in a `Val{t}` argument, where `t` can be `1`, `2`, `3` or `4`.
+In this case, only the Gorenstein coefficients of that type are classified, see
+Definition ``\ref{def:gorenstein_coefficients_types}``.
 
 """
 function classify_gorenstein_coefficients(ι :: T, ::Val{1}) where {T <: Integer}

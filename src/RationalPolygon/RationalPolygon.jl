@@ -3,16 +3,16 @@
     RationalPolygon{T<:Integer,N,M}
 
 The type of rational polygons in two-dimensional space. `T` is the type of
-integers to be used. `N` is the number of vertices of the polygon and `M`
-equals `2*N`. It has the following fields:
+integers to be used. ``N`` is the number of vertices of the polygon and ``M``
+equals ``2 \cdot N``. It has the following fields:
 
-- `rationality :: T`: The rationality of the polygon, e.g. `1` for lattice polygons, 
-  `2` for half-integral polygons etc.
-- `vertex_matrix :: SMatrix{2,N,T,M}`: An integral `2xN` matrix. The vertices of the polygon 
+- `rationality :: T`: The rationality of the polygon, e.g. ``1`` for lattice polygons, 
+  ``2`` for half-integral polygons etc.
+- `vertex_matrix :: SMatrix{2,N,T,M}`: An integral ``2 \times N`` matrix. The vertices of the polygon 
   are understood to be the columns of this matrix divided by `rationality`.
 - `number_of_vertices :: Int`: The number of vertices of the polygon. This is redundant 
-  information, since the number of vertices is already available as the type parameter `N`. 
-  However, getting the number of vertices of a polygon through the type paremeter means lots 
+  information, since the number of vertices is already available as the type parameter ``N``. 
+  However, getting the number of vertices of a polygon through the type parameter means lots 
   of work for Julia's dispatch algorithm. Therefore, we found it to improve performance to put 
   it as a variable into the struct as well.
 - `is_unimodular_normal_form :: Bool`: A flag to remember that the polygon is already in 
@@ -134,7 +134,7 @@ empty_polygon(one(T))
 @doc raw"""
     convex_hull(points :: Vector{LatticePoint{T}}, k :: T = one(T)) where {T <: Integer}
 
-Return the `k`-rational polygon given by the convex hull of `p // k`, where `p
+Return the ``k``-rational polygon given by the convex hull of ``p / k``, where `p
 ∈ points`.
 
 """
@@ -164,7 +164,7 @@ RationalPolygon(graham_scan(points))
     convex_hull(points :: Vector{RationalPoint{T}}, k :: T) where {T <: Integer}
 
 Return the convex hull of a given set of rational points, viewed as a
-`k`-rational polygon.
+``k``-rational polygon.
 
 # Example:
 
@@ -190,9 +190,9 @@ number_of_vertices(P :: RationalPolygon{T,N,M}) where {N,M,T <: Integer} = P.num
 @doc raw"""
     rationality(P :: RationalPolygon)
 
-Return the rationality of `P`. Note that this does not need to be the _denominator_ 
-of `P`, which is the _smallest_
-positive integer `k` such that `k*P` is a lattice polygon: The standard lattice
+Return the rationality of ``P``. Note that this does not need to be the _denominator_ 
+of ``P``, which is the smallest
+positive integer ``k`` such that ``kP`` is a lattice polygon: The standard lattice
 triangle may also be viewed as a half-integral polygon, in which case the
 rationality would be two, but the denominator is one.
 
@@ -203,7 +203,7 @@ rationality(P :: RationalPolygon{T,N}) where {N,T <: Integer} = P.rationality
 @doc raw"""
     vertex_matrix(P :: RationalPolygon)
 
-The vertex matrix of `P` is the ``2 \times N`` integral matrix containing the vertices of
+Return the ``2 \times N`` integral matrix containing the vertices of
 `rationality(P) * P` as its columns.
 
 # Example:
@@ -225,7 +225,7 @@ vertex_matrix(P :: RationalPolygon{T,N}) where {N,T <: Integer} = P.vertex_matri
 @doc raw"""
     is_unimodular_normal_form(P :: RationalPolygon)
 
-Return whether it is already known that `P` is in unimodular normal form.
+Return whether it is already known that ``P`` is in unimodular normal form.
 
 """
 is_unimodular_normal_form(P :: RationalPolygon) = P.is_unimodular_normal_form
@@ -234,7 +234,7 @@ is_unimodular_normal_form(P :: RationalPolygon) = P.is_unimodular_normal_form
 @doc raw"""
     is_affine_normal_form(P :: RationalPolygon)
 
-Return whether it is already known that `P` is in affine normal form.
+Return whether it is already known that ``P`` is in affine normal form.
 
 """
 is_affine_normal_form(P :: RationalPolygon) = P.is_affine_normal_form
@@ -249,8 +249,8 @@ Base.print(io, "Rational polygon of rationality $(rationality(P)) with $(number_
 @doc raw"""
     scaled_vertex(P :: RationalPolygon, i :: Int)
 
-Return the `i`-th integral vertex of the polygon `rationality(P) * P`. The
-index `i` is regarded as a cyclic index, e.g. the `N+1`-th vertex is equal to
+Return the ``i``-th integral vertex of the polygon `rationality(P) * P`. The
+index ``i`` is regarded as a cyclic index, e.g. the ``N+1``-th vertex is equal to
 the first vertex.
 
 """
@@ -264,8 +264,8 @@ end
 @doc raw"""
     vertex(P :: RationalPolygon, i :: Int)
 
-Return the `i`-th vertex of the polygon `P`. The index `i` is regarded as a
-cyclic index, e.g. the `N+1`-th vertex is equal to the first vertex.
+Return the ``i``-th vertex of the polygon ``P``. The index ``i`` is regarded as a
+cyclic index, e.g. the ``N+1``-th vertex is equal to the first vertex.
 
 """
 vertex(P :: RationalPolygon{T,N}, i :: Int) where {N,T <: Integer} = scaled_vertex(P, i) .// rationality(P)
@@ -295,7 +295,7 @@ RationalPoint{T}
 @doc raw"""
     vertices(P :: RationalPolygon)
 
-Return the vertices of `P`.
+Return the vertices of ``P``.
 
 """
 vertices(P :: RationalPolygon{T,N}) where {N,T <: Integer} = collect(P)
@@ -303,7 +303,7 @@ vertices(P :: RationalPolygon{T,N}) where {N,T <: Integer} = collect(P)
 @doc raw"""
     Base.denominator(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 
-Return the smallest positive integer `k` such that `k * P` is a lattice polygon.
+Return the smallest positive integer ``k`` such that ``kP`` is a lattice polygon.
 
 """
 Base.denominator(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
@@ -325,7 +325,7 @@ end
 @doc raw"""
     Base.:(+)(P :: RationalPolygon{T}, v :: LatticePoint{T}) where {T <: Integer}
 
-For a `k`-rational polygon `P`, return the translated polygons `P + (v // k)`.
+For a ``k``-rational polygon ``P``, return the translated polygons `P + (v // k)`.
 
 """
 Base.:(+)(P :: RationalPolygon{T}, v :: LatticePoint{T}) where {T <: Integer} =

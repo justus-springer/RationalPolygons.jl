@@ -2,15 +2,17 @@
 @doc raw"""
     classify_maximal_polygons_m1p1(k :: T, i :: Int) where {T <: Integer}
 
-Return all maximal `k`-rational polygons with `i` interior lattice points
+Return all maximal ``k``-rational polygons with ``i`` interior lattice points
 that can be realized in ``\mathbb{R} \times [-1,1]``.
 
 # Example:
 
-Compute the numbers of polygons for ``1 \leq k \leq 5`` and ``0 \leq i \leq 10``. 
+Compute the numbers of maximal ``k``-rational polygons in ``\mathbb{R} \times [-1,1]`` for
+``k \leq 5`` and ``i \leq 10`` interior lattice points.
+
 
 ```jldoctest
-julia> [length(classify_maximal_polygons_m1p1(k,i)) for k = 1 : 5, i = 0 :10]
+julia> [length(classify_maximal_polygons_m1p1(k,i)) for k = 1 : 5, i = 0 : 10]
 5×11 Matrix{Int64}:
   1    2    4    5    6    7    8    9   10   11   12
   4    9   13   18   22   26   30   34   38   42   46

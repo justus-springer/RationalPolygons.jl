@@ -6,7 +6,7 @@ A struct holding preferences for [`InMemorySubpolygonStorage`](@ref). There are 
 - `primitive :: Bool`: Whether only subpolygons with primitive vertices should
    be computed. The default is `false`.
 - `use_affine_normal_form :: Bool`: Whether to use [`affine_normal_form`](@ref)
-    or [`unimodular_normal_form`](@ref). The default is `true`, i.e. affine normal
+    or [`unimodular_normal_form`](@ref). The default is `true`, which means affine normal
     form.
 - `only_equal_number_of_interior_lattice_points :: Bool`: Whether only
     subpolygons having the same number of interior lattice points as the starting
@@ -155,14 +155,14 @@ end
     subpolygons(P :: RationalPolygon{T}) where {T <: Integer}
 
 Compute all subpolygons of a rational polygon or list of rational polygons. The
-computation is done in memory, for storage on disk see also
+computation is done in memory. For storage on disk, see
 [`HDFSubpolygonStorage`](@ref). This function takes the following keyword
 arguments:
 
 - `primitive :: Bool`: Whether only subpolygons with primitive vertices should
     be returned. The default is `false`.
 - `use_affine_normal_form :: Bool`: Whether to use affine or unimodular normal
-    form. The default is `true`, so affine normal form.
+    form. The default is `true`, which means affine normal form.
 - `only_equal_number_of_interior_lattice_points :: Bool`: Whether only
     subpolygons that share the same number of interior lattice points with the
     starting polygons should be returned.

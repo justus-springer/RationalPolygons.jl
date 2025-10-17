@@ -140,11 +140,13 @@ union(classify_maximal_lattice_free_polygons_m1p2_squares(k),
 @doc raw"""
     classify_maximal_lattice_free_polygons(k :: T ; logging = false) where {T <: Integer}
 
-Return all ``k``-rational polygons with no interior lattice points.
+Return all ``k``-maximal polygons with no interior lattice points.
 
 # Example:
 
-Compute the numbers of polygons for ``1 \leq k \leq 6``:
+We compute the numbers of ``k``-maximal polygons with no interior lattice points
+for ``1 \leq k \leq 6``. See also Classification
+``\ref{class:maximal_polygons_with_no_interior_lattice_points}``.
 
 ```jldoctest
 julia> length.(classify_maximal_lattice_free_polygons.(1:6))

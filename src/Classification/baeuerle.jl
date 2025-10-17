@@ -2,7 +2,7 @@
     unit_fraction_partitions_length_three(ι :: T) where {T <: Integer}
 
 Return all triples ``(a,b,c)`` such that ``\frac{1}{\iota} = \frac{1}{a} + \frac{1}{b} + \frac{1}{c} ``
-and ``a \leq b \leq c``. See also [A004194](https://oeis.org/A004194) on OEIS.
+and ``a \leq b \leq c``. See also [A004194](https://oeis.org/A004194) on OEIS [oeis](@cite).
 
 # Example:
 
@@ -38,11 +38,11 @@ end
 @doc raw"""
     classify_lattice_triangles_by_gorenstein_index(ι :: T) where {T <: Integer}
 
-Return all lattice triangles with Gorenstein index ``ι``.
+Return all LDP triangles with Gorenstein index ``\iota``.
 
 # Example:
 
-There are five lattice triangles with Gorenstein index one:
+There are five LDP triangles with Gorenstein index one:
 
 ```jldoctest
 julia> classify_lattice_triangles_by_gorenstein_index(1)
@@ -99,7 +99,7 @@ abstract type BaeuerleStorage{T <: Integer} end
 @doc raw"""
     mutable struct InMemoryBaeuerleStorage{T <: Integer} <: BaeuerleStorage{T}
 
-A struct holding classification results of Bäuerle's classification of lattice
+A struct holding classification results of Bäuerle's classification of LDP
 triangles by Gorenstein index.
 
 """
@@ -115,7 +115,7 @@ end
 @doc raw"""
     classify_lattice_triangles_by_gorenstein_index(st :: InMemoryBaeuerleStorage{T}, max_gorenstein_index :: T) where {T <: Integer}
 
-Perform Bäuerle's classification of lattice triangles up to
+Perform Bäuerle's classification of LDP triangles up to
 `max_gorenstein_index`, storing the results in memory.
 
 # Example:
@@ -163,7 +163,7 @@ end
 A struct holding preferences for Bäuerle's classification using the HDF5 file format.
 It has the following fields:
 
-- `swmr :: Bool`: Whether to use single-reader-multiple-writer mode for HDF5.
+- `swmr :: Bool`: Whether to use single-writer-multiple-reader mode for HDF5.
     Defaults to `true`.
 - `step_size :: Int`: The step size for multithreaded classification in
     terms of the Gorenstein index. Defaults to ``100``.
@@ -188,8 +188,8 @@ end
 @doc raw"""
     mutable struct HDFBaeuerleStorage{T <: Integer} <: BaeuerleStorage{T}
 
-A struct for managing classification results of Baeuerle's classification of
-lattice triangles using the HDF5 file format. It has the following fields:
+A struct for managing classification results of Bäuerle's classification of
+LDP triangles using the HDF5 file format. It has the following fields:
 
 - `preferences :: HDFBaeuerleStoragePreferences{T}`
 - `file_path :: String`: The path of the HDF file to be generated.

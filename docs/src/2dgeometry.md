@@ -12,8 +12,8 @@ As the name suggests, these are _statically sized_, which leads to improved
 performance and memory management for many common operations. We provide three
 type aliases [`LatticePoint`](@ref), [`RationalPoint`](@ref), and
 [`Point`](@ref), the latter being the union of the previous two. Note that
-everything is stated for an arbitrary subtype `T <: Integer`, e.g. fixed size
-machine integers like `Int64`, or unbounded integer types like `BigInt`.
+everything is defined for an arbitrary subtype `T <: Integer`. This allows using
+both machine integers, like `Int64`, and unbounded integer types, like `BigInt`.
 
 ```@docs
 LatticePoint
@@ -32,7 +32,7 @@ pseudo_angle(p :: Point{T}) where {T <: Integer}
 
 ## Graham scan
 
-The Graham scan is a planar convex hull algorithm named after Ronald Graham
+The Graham scan is a planar convex hull algorithm developed by Ronald Graham
 [Gra72](@cite). With an asymptotic running time of ``O(n \cdot \mathrm{log}(n))``, it
 is a lot quicker than algorithms that work in arbitrary dimension.
 
@@ -70,7 +70,7 @@ intersection_point
 ## Affine halfplanes
 
 An affine halfplane is encoded as a struct consisting of a normal vector ``v \in
-\mathbb{Q}^2`` and a translation ``b \in \mathbb{Q}^2``, representing the set of
+\mathbb{Q}^2`` and a translation ``b \in \mathbb{Q}^2``. It represents the set of
 points ``\{ x \in \mathbb{Q}^2 | \langle v, x \rangle \geq b \}``.
 
 ```@docs

@@ -8,7 +8,7 @@ ccw(a::Point{T}, b::Point{T}, c::Point{T}) where {T <: Integer} =
 Perform a Graham scan on the given points, removing all points that are not
 vertices of their convex hull and ordering them counterclockwise.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> points = LatticePoint{Int}[(0,0), (1,0), (1,1), (0,1), (-1,1), (0,-1), (-1,-1), (0,-1)];

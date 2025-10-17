@@ -3,8 +3,8 @@
     parse_rational_polygons(k :: T, files :: AbstractVector{String}) where {T <: Integer}
     parse_rational_polygons(k :: T, file :: String) where {T <: Integer}
 
-Parse a list of files containing the vertices of a `k`-rational polygon. The
-files must have one polygon per line contained its vertices, as in the following example:
+Parse a list of files containing the vertices of a ``k``-rational polygon. The
+files must have one polygon per line containing its vertices, as in the following example:
 
 ```shell
 [[2, 0], [1, 3], [-1, 0], [-3, -4]]

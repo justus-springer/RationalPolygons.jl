@@ -2,7 +2,7 @@
 @doc raw"""
     Line{T <: Integer}
 
-A line in 2-dimensional rational space. It has two fields: `base_point :: RationalPoint{T}` and `direction_vector :: RationalPoint{T}`.
+A line in two-dimensional rational space. It has two fields: `base_point :: RationalPoint{T}` and `direction_vector :: RationalPoint{T}`.
 
 """
 struct Line{T <: Integer}
@@ -18,7 +18,7 @@ end
 @doc raw"""
     base_point(L :: Line{T}) where {T <: Integer}
 
-Return a point on the line `L`.
+Return a point on the line ``L``.
 
 """
 base_point(L :: Line{T}) where {T <: Integer} = L.base_point
@@ -27,7 +27,7 @@ base_point(L :: Line{T}) where {T <: Integer} = L.base_point
 @doc raw"""
     direction_vector(L :: Line{T}) where {T <: Integer}
 
-Return the direction vector of `L`.
+Return the direction vector of ``L``.
 
 """
 direction_vector(L :: Line{T}) where {T <: Integer} = L.direction_vector
@@ -48,7 +48,7 @@ end
 @doc raw"""
     Base.in(x :: Point{T}, L :: Line{T}) where {T <: Integer}
 
-Check whether a point `x` lies on a line `L`.
+Check whether a point ``x`` lies on a line ``L``.
 
 # Example:
 
@@ -65,7 +65,7 @@ iszero(det(x - base_point(L), direction_vector(L)))
 @doc raw"""
     normal_vector(L :: Line{T}) where {T <: Integer}
 
-Return a primitive vector orthogonal to the direction vector of `L`.
+Return a primitive vector orthogonal to the direction vector of ``L``.
 
 # Example:
 
@@ -86,7 +86,7 @@ end
 @doc raw"""
     line_through_points(A :: Point{T}, B :: Point{T}) where {T <: Integer}
 
-Return the line going through the points `A` and `B`.
+Return the line going through the points ``A`` and ``B``.
 
 # Example:
 
@@ -103,7 +103,7 @@ Line(A, B - A)
 @doc raw"""
     horizontal_line(y :: Union{T, Rational{T}}) where {T <: Integer}
 
-Return the horizontal line at `y`.
+Return the horizontal line at ``y``.
 
 """
 horizontal_line(y :: Union{T, Rational{T}}) where {T <: Integer} =
@@ -113,7 +113,7 @@ Line(Point(zero(y), y), Point(one(y), zero(y)))
 @doc raw"""
     vertical_line(x :: Union{T, Rational{T}}) where {T <: Integer}
 
-Return the vertical line at `x`.
+Return the vertical line at ``x``.
 
 """
 vertical_line(x :: Union{T, Rational{T}}) where {T <: Integer} =

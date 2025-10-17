@@ -1,7 +1,7 @@
 @doc raw"""
     is_periodic(v :: Vector, k :: Int)
 
-Check if a vector `v` is `k`-periodic, i.e. `v[i] == v[mod(i+k,1:n)]` for all
+Check if a vector ``v`` is ``k``-periodic, i.e. `v[i] == v[mod(i+k,1:n)]` for all
 `i`, where `n = length(v)`.
 
 """
@@ -14,7 +14,7 @@ end
 @doc raw"""
     period(v :: Vector)
 
-Return the smallest positive integer `k` such that `v` is `k`-periodic.
+Return the smallest positive integer ``k`` such that ``v`` is ``k``-periodic.
 
 """
 function period(v :: Vector)
@@ -30,7 +30,7 @@ end
     ehrhart_quasipolynomial_with_periods(P :: RationalPolygon{T}) where {T <: Integer}
 
 Return a ``k \times 3``-matrix of normalized coefficients of the Ehrhart
-quasipolynomial of a `k`-rational polygon `P`, together with a vector of it's
+quasipolynomial of a ``k``-rational polygon ``P``, together with a vector of its
 three periods.
 
 """
@@ -55,7 +55,7 @@ end
     ehrhart_quasipolynomial(P :: RationalPolygon)
 
 Return a ``k \times 3``-matrix of normalized coefficients of the Ehrhart quasipolynomial of a
-`k`-rational polygon `P`.
+``k``-rational polygon ``P``.
 
 """
 ehrhart_quasipolynomial(P :: RationalPolygon) =
@@ -65,8 +65,8 @@ ehrhart_quasipolynomial_with_periods(P)[1]
 @doc raw"""
     ehrhart_quasipolynomial_periods(P :: RationalPolygon)
 
-Return the periods of the Ehrhart quasipolynomial of a `k`-rational polygon
-`P`.
+Return the periods of the Ehrhart quasipolynomial of a ``k``-rational polygon
+``P``.
 
 """
 ehrhart_quasipolynomial_periods(P :: RationalPolygon) =
@@ -76,8 +76,8 @@ ehrhart_quasipolynomial_with_periods(P)[2]
 @doc raw"""
     ehrhart_quasipolynomial_period(P :: RationalPolygon)
 
-Return the period of the Ehrhart quasipolynomial of a `k`-rational polygon
-`P`.
+Return the period of the Ehrhart quasipolynomial of a ``k``-rational polygon
+``P``.
 
 """
 ehrhart_quasipolynomial_period(P :: RationalPolygon) =

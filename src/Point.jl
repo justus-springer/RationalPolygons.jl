@@ -43,9 +43,9 @@ det(M :: Matrix2{T}) where {T <: Integer} = M[1,1]*M[2,2] - M[1,2]*M[2,1]
 @doc raw"""
     denominator(p :: Point)
 
-The smallest integer `r` such that `r*p` is integral.
+The smallest integer ``r`` such that ``r \cdot p`` is integral.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> denominator(RationalPoint(1//2,1//3))
@@ -59,9 +59,9 @@ Base.denominator(p :: Point) = lcm(denominator(p[1]), denominator(p[2]))
 @doc raw"""
     multiplicity(p :: Point)
 
-The unique rational number `x` such that `x*p` is primitive and integral.
+The unique rational number ``x`` such that ``x \cdot p`` is primitive and integral.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> multiplicity(RationalPoint(4//3,2//3))
@@ -85,9 +85,9 @@ is_primitive(p :: Point) = multiplicity(p) == 1
 @doc raw"""
     primitivize(p :: Point)
 
-Return the unique primitive lattice point on the ray spanned by `p`.
+Return the unique primitive lattice point on the ray spanned by ``p``.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> primitivize(RationalPoint(4//3,2//3))
@@ -103,9 +103,9 @@ primitivize(p :: Point) = numerator.(multiplicity(p) * p)
 @doc raw"""
     norm(p :: Point{T})
 
-Return the square of the euclidean norm of `p`.
+Return the square of the euclidean norm of ``p``.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> norm(RationalPoint(4//3,2//3))
@@ -119,7 +119,7 @@ norm(p :: Point{T}) where {T <: Integer} = p[1]^2 + p[2]^2
 @doc raw"""
     distance(p :: Point{T}, q :: Point{T})
 
-Return the square of the euclidean distance between `p` and `q`.
+Return the square of the euclidean distance between ``p`` and ``q``.
 
 """
 distance(p :: Point{T}, q :: Point{T}) where {T <: Integer} = norm(p - q)
@@ -128,8 +128,8 @@ distance(p :: Point{T}, q :: Point{T}) where {T <: Integer} = norm(p - q)
 @doc raw"""
     is_k_rational(k :: T, p :: Point{T}) where {T <: Integer}
 
-Checks whether a point `p` is `k`-rational, i.e. its coordinates have
-denominator at most `k`.
+Checks whether a point ``p`` is ``k``-rational, i.e. its coordinates have
+denominator at most ``k``.
 
 """
 is_k_rational(k :: T, p :: Point{T}) where {T <: Integer} = k % denominator(p) == 0
@@ -138,7 +138,7 @@ is_k_rational(k :: T, p :: Point{T}) where {T <: Integer} = k % denominator(p) =
 @doc raw"""
     is_integral(p :: Point{T}) where {T <: Integer}
 
-Checks whether a point `p` is integral.
+Checks whether a point ``p`` is integral.
 
 """
 is_integral(p :: Point{T}) where {T <: Integer} = is_k_rational(one(T), p)
@@ -147,11 +147,11 @@ is_integral(p :: Point{T}) where {T <: Integer} = is_k_rational(one(T), p)
 @doc raw"""
     pseudo_angle(p :: Point{T}) where {T <: Integer}
 
-Returns a value in the half-open interval ``(-2,2]``. A pseudo angle
-allows comparing vectors by angle, but is faster to compute than the
+Returns a value in the half-open interval ``(-2,2]``. A pseudo-angle
+allows comparing vectors by angle, while being faster to compute than the
 euclidean angle.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> pseudo_angle(LatticePoint(1,1))

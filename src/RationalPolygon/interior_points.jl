@@ -2,7 +2,7 @@
 @doc raw"""
     generic_lattice_points(P :: RationalPolygon{T,N}, k :: T)
 
-Return the lattice points in the `k`-fold of the rational polygon `P`. If the
+Return the lattice points in the ``k``-fold of the rational polygon ``P``. If the
 keyword argument `interior = true` is passed, only the lattice points in the
 relative interior are computed. If `only_count = true` is passed, only the total
 number of lattice points is returned.
@@ -85,7 +85,7 @@ end
 @doc raw"""
     boundary_k_rational_points(P :: RationalPolygon{T,N}, k :: T) where {N,T <: Integer}
 
-Return all `k`-rational points on the boundary of `P`.
+Return all ``k``-rational points on the boundary of ``P``.
 
 """
 function boundary_k_rational_points(P :: RationalPolygon{T}, k :: T) where {T <: Integer}
@@ -100,7 +100,7 @@ end
 @doc raw"""
     number_of_boundary_k_rational_points(P :: RationalPolygon{T}, k :: T) where {T <: Integer}
 
-Return the number of `k`-rational points on the boundary of `P`.
+Return the number of ``k``-rational points on the boundary of ``P``.
 
 """
 number_of_boundary_k_rational_points(P :: RationalPolygon{T}, k :: T) where {T <: Integer} =
@@ -110,7 +110,7 @@ length(boundary_k_rational_points(P,k))
 @doc raw"""
     boundary_lattice_points(P :: RationalPolygon{T}) where {T <: Integer}
 
-Return all lattice points on the boundary of `P`.
+Return all lattice points on the boundary of ``P``.
 
 """
 boundary_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
@@ -120,7 +120,7 @@ boundary_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
 @doc raw"""
     number_of_boundary_lattice_points(P :: RationalPolygon)
 
-Return the number of lattice points on the boundary of `P`.
+Return the number of lattice points on the boundary of ``P``.
 
 """
 number_of_boundary_lattice_points(P :: RationalPolygon) =
@@ -130,7 +130,7 @@ length(boundary_lattice_points(P))
 @doc raw"""
     interior_k_rational_points(P :: RationalPolygon{T}, k :: T) where {T <: Integer}
 
-Return all `k`-rational points in the interior of `P`.
+Return all ``k``-rational points in the interior of ``P``.
 
 """
 interior_k_rational_points(P :: RationalPolygon{T}, k :: T) where {T <: Integer} =
@@ -140,7 +140,7 @@ generic_lattice_points(P, k; interior = true) .// k
 @doc raw"""
     number_of_interior_k_rational_points(k :: T, P :: RationalPolygon{T}) where {T <: Integer}
 
-Return the number of `k`-rational points in the interior of `P`.
+Return the number of ``k``-rational points in the interior of ``P``.
 
 """
 number_of_interior_k_rational_points(P :: RationalPolygon{T}, k :: T) where {T <: Integer} =
@@ -150,7 +150,7 @@ generic_lattice_points(P, k; interior = true, only_count = true)
 @doc raw"""
     interior_lattice_points(P :: RationalPolygon{T}) where {T <: Integer}
 
-Return all lattice points in the interior of `P`.
+Return all lattice points in the interior of ``P``.
 
 """
 interior_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
@@ -160,7 +160,7 @@ generic_lattice_points(P, one(T); interior = true)
 @doc raw"""
     number_of_interior_lattice_points(P :: RationalPolygon{T}) where {T <: Integer}
 
-Return the number of lattice points in the interior of `P`.
+Return the number of lattice points in the interior of ``P``.
 
 """
 number_of_interior_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
@@ -170,7 +170,7 @@ generic_lattice_points(P, one(T), interior = true, only_count = true)
 @doc raw"""
     k_rational_points(k :: T, P :: RationalPolygon{T}) where {T <: Integer}
     
-Return all `k`-rational points in `P`.
+Return all ``k``-rational points in ``P``.
 
 """
 k_rational_points(P :: RationalPolygon{T}, k :: T) where {T <: Integer} =
@@ -180,7 +180,7 @@ generic_lattice_points(P, k) .// k
 @doc raw"""
     number_of_k_rational_points(P :: RationalPolygon{T}, k :: T) where {T <: Integer}
 
-Return the number of `k`-rational points in `P`.
+Return the number of ``k``-rational points in ``P``.
 
 """
 number_of_k_rational_points(P :: RationalPolygon{T}, k :: T) where {T <: Integer} =
@@ -190,7 +190,7 @@ generic_lattice_points(P, k, only_count = true)
 @doc raw"""
     lattice_points(P :: RationalPolygon{T}) where {T <: Integer}
     
-Return all lattice points in `P`.
+Return all lattice points in ``P``.
 
 """
 lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
@@ -200,7 +200,7 @@ generic_lattice_points(P, one(T))
 @doc raw"""
     number_of_lattice_points(P :: RationalPolygon{T}) where {T <: Integer}
     
-Return the number of lattice points in `P`.
+Return the number of lattice points in ``P``.
 
 """
 number_of_lattice_points(P :: RationalPolygon{T}) where {T <: Integer} =
@@ -210,8 +210,8 @@ generic_lattice_points(P, one(T), only_count = true)
 @doc raw"""
     k_rational_hull(P :: RationalPolygon{T}, k :: T) where {T <: Integer}
 
-Return the convex hull of all `k`-rational points contained in `P`. If
-`primitive = true` is passed, only the primitive `k`-rational points
+Return the convex hull of all ``k``-rational points contained in ``P``. If
+`primitive = true` is passed, only the primitive ``k``-rational points
 are taken.
 
 """
@@ -225,8 +225,8 @@ end
 @doc raw"""
     interior_k_rational_hull(P :: RationalPolygon{T}, k :: T) where {T <: Integer}
 
-Return the convex hull of all interior `k`-rational points of `P`. If
-`primitive = true` is passed, only the primitive `k`-rational points
+Return the convex hull of all interior ``k``-rational points of ``P``. If
+`primitive = true` is passed, only the primitive ``k``-rational points
 are taken.
 
 """
@@ -240,7 +240,7 @@ end
 @doc raw"""
     integer_hull(P :: RationalPolygon{T}) where {T <: Integer}
 
-Return the convex hull of all lattice points in the interior of `P`. If
+Return the convex hull of all lattice points in the interior of ``P``. If
 `primitive = true` is passed, only the primitive interior lattice points are
 taken.
 
@@ -252,7 +252,7 @@ k_rational_hull(P, one(T); primitive)
 @doc raw"""
     interior_integer_hull(P :: RationalPolygon{T}) where {T <: Integer}
 
-Return the convex hull of all interior lattice points of `P`. If `primitive =
+Return the convex hull of all interior lattice points of ``P``. If `primitive =
 true` is passed, only the primitive lattice points are taken.
 
 """

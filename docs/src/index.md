@@ -1,6 +1,6 @@
 This appendix serves as a reference for `RationalPolygons.jl`, a Julia package
 for computations with rational convex polygons. `RationalPolygons.jl` does not
-make use of any external computer algebra system but implements all necessary
+make use of any external computer algebra system, but implements all necessary
 algorithms, including two-dimensional euclidean geometry, from scratch in pure
 Julia. This allows for quite good performance, with computations involving
 billions of polygons being feasible on a personal computer.
@@ -45,8 +45,8 @@ The rest of this appendix is organized as follows: In Section
 ``\ref{doc:2D-Geometry}``, we go over some basic functions for two-dimensional
 euclidean geometry over the rationals, such as computing the convex hull and
 intersecting lines. Section ``\ref{doc:Polygons}`` covers the type of rational
-polygons as well as basic properties and the normal form. In Section
-``\ref{doc:Subpolygons}``, we discuss computation subpolygons, following the
+polygons as well as basic properties and normal forms. In Section
+``\ref{doc:Subpolygons}``, we discuss computation of subpolygons, following the
 approach from Section ``\ref{subsec:subpolygons}``. Finally, Section
 ``\ref{doc:Classifications}`` covers implementations of the classification
 algorithms from Chapter ``\ref{chp:rational_polygons}``, Sections
@@ -54,7 +54,10 @@ algorithms from Chapter ``\ref{chp:rational_polygons}``, Sections
 ``\ref{sec:ldp_polygons_classifications_by_gorenstein_index}``, as well as
 various classification algorithms by other authors.
 
-This documentation has been generated from the docstrings of the package's
-source code. A web version is available on its GitHub page
-[RationalPolygons_jl](@cite). All example sessions have been tested against
-version `v1.2.0`.
+This documentation is generated directly from the docstrings of the package's
+source code. An online version is available on its GitHub page
+[RationalPolygons_jl](@cite). Every documented item includes a clickable
+[`source`](https://github.com/justus-springer/RationalPolygons.jl) link that directs to
+the corresponding line in the source code where it is defined. The content here
+refers to version `v1.2.0-thesis` of `RationalPolygons.jl`. All example sessions have been
+tested and verified to work with this version.

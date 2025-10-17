@@ -1,7 +1,7 @@
 @doc raw"""
     hnf(A :: SMatrix{2,N,T}) where {N,T<:Integer}
 
-An elementary implementation of the hermite normal form for 2xn integral
+An elementary implementation of the Hermite normal form for ``2 \times n`` integral
 matrices.
 
 """
@@ -52,7 +52,7 @@ SVector{N}(abs(det(P[i+1] - P[i], P[i] - P[i-1])) for i = 1 : N)
 @doc raw"""
     area_maximizing_vertices(P :: RationalPolygon)
 
-Return the indices of those vertices of `P` that maximize the lattice edge
+Return the indices of those vertices of ``P`` that maximize the lattice edge
 area.
 
 """
@@ -74,8 +74,8 @@ end
 @doc raw"""
     unimodular_normal_form_with_automorphism_group(P :: RationalPolygon)
 
-Return a pair `(Q,G)` where `Q` is the unimodular normal form of `P` and `G` is
-the unimodular automorphism group of `P`.
+Return a pair ``(Q,G)`` where ``Q`` is the unimodular normal form of ``P`` and ``G`` is
+the unimodular automorphism group of ``P``.
 
 """
 function unimodular_normal_form_with_automorphism_group(P :: RationalPolygon{T,N}) where {N,T <: Integer}
@@ -127,7 +127,7 @@ end
 @doc raw"""
     are_unimodular_equivalent(P :: RationalPolygon, Q :: RationalPolygon)   
 
-Checks whether two rational polygons are equivalent by a unimodular
+Check whether two rational polygons are equivalent by a unimodular
 transformation.
 
 """
@@ -137,7 +137,7 @@ unimodular_normal_form(P) == unimodular_normal_form(Q)
 @doc raw"""
     unimodular_automorphism_group(P :: RationalPolygon)
 
-Return the automorphism group of `P` with respect to unimodular
+Return the automorphism group of ``P`` with respect to unimodular
 transformations.
 
 # Example:
@@ -161,7 +161,7 @@ unimodular_normal_form_with_automorphism_group(P)[2]
         A2 :: SMatrix{2,N,T}, i2 :: Int, o2 :: Bool) where {N, T <: Integer}
 
 This is a helper function for `affine_normal_form`. It checks, whether two
-special vertices of two `k`-rational polygons can be sent to each other via an
+special vertices of two ``k``-rational polygons can be sent to each other via an
 affine unimodular transformation. The matrices `A1, A2` are the vertex matrices
 of the polygons, `i1, i2` are the indices of the special vertices and `o1, o2`
 are the orientations, i.e. whether the vertices of `A1` and `A2` are sorted
@@ -185,7 +185,7 @@ end
 @doc raw"""
     affine_normal_form_with_special_indices(P :: RationalPolygon)
 
-Return a pair `(Q,is)` where `Q` is the affine normal form of `P` and `is` is the set of special indices of `P`.
+Return a pair ``(Q,is)`` where ``Q`` is the affine normal form of ``P`` and ``is`` is the set of special indices of ``P``.
 
 """
 function affine_normal_form_with_special_indices(P :: RationalPolygon{T,N}) where {N,T <: Integer}
@@ -225,8 +225,8 @@ end
 @doc raw"""
     affine_normal_form_with_automorphism_group(P :: RationalPolygon)
 
-Return a pair `(Q,G)` where `Q` is the affine normal form of `P` and `G` is the
-affine automorphism group of `P`.
+Return a pair ``(Q,G)`` where ``Q`` is the affine normal form of ``P`` and ``G`` is the
+affine automorphism group of ``P``.
 
 """
 function affine_normal_form_with_automorphism_group(P :: RationalPolygon{T,N}) where {N,T <: Integer}
@@ -257,7 +257,7 @@ is_affine_normal_form(P) ? P : affine_normal_form_with_automorphism_group(P)[1]
 @doc raw"""
     are_affine_equivalent(P :: RationalPolygon, Q :: RationalPolygon)   
 
-Checks whether two rational polygons are equivalent by an affine unimodular
+Check whether two rational polygons are equivalent by an affine unimodular
 transformation.
 
 """
@@ -267,7 +267,7 @@ affine_normal_form(P) == affine_normal_form(Q)
 @doc raw"""
     affine_automorphism_group(P :: RationalPolygon{T,N}) where {N,T <: Integer}
 
-Return the automorphism group of `P` with respect to affine unimodular
+Return the automorphism group of ``P`` with respect to affine unimodular
 transformations.
 
 """

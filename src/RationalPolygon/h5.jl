@@ -1,8 +1,8 @@
 @doc raw"""
     create_polygon_dataset(f :: Union{HDF5.File, HDF5.Group}, path :: String, N :: Int)
 
-Create an HDF5 dataset named `path` for storing rational polygons with `N`
-vertices. The dataset will have an HDF5 compound datatype with `2*N` integers,
+Create an HDF5 dataset named `path` for storing rational polygons with ``N``
+vertices. The dataset will have an HDF5 compound datatype with ``2N`` integers,
 which are the entries of the vertex matrices stored in a column major layout.
 This function takes three keyword arguments:
 
@@ -30,7 +30,7 @@ end
 @doc raw"""
     read_polygon_dataset(k :: T, f :: Union{HDF5.File, HDF5.Group}, path :: String, I...) where {T <: Integer}
 
-Read from an HDF5 dataset containing `k`-rational polygons.
+Read from an HDF5 dataset containing ``k``-rational polygons.
 
 """
 function read_polygon_dataset(k :: T,

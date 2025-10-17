@@ -115,7 +115,7 @@ number is the number of maximal lattice polygons.
 # Example:
 
 Perform two steps in Castryck's classification. The result tells us that there
-are 45 lattice polygons with exactly two interior lattice points, four of which
+are ``45`` lattice polygons with exactly two interior lattice points, four of which
 are maximal.
 
 
@@ -188,7 +188,7 @@ end
 A struct holding preferences for Castryck's classification using the HDF5 file format.
 It has the following fields:
 
-- `swmr :: Bool`: Whether to use single-reader-multiple-writer mode for HDF5.
+- `swmr :: Bool`: Whether to use single-writer-multiple-reader mode for HDF5.
     Defaults to `true`.
 - `maximum_genus :: Int`: An upper bound for the maximal number of interior
     lattice points to which the classification should be run. Defaults to ``100``.
@@ -197,7 +197,7 @@ It has the following fields:
     HDF5 file generated will have a dataset `numbers_of_polygons` storing the
     number of polygons for each number of vertices and the size of this dataset
     needs to be set beforehand. Defaults to ``100``, which should be more than enough for any
-    feasable computation.
+    feasible computation.
 - `block_size :: Int`: How many polygons should be read into memory at once
     during the computation of subpolygons and the moving-out process. Defaults to
     ``10^6``.
@@ -388,8 +388,8 @@ points, up to `max_genus`.
 # Example:
 
 Reproduce Castryck's classification in memory, see Table 1 of [Cas12](@cite) or
-[A322343](https://oeis.org/A322343) on OEIS. This should not take longer than a few minutes on modern
-hardware.
+[A322343](https://oeis.org/A322343) on OEIS [oeis](@cite).
+This should not take longer than a few minutes on modern hardware.
 
 ```julia
 julia> st = InMemoryCastryckStorage{Int}();

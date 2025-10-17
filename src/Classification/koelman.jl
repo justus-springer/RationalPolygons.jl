@@ -158,14 +158,14 @@ classify_polygons_by_number_of_lattice_points(InMemoryKoelmanStorage{T}(), max_n
 
 A struct holding preferences for Koelman's classification using the HDF5 file format. It has the following fields:
 
-- `swmr :: Bool`: Whether to use single-reader-multiple-writer mode for HDF5.
+- `swmr :: Bool`: Whether to use single-writer-multiple-reader mode for HDF5.
     Defaults to `true`.
 - `maximum_number_of_vertices :: Int`: An upper bound for the maximal number of
     vertices to be expected in the classification. This has to be set since every
     HDF5 file generated will have a dataset `numbers_of_polygons` storing the
     number of polygons for each number of vertices and the size of this dataset
     needs to be set beforehand. Defaults to ``100``, which should be more than enough for any
-    feasable computation.
+    feasible computation.
 - `block_size :: Int`: How many polygons should be read into memory at once
     during the extension process. Defaults to ``10^6``.
 
@@ -303,7 +303,7 @@ up to `max_number_of_lattice_points`.
 # Example:
 
 Reproduce Koelman's original classification in memory, see Table 4.4.3 of
-[Koe91](@cite) or A371917 on OEIS. This should not take longer than a few
+[Koe91](@cite) or A371917 on OEIS [oeis](@cite). This should not take longer than a few
 minutes on modern hardware.
 
 ```julia
@@ -361,8 +361,8 @@ julia> st = HDFKoelmanStorage{Int}("/tmp");
 julia> classify_polygons_by_number_of_lattice_points(st, 42);
 ```
 
-The result will be HDF5 files named `l1.h5`, `l2.h5` etc, each containing one
-dataset of polygons with fixed number of vertices as well as a dataset
+The result will be HDF5 files named `l1.h5`, `l2.h5` etc., each containing one
+dataset of polygons for every number of vertices as well as a dataset
 `numbers_of_polygons` holding their numbers.
 
 ```jlcon

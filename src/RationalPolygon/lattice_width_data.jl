@@ -2,7 +2,7 @@
 @doc raw"""
     width(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
 
-Return the lattice width of `P` in direction `w`.
+Return the lattice width of ``P`` in direction ``w``.
 
 # Example:
 
@@ -27,7 +27,7 @@ end
 @doc raw"""
     all_direction_vectors_with_width_less_than(P :: RationalPolygon{T}, c :: Rational{T}) where {T <: Integer}
 
-Return all direction vectors in which the width of `P` is less than or equal to a given constant.
+Return all direction vectors in which the width of ``P`` is less than or equal to a given constant.
 
 # Example:
 
@@ -55,7 +55,7 @@ end
 @doc raw"""
     width_with_direction_vectors(P :: RationalPolygon{T}) where {T <: Integer}
 
-Return the lattice width of `P` together with the list of direction vectors
+Return the lattice width of ``P`` together with the list of direction vectors
 that realize this width.
 
 
@@ -73,7 +73,7 @@ end
 @doc raw"""
     width(P :: RationalPolygon)
 
-Return the lattice width of `P`.
+Return the lattice width of ``P``.
 
 # Example:
 
@@ -92,8 +92,8 @@ width(P :: RationalPolygon) = width_with_direction_vectors(P)[1]
 @doc raw"""
     scaled_width(P :: RationalPolygon)
 
-Return the width of the scaled lattice polygon `k * P`, where `k` is the
-rationality of `P`. This equals `k * width(P)` and is always an integer.
+Return the width of the scaled lattice polygon ``kP``, where ``k`` is the
+rationality of ``P``. This equals `k * width(P)` and is always an integer.
 
 """
 scaled_width(P :: RationalPolygon) = numerator(rationality(P) * width(P))
@@ -102,8 +102,8 @@ scaled_width(P :: RationalPolygon) = numerator(rationality(P) * width(P))
 @doc raw"""
     width_direction_vectors(P :: RationalPolygon)
 
-Return the lattice width direction vectors of `P`, i.e. those directions that
-realize the lattice width of `P`.
+Return the lattice width direction vectors of ``P``, i.e. those directions that
+realize the lattice width of ``P``.
 
 # Example:
 
@@ -124,8 +124,8 @@ width_direction_vectors(P :: RationalPolygon) = width_with_direction_vectors(P)[
 @doc raw"""
     adjust_to_width_direction(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
 
-Apply an affine unimodular transformation to `P` that transforms the given
-width direction vector to (1,0), see Lemma 2.10 of [Boh23](@cite).
+Apply an affine unimodular transformation to ``P`` that transforms the given
+width direction vector to ``(1,0)``, see Lemma 2.10 of [Boh23](@cite).
 
 """
 function adjust_to_width_direction(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
@@ -143,8 +143,8 @@ end
 @doc raw"""
     number_of_interior_integral_lines(P :: RationalPolygon{T}, w :: Point{T}) where {T <: Integer}
 
-Return the number of interior integral lines of `P` with respect to a given
-direction vector `w`.
+Return the number of interior integral lines of ``P`` with respect to a given
+direction vector ``w``.
 
 # Example:
 
@@ -172,7 +172,7 @@ end
 @doc raw"""
     minimal_number_of_interior_integral_lines(P :: RationalPolygon{T}) where {T <: Integer}
 
-Return the minimal number of interior integral lines of `P`.
+Return the minimal number of interior integral lines of ``P``.
 
 # Example:
 
@@ -195,7 +195,7 @@ end
 @doc raw"""
     is_realizable_in_interval(P :: RationalPolygon{T}, h :: T) where {T <: Integer}
 
-Check whether `P` is realizable in ``\mathbb{R} \times [0,h]``. This is true
+Check whether ``P`` is realizable in ``\mathbb{R} \times [0,h]``. This is true
 if and only if the minimal number of interior integral lines is less than or
 equal to ``h-1``.
 
@@ -285,7 +285,7 @@ end
 @doc raw"""
     number_of_interior_integral_vertical_lines(P :: RationalPolygon, w :: Point{T}) where {T <: Integer}
 
-Return the number of interior integral vertical lines of `P` with respect to a
+Return the number of interior integral vertical lines of ``P`` with respect to a
 given lattice width direction vector, see Definition 2.11 of [Boh23](@cite). 
 
 """
@@ -296,7 +296,7 @@ number_of_interior_integral_vertical_lines(lattice_width_data(P, w))
 @doc raw"""
     position_of_longest_vertical_slice_length(P :: RationalPolygon, w :: Point{T}) where {T <: Integer}
 
-Return the position of the longest vertical slicing length of `P` with respect
+Return the position of the longest vertical slicing length of ``P`` with respect
 to a given lattice width direction vector, see Definition 2.11 of
 [Boh23](@cite). 
 
@@ -308,7 +308,7 @@ position_of_longest_vertical_slice_length(lattice_width_data(P, w))
 @doc raw"""
     lattice_width_datas(P :: RationalPolygon{T}) where {T <: Integer}   
     
-Return the lattice with datas for all lattice width direction vectors of `P`.
+Return the lattice width data for all lattice width direction vectors of ``P``.
 
 """
 lattice_width_datas(P :: RationalPolygon{T}) where {T <: Integer} =
@@ -319,7 +319,7 @@ lattice_width_data.(P, width_direction_vectors(P))
     numbers_of_interior_integral_vertical_lines(P :: RationalPolygon{T}) where {T <: Integer}
 
 Return the number of interior integral vertical lines for all width direction
-vectors of `P`.
+vectors of ``P``.
 
 """
 numbers_of_interior_integral_vertical_lines(P :: RationalPolygon{T}) where {T <: Integer} =
@@ -330,7 +330,7 @@ numbers_of_interior_integral_vertical_lines(P :: RationalPolygon{T}) where {T <:
     positions_of_longest_vertical_slice_length(P :: RationalPolygon{T}) where {T <: Integer}
 
 Return the positions of the longest vertical slicing lengths for all width
-direction vectors of `P`.
+direction vectors of ``P``.
 
 """
 positions_of_longest_vertical_slice_length(P :: RationalPolygon{T}) where {T <: Integer} =

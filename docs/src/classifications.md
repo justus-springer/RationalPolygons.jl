@@ -6,7 +6,7 @@ polygons from Chapter ``\ref{chp:rational_polygons}``, see Sections
 ``\ref{doc:Almost-k-hollow-LDP-polygons}``. Additionally, we implement the
 classification of LDP triangles by Picard index from Section
 ``\ref{sec:ldp_triangles_classification_by_picard_index}``, see
-``\ref{doc:LDP-triangles-by-Picard-index}`` and the classification of LDP
+``\ref{doc:LDP-triangles-by-Picard-index}``, and the classification of LDP
 quadrangles by Gorenstein index from Section
 ``\ref{sec:ldp_polygons_classifications_by_gorenstein_index}``, see
 ``\ref{doc:LDP-quadrangles-by-Gorenstein-index}``. Moreover, several other
@@ -62,7 +62,7 @@ polygons with primitive vertices. These are exactly the almost ``k``-hollow LDP
 polygons and they correspond to ``\frac{1}{k}``-log canonical toric del Pezzo surfaces.
 In particular, we can reproduce the classification of the ``48032`` almost ``3``-hollow
 LDP polygons (``\frac{1}{3}``-log canonical toric del Pezzo surfaces) from Theorem 4.11
-of [HaHaSp25](@cite). See also Table ``\ref{class:ldp_polygons}`` for the classification up
+of [HaHaSp25](@cite). See also Classification ``\ref{class:ldp_polygons}`` for the numbers up
 to ``k = 6``.
 
 ```jlcon
@@ -121,8 +121,8 @@ Koelman [Koe91](@cite) gave an algorithm to classify lattice polygons with a
 given number of lattice points and ran it up to ``42`` lattice points, Table
 4.4.3 of [Koe91](@cite). We have implemented their algorithm here, which
 successfully reproduces their numbers. See also Section
-``\ref{sec:general_case}`` and [A371917](https://oeis.org/A371917) on OEIS for
-the numbers up to ``112`` lattice points.
+``\ref{sec:general_case}`` and [A371917](https://oeis.org/A371917) on OEIS
+[oeis](@cite) for the numbers up to ``112`` lattice points.
 
 ```@docs
 height_one_points
@@ -138,11 +138,12 @@ classify_polygons_by_number_of_lattice_points
 ## Lattice polygons by number of interior lattice points
 
 Castryck [Cas12](@cite) gave an algorithm to classify lattice polygons by number
-of interior lattice points and ran it up to 30 interior lattice points. Our
-implementation here successfully reproduces their numbers from Table 1 of
-[Cas12](@cite), see also [A322343](https://oeis.org/A322343) on OEIS.
+of interior lattice points ``i`` and ran it up to ``i = 30``. Our implementation
+here successfully reproduces their numbers from Table 1 of [Cas12](@cite), see
+also [A322343](https://oeis.org/A322343) on OEIS [oeis](@cite).
 
 ```@docs
+move_out_edges
 classify_maximal_lattice_polygons_with_collinear_interior_points
 classify_maximal_lattice_polygons_with_two_dimensional_empty_fine_interior
 CastryckStorage
@@ -157,10 +158,10 @@ classify_lattice_polygons_by_genus
 
 Brown and Kasprzyk [BK13](@cite) considered lattice polygons that are
 contained in a square of fixed side length and classified them up to side length
-``7``. Their numbers (Table 1 of [BK13](@cite), see also
+seven. Their numbers (Table 1 of [BK13](@cite), see also
 [A374975](https://oeis.org/A374975)) can be reproduced with
 `RationalPolygons.jl` by computing subpolygons of the square. See also
-Classifiction ``\ref{class:polygons_in_box}`` for the numbers up to side length
+Classification ``\ref{class:polygons_in_box}`` for the numbers up to side length
 ``11``.
 
 ```jlcon
@@ -205,7 +206,7 @@ Kasprzyk, Kreuzer and Nill [KKN10](@cite) gave an algorithm to classify LDP
 polygons by Gorenstein index and ran the classification up to index ``17``.
 `RationalPolygons.jl` implements a version of their algorithm, which
 successfully reproduces their numbers (see Theorem 1.2 of [KKN10](@cite)). See
-also [A145581](https://oeis.org/A145581) for the numbers up to index ``32``.
+also [A145581](https://oeis.org/A145581) on OEIS [oeis](@cite) for the numbers up to index ``32``.
 
 ```@docs
 PartialLDP
@@ -227,6 +228,7 @@ Algorithm and the classification up to Gorenstein index ``45\,000``.
 unit_fraction_partitions_length_three
 BaeuerleStorage
 InMemoryBaeuerleStorage
+HDFBaeuerleStoragePreferences
 HDFBaeuerleStorage
 classify_lattice_triangles_by_gorenstein_index
 ```
@@ -236,15 +238,17 @@ classify_lattice_triangles_by_gorenstein_index
 Hausen and Király [HaKi24](@cite) classified fake weighted projective planes
 having integral degree (=canonical self intersection). In terms of polygons,
 these can be described as LDP triangles such that twice the euclidean area of
-its dual is an integer. The attained values of this integer (which is the degree
-of the associated fake weighted projective plane) are the integers ``\{1, 2, 3,
-4, 5, 6, 8, 9\}``. In total, there are ``24`` infinite series of these triangles,
-where each of them is parameterized by the solution set of a squared Markov type
-equation (see Theorem 1.1 of [HaKi24](@cite)). These solution sets can be
-described as infinite binary trees with a unique root. `RationalPolygons.jl`
-uses this description to implement a classification algorithm for LDP triangles
-with integral degree. To make this classification finite, one has to provide a
-maximal depth to which the solution trees are traversed.
+its dual is an integer (see also Proposition
+``\ref{prp:ldp_polygon_degree_eq_area_dual}``). The attained values of this
+integer (which is the degree of the associated fake weighted projective plane)
+are the integers ``\{1, 2, 3, 4, 5, 6, 8, 9\}``. In total, there are ``24``
+infinite series of these triangles, where each of them is parameterized by the
+solution set of a squared Markov type equation (see Theorem 1.1 of
+[HaKi24](@cite)). These solution sets can be described as infinite binary trees
+with a unique root. `RationalPolygons.jl` uses this description to implement a
+classification algorithm for LDP triangles with integral degree. To make this
+classification finite, one has to provide a maximal depth to which the solution
+trees are traversed.
 
 As with our other classifications, all functions come with a parameter `T <:
 Integer`, which is the integer type to be used. Since the entries of the

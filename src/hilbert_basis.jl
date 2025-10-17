@@ -4,9 +4,12 @@
 
 Bring a two-dimensional cone into normal form in the sense of [CoLiSc11](@cite).
 The result is a triple ``(d, k, M)``, where ``d`` and ``k`` are the parameters of the cone
-and ``M`` is a ``2 \times 2`` integral matrix such that `M * [0 d ; 1 -k] == A`
+and ``M`` is a ``2 \times 2`` integral matrix such that 
+```math
+M \cdot \begin{bmatrix} 0 & d \\ 1 & -k \end{bmatrix} = A.
+```
 
-# Example
+# Example:
 
 ```jldoctest
 julia> A = Matrix2(2, 1, -3, -5)
@@ -14,8 +17,11 @@ julia> A = Matrix2(2, 1, -3, -5)
  2  -3
  1  -5
 
-julia> cls_cone_normal_form(A)
+julia> d, k, M = cls_cone_normal_form(A)
 (7, 5, [1 2; 0 1])
+
+julia> M * [0 d ; 1 -k] == A
+true
 ```
 
 """
@@ -35,7 +41,7 @@ end
 
 Return the Hirzebruch-Jung continued fraction associated to ``x / y``.
 
-# Example
+# Example:
 
 See Example 10.2.4 of [CoLiSc11](@cite).
 
@@ -62,9 +68,9 @@ end
     hilbert_basis(A :: Matrix2{T}) where {T <: Integer}
 
 Return the Hilbert basis of a two-dimensional cone spanned by the columns of
-`A`, which must be primitive.
+``A``, which must be primitive.
 
-# Example
+# Example:
 
 See Example 10.2.4 of [CoLiSc11](@cite).
 
@@ -108,8 +114,8 @@ end
 @doc raw"""
     hilbert_basis(v1 :: LatticePoint{T}, v2 :: LatticePoint{T}) where {T <: Integer}
 
-Return the hilbert basis of a two-dimensional cone spanned by given integral
-primitive vectors `v1` and `v2`.
+Return the Hilbert basis of a two-dimensional cone spanned by given integral
+primitive vectors ``v_1`` and ``v_2``.
 
 """
 hilbert_basis(v1 :: LatticePoint{T}, v2 :: LatticePoint{T}) where {T <: Integer} =
@@ -138,7 +144,8 @@ end
     discrepancies(v1 :: LatticePoint{T}, v2 :: LatticePoint{T}) where {T <: Integer}
 
 The discrepancies of the two-dimensional cone spanned by two given integral
-primitive vectors.
+primitive vectors. See Definition ``\ref{def:local_log_canonicity}`` and 
+Proposition ``\ref{prp:local_log_canonicity_formula}``.
 
 """
 discrepancies(v1 :: LatticePoint{T}, v2 :: LatticePoint{T}) where {T <: Integer} =
