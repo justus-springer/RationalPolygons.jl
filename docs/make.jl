@@ -18,8 +18,11 @@ using Documenter, DocumenterCitations, RationalPolygons, StaticArrays
 
 bib = CitationBibliography(joinpath(@__DIR__, "src", "refs.bib"))
 
+DocMeta.setdocmeta!(RationalPolygons, :DocTestSetup, :(using RationalPolygons, StaticArrays); recursive=true)
+
 if format == "html"
     makedocs(
+        modules = [RationalPolygons],
         sitename = "RationalPolygons",
         pages = [
             "RationalPolygons.jl" => "index.md",
@@ -31,6 +34,7 @@ if format == "html"
             "Bibliography" => "bibliography.md",
             "Index" => "docs_index.md"
         ],
+        warnonly = :missing_docs,
         plugins = [bib]
     )
 
@@ -40,6 +44,7 @@ if format == "html"
 
 elseif format == "thesis"
     makedocs(
+        # modules = [RationalPolygons],
         sitename = "RationalPolygons",
         format = Documenter.LaTeX(platform = "none"),
         pages = [
@@ -49,6 +54,7 @@ elseif format == "thesis"
             "Subpolygons" => "subpolygons.md",
             "Classifications" => "classifications.md",
         ],
+        warnonly = :missing_docs,
         plugins = [bib],
     )
 
