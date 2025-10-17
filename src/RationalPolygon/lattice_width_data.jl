@@ -36,7 +36,7 @@ julia> P = convex_hull(LatticePoint{Int}[(1,1),(1,-2),(-4,2),(-2,2)],2)
 Rational polygon of rationality 2 with 4 vertices.
 
 julia> all_direction_vectors_with_width_less_than(P, 3//1)
-4-element Vector{StaticArraysCore.SVector{2, Int64}}:
+4-element Vector{SVector{2, Int64}}:
  [1, 0]
  [0, 1]
  [1, 1]
@@ -112,7 +112,7 @@ julia> P = convex_hull(LatticePoint{Int}[(1,1),(1,-2),(-4,2),(-2,2)],2)
 Rational polygon of rationality 2 with 4 vertices.
 
 julia> width_direction_vectors(P)
-2-element Vector{StaticArraysCore.SVector{2, Int64}}:
+2-element Vector{SVector{2, Int64}}:
  [0, 1]
  [1, 1]
 ```
@@ -256,7 +256,7 @@ julia> P = convex_hull(LatticePoint{Int}[(1,1),(1,-2),(-4,2),(-2,2)],2)
 Rational polygon of rationality 2 with 4 vertices.
 
 julia> ws = width_direction_vectors(P)
-2-element Vector{StaticArraysCore.SVector{2, Int64}}:
+2-element Vector{SVector{2, Int64}}:
  [0, 1]
  [1, 1]
 

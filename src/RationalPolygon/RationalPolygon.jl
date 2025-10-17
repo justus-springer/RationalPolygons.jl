@@ -213,7 +213,7 @@ julia> P = convex_hull(RationalPoint{Int}[(1,0),(0,1//2),(0,-1//3)])
 Rational polygon of rationality 6 with 3 vertices.
 
 julia> vertex_matrix(P)
-2×3 StaticArraysCore.SMatrix{2, 3, Int64, 6} with indices SOneTo(2)×SOneTo(3):
+2×3 SMatrix{2, 3, Int64, 6} with indices SOneTo(2)×SOneTo(3):
   0  6  0
  -2  0  3
 ```

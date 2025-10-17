@@ -71,7 +71,7 @@ Return a primitive vector orthogonal to the direction vector of `L`.
 
 ```jldoctest
 julia> normal_vector(line_through_points(Point(1,0),Point(2,2)))
-2-element StaticArraysCore.SVector{2, Int64} with indices SOneTo(2):
+2-element SVector{2, Int64} with indices SOneTo(2):
  -2
   1
 ```

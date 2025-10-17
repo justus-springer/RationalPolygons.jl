@@ -14,7 +14,7 @@ vertices of their convex hull and ordering them counterclockwise.
 julia> points = LatticePoint{Int}[(0,0), (1,0), (1,1), (0,1), (-1,1), (0,-1), (-1,-1), (0,-1)];
 
 julia> graham_scan!(points)
-5-element Vector{StaticArraysCore.SVector{2, Int64}}:
+5-element Vector{SVector{2, Int64}}:
  [-1, -1]
  [0, -1]
  [1, 0]

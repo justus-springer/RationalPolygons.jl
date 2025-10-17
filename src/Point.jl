@@ -91,7 +91,7 @@ Return the unique primitive lattice point on the ray spanned by `p`.
 
 ```jldoctest
 julia> primitivize(RationalPoint(4//3,2//3))
-2-element StaticArraysCore.SVector{2, Int64} with indices SOneTo(2):
+2-element SVector{2, Int64} with indices SOneTo(2):
  2
  1
 ```

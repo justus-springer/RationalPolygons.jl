@@ -171,7 +171,7 @@ julia> P = convex_hull(LatticePoint{Int}[(1,0), (2,5), (-4,-5), (-1,-5)])
 Rational polygon of rationality 1 with 4 vertices.
 
 julia> grading_matrix_free_part(P)
-2×4 StaticArraysCore.SMatrix{2, 4, Int64, 8} with indices SOneTo(2)×SOneTo(4):
+2×4 SMatrix{2, 4, Int64, 8} with indices SOneTo(2)×SOneTo(4):
  1  -1  3  0
  1   0  2  1
 ```
@@ -197,7 +197,7 @@ julia> multiplicity(P)
 5
 
 julia> grading_matrix_torsion_part(P)
-4-element StaticArraysCore.SVector{4, Int64} with indices SOneTo(4):
+4-element SVector{4, Int64} with indices SOneTo(4):
  4
  0
  1
@@ -225,7 +225,7 @@ julia> P = convex_hull(LatticePoint{Int}[(1,0), (2,5), (-4,-5), (-1,-5)])
 Rational polygon of rationality 1 with 4 vertices.
 
 julia> gorenstein_coefficients(P)
-4×2 StaticArraysCore.SMatrix{4, 2, Int64, 8} with indices SOneTo(4)×SOneTo(2):
+4×2 SMatrix{4, 2, Int64, 8} with indices SOneTo(4)×SOneTo(2):
  20   5
  15  10
   5  10
@@ -262,7 +262,7 @@ julia> P = convex_hull(LatticePoint{Int}[(1,0), (2,5), (-4,-5), (-1,-5)])
 Rational polygon of rationality 1 with 4 vertices.
 
 julia> gorenstein_matrix(P)
-4×4 StaticArraysCore.SMatrix{4, 4, Int64, 16} with indices SOneTo(4)×SOneTo(4):
+4×4 SMatrix{4, 4, Int64, 16} with indices SOneTo(4)×SOneTo(4):
  -15    0   5   5
    5  -10  -5   5
    5    5   0  -5
