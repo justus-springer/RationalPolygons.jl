@@ -2,7 +2,7 @@
 @doc raw"""
     cls_cone_normal_form(A :: Matrix2{T}) where {T <: Integer}
 
-Bring a two-dimensional cone into normal form in the sense of [CLS11](@cite).
+Bring a two-dimensional cone into normal form in the sense of [CoLiSc11](@cite).
 The result is a triple ``(d, k, M)``, where ``d`` and ``k`` are the parameters of the cone
 and ``M`` is a ``2 \times 2`` integral matrix such that `M * [0 d ; 1 -k] == A`
 
@@ -37,7 +37,7 @@ Return the Hirzebruch-Jung continued fraction associated to ``x / y``.
 
 # Example
 
-See Example 10.2.4 of [CLS11](@cite).
+See Example 10.2.4 of [CoLiSc11](@cite).
 
 ```jldoctest
 julia> hirzebruch_jung(7,5)
@@ -66,7 +66,7 @@ Return the Hilbert basis of a two-dimensional cone spanned by the columns of
 
 # Example
 
-See Example 10.2.4 of [CLS11](@cite).
+See Example 10.2.4 of [CoLiSc11](@cite).
 
 ```jldoctest
 julia> A = Matrix2(0,1,7,-5)

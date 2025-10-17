@@ -115,7 +115,7 @@ Perform the classification of LDP triangles up to
 # Example:
 
 Reproduce the classification up to Picard index 10000, see also
-Theorem 1.2 of [Spr24](@cite).
+Theorem 1.2 of [Spr25](@cite).
 
 ```jldoctest
 julia> st = InMemoryPicardIndexStorage{Int}()

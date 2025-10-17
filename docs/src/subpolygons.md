@@ -8,7 +8,7 @@ vertices of ``P`` by computing Hilbert bases.
 
 ## Hilbert bases
 
-We follow [CLS11](@cite) to compute Hilbert bases of two-dimensional cones
+We follow [CoLiSc11](@cite) to compute Hilbert bases of two-dimensional cones
 using Hirzebruch-Jung continued fractions.
 
 ```@docs

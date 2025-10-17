@@ -10,7 +10,7 @@ all _primitive_ `k`-rational points of `P` except the `i`-th vertex.
 
 # Example:
 
-Compare Example 10.2.7 of [CLS11](@cite).
+Compare Example 10.2.7 of [CoLiSc11](@cite).
 
 ```jldoctest
 julia> P = convex_hull(LatticePoint{Int}[(0,0),(7,-5),(7,1),(0,1)])
