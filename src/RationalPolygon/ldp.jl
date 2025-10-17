@@ -106,7 +106,7 @@ all(i -> is_smooth(P, i), 1 : N)
 
 The product of all local multiplicities of `P` divided by the global
 multiplicity. For LDP polygons, this equals the index of the Picard group inside
-the divisor class group of the associated toric surface, see Proposition ``\ref{prp:picard_index_formula_ldp_polygons}``
+the divisor class group of the associated toric surface, see Theorem ``\ref{thm:picard_index_formula_ldp_polygons}``
 
 """
 picard_index(P :: RationalPolygon{T,N}) where {N,T <: Integer} =
