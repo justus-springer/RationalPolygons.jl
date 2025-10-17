@@ -290,9 +290,9 @@ Compute the numbers of polygons for ``k \leq 3``.
 ```jldoctest
 julia> length.(classify_maximal_polygons_genus_one.(1:3))
 3-element Vector{Int64}:
-   3
-  10
-  39
+  3
+ 10
+ 39
 ```
 
 """

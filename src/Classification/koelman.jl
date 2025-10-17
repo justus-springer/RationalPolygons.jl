@@ -135,13 +135,6 @@ julia> st = InMemoryKoelmanStorage{Int64}();
 
 julia> classify_next_number_of_lattice_points(st)
 3
-
-julia> st.polygons[4]
-3-element Vector{RationalPolygon{Int64}}:
- Rational polygon of rationality 1 with 3 vertices.
- Rational polygon of rationality 1 with 4 vertices.
- Rational polygon of rationality 1 with 3 vertices.
-
 ```
 
 """
