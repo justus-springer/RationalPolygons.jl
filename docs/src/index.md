@@ -57,7 +57,8 @@ various classification algorithms by other authors.
 This documentation is generated directly from the docstrings of the package's
 source code. An online version is available on its GitHub page
 [RationalPolygons_jl](@cite). Every documented item includes a clickable
-[`source`](https://github.com/justus-springer/RationalPolygons.jl) link that directs to
-the corresponding line in the source code where it is defined. The content here
-refers to version `v1.2.0-thesis` of `RationalPolygons.jl`. All example sessions have been
-tested and verified to work with this version.
+[`source`](https://github.com/justus-springer/RationalPolygons.jl/blob/v1.2.0-thesis/docs/src/index.md?plain=1#L60)
+link that directs to the corresponding line in the source code where it is
+defined. The content here refers to version `v1.2.0-thesis` of
+`RationalPolygons.jl`. All example sessions have been tested and verified to
+work with this version.
