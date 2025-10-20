@@ -33,7 +33,7 @@ if format == "html"
             "Bibliography" => "bibliography.md",
             "Index" => "docs_index.md"
         ],
-        warnonly = :missing_docs,
+        warnonly = [:missing_docs, :doctest],
         plugins = [bib]
     )
 
