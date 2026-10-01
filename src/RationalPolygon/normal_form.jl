@@ -7,31 +7,42 @@ matrices.
 """
 function hnf(A :: SMatrix{2,N,T,M}) where {N,M,T<:Integer}
 
-    if A[1,1] == 0
+    # The pivots are the first nonzero column and the first column independent
+    # of it. These need not be the first two columns, e.g. for the vertex
+    # matrix of a polygon with the origin on an edge line.
+    i = 1
+    while A[1,i] == 0 && A[2,i] == 0
+        i == N && return A
+        i += 1
+    end
+
+    if A[1,i] == 0
         A = SMatrix{2,2,T,4}(0,1,1,0) * A
     end
 
-    d,a,b = gcdx(A[1,1],A[2,1])
-    if A[1,1] != d
+    d,a,b = gcdx(A[1,i],A[2,i])
+    if A[1,i] != d
         _, x, y = gcdx(a,b)
         A = SMatrix{2,2,T,4}(a,-y,b,x) * A
     end
 
-	if A[1,1] != 0 
-		f = div(A[2,1],A[1,1])
-        A = SMatrix{2,2,T,4}(1,-f,0,1) * A
-	end
+	f = div(A[2,i],A[1,i])
+    A = SMatrix{2,2,T,4}(1,-f,0,1) * A
 
-    if sign(A[2,2]) == -1
+    j = i + 1
+    while j <= N && A[2,j] == 0
+        j += 1
+    end
+    j > N && return A
+
+    if sign(A[2,j]) == -1
         A = SMatrix{2,2,T,4}(1,0,0,-1) * A
     end
 
-	if A[2,2] != 0
-		c = fld(A[1,2],A[2,2])
-        if c != 0 
-            A = SMatrix{2,2,T,4}(1,0,-c,1) * A
-        end
-	end
+	c = fld(A[1,j],A[2,j])
+    if c != 0
+        A = SMatrix{2,2,T,4}(1,0,-c,1) * A
+    end
 
     return A
 

@@ -307,3 +307,9 @@ end
         @test all(Ps -> all(P -> degree(P) == Ks[i], Ps), Pss)
     end
 end
+
+@testset "Unimodular normal form with origin on an edge line" begin
+    P = convex_hull(LatticePoint{Int}[(-1,-3),(3,-1),(2,2),(0,0)])
+    U = Matrix2{Int}(1,-5,7,-34)
+    @test unimodular_normal_form(U * P) == unimodular_normal_form(P)
+end
