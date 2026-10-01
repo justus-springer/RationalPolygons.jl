@@ -158,6 +158,8 @@ For details about the normal form used in `RationalPolygons.jl`, see
 ```@docs
 unimodular_normal_form
 are_unimodular_equivalent
+pretty_normal_form
+prettify
 affine_normal_form
 are_affine_equivalent
 PolygonAutomorphismGroup

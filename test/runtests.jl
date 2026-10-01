@@ -313,3 +313,12 @@ end
     U = Matrix2{Int}(1,-5,7,-34)
     @test unimodular_normal_form(U * P) == unimodular_normal_form(P)
 end
+
+@testset "Pretty normal form" begin
+    P = convex_hull(LatticePoint{Int}[(0,0),(1,0),(0,1)])
+    U = Matrix2{Int}(1,1000,1000,1000001)
+    V = vertex_matrix(prettify(U * P))
+    @test maximum(V; dims=2) - minimum(V; dims=2) == [1; 1;;]
+    Q = convex_hull(LatticePoint{Int}[(-3,0),(0,1),(3,0),(0,-1)], 3)
+    @test pretty_normal_form(U * Q) == pretty_normal_form(Q)
+end

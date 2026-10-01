@@ -136,6 +136,56 @@ end
 
 
 @doc raw"""
+    prettify(P :: RationalPolygon{T}) where {T <: Integer}
+
+Return a unimodular image of `P` whose bounding box has minimal side lengths.
+
+This uses the generalized Gauss reduction, see Algorithm 2.5 of
+[HaSo22](@cite): a reduced basis with respect to the width norm
+`h ↦ width(P, h)` attains both successive minima, see Theorem 2.3 of
+[HaSo22](@cite).
+
+"""
+function prettify(P :: RationalPolygon{T}) where {T <: Integer}
+    V = vertex_matrix(P)
+    nrm(h) = maximum(h' * V) - minimum(h' * V)
+
+    h1, h2 = SVector{2,T}(1,0), SVector{2,T}(0,1)
+    nrm(h1) > nrm(h2) && ((h1, h2) = (h2, h1))
+    while true
+        # m ↦ nrm(m*h1 + h2) is convex and its minimum lies in [-M, M]
+        # by the triangle inequality, so binary search for the first
+        # non-negative difference.
+        M = cld(2 * nrm(h2), nrm(h1))
+        lo, hi = -M, M
+        while lo < hi
+            m = fld(lo + hi, 2)
+            nrm((m+1) * h1 + h2) >= nrm(m * h1 + h2) ? (hi = m) : (lo = m + 1)
+        end
+        h = lo * h1 + h2
+        if nrm(h) >= nrm(h1)
+            h2 = h
+            break
+        end
+        h1, h2 = h, h1
+    end
+
+    return vcat(h2', h1') * P
+end
+
+
+@doc raw"""
+    pretty_normal_form(P :: RationalPolygon{T}) where {T <: Integer}
+
+Return `prettify(unimodular_normal_form(P))`, a canonical representative with a
+minimal bounding box.
+
+"""
+pretty_normal_form(P :: RationalPolygon{T}) where {T <: Integer} =
+prettify(unimodular_normal_form(P))
+
+
+@doc raw"""
     are_unimodular_equivalent(P :: RationalPolygon, Q :: RationalPolygon)   
 
 Checks whether two rational polygons are equivalent by a unimodular

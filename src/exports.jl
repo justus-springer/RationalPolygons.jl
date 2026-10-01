@@ -182,6 +182,8 @@ export Point
 export PolygonAutomorphismGroup
 export position_of_longest_vertical_slice_length
 export positions_of_longest_vertical_slice_length
+export pretty_normal_form
+export prettify
 export primitivize
 export pseudo_angle
 export pseudo_angle_with_distance
