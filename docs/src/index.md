@@ -26,6 +26,9 @@ plot(P)
 
 ![image](example_polygon.png)
 
+Pass a vector of polygons to draw them together, and `show_vertices=true` to
+mark the vertices.
+
 ```@repl quick_start
 number_of_interior_lattice_points(P)
 number_of_boundary_lattice_points(P)

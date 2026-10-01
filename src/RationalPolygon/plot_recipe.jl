@@ -1,46 +1,60 @@
 @recipe function plot_recipe(Ps :: Union{RationalPolygon{T}, Vector{<:RationalPolygon{T}}}) where {T <: Integer}
 
-    if Ps isa RationalPolygon
+    single = Ps isa RationalPolygon
+    if single
         Ps = [Ps]
     end
 
-    k = rationality(first(Ps))
-    all(P -> rationality(P) == k, Ps) || error("Polygons must have the same rationality")
+    show_vertices = pop!(plotattributes, :show_vertices, false)
 
-    xmin = minimum([v[1] for P ∈ Ps for v ∈ P]) - 1//k
-    xmax = maximum([v[1] for P ∈ Ps for v ∈ P]) + 1//k
-    ymin = minimum([v[2] for P ∈ Ps for v ∈ P]) - 1//k
-    ymax = maximum([v[2] for P ∈ Ps for v ∈ P]) + 1//k
+    k = lcm(rationality.(Ps))
 
-    lattice_points = [(x,y) for x = ceil(xmin) : floor(xmax) for y = ceil(ymin) : floor(ymax)]
+    xmin = floor(minimum(v[1] for P ∈ Ps for v ∈ P)) - 1
+    xmax = ceil(maximum(v[1] for P ∈ Ps for v ∈ P)) + 1
+    ymin = floor(minimum(v[2] for P ∈ Ps for v ∈ P)) - 1
+    ymax = ceil(maximum(v[2] for P ∈ Ps for v ∈ P)) + 1
 
     framestyle --> :none
-    aspect_ratio --> true
+    aspect_ratio --> :equal
+    legend --> false
+
+    for (i, P) ∈ enumerate(Ps)
+        vs = [(v[1], v[2]) for v ∈ vertices(P)]
+        color = single ? :gray : i
+        @series begin
+            seriestype := :shape
+            fillcolor --> color
+            fillalpha --> 0.3
+            linecolor --> :black
+            linewidth --> 1.5
+            vs
+        end
+        if show_vertices
+            @series begin
+                seriestype := :scatter
+                markercolor --> :white
+                markerstrokecolor --> (single ? :black : color)
+                markersize --> 6
+                vs
+            end
+        end
+    end
+
+    if k > 1
+        @series begin
+            seriestype := :scatter
+            markercolor --> :gray
+            markerstrokewidth --> 0
+            markersize --> 1.5
+            [(x//k, y//k) for x = k*xmin : k*xmax for y = k*ymin : k*ymax if x % k != 0 || y % k != 0]
+        end
+    end
 
     @series begin
         seriestype := :scatter
         markercolor --> :black
-        xlims --> (xmin,xmax)
-        ylims --> (ymin,ymax)
-        xticks --> ceil(xmin):1:floor(xmax)
-        yticks --> ceil(ymin):1:floor(ymax)
-        aspect_ratio --> :equal
-        axis --> false
-        label --> false
-        grid --> false
-        lattice_points
-    end
-
-    for P ∈ Ps
-        @series begin
-            seriestype := :shape
-            label --> false
-            fillcolor --> :gray
-            opacity --> 0.3
-            [(v[1],v[2]) for v ∈ vertices(P)]
-        end
+        markersize --> 3
+        [(x, y) for x = xmin : xmax for y = ymin : ymax]
     end
 
 end
-
-
