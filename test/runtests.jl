@@ -321,4 +321,6 @@ end
     @test maximum(V; dims=2) - minimum(V; dims=2) == [1; 1;;]
     Q = convex_hull(LatticePoint{Int}[(-3,0),(0,1),(3,0),(0,-1)], 3)
     @test pretty_normal_form(U * Q) == pretty_normal_form(Q)
+    R = prettify(convex_hull(LatticePoint{Int}[(-10,-10),(10,4),(11,9),(-5,8),(-9,3)], 4))
+    @test prettify(R) == R
 end

@@ -151,7 +151,8 @@ function prettify(P :: RationalPolygon{T}) where {T <: Integer}
     nrm(h) = maximum(h' * V) - minimum(h' * V)
 
     h1, h2 = SVector{2,T}(1,0), SVector{2,T}(0,1)
-    nrm(h1) > nrm(h2) && ((h1, h2) = (h2, h1))
+    # Ties are broken towards the identity, so that prettify is idempotent.
+    nrm(h1) >= nrm(h2) && ((h1, h2) = (h2, h1))
     while true
         # m ↦ nrm(m*h1 + h2) is convex and its minimum lies in [-M, M]
         # by the triangle inequality, so binary search for the first
@@ -162,7 +163,7 @@ function prettify(P :: RationalPolygon{T}) where {T <: Integer}
             m = fld(lo + hi, 2)
             nrm((m+1) * h1 + h2) >= nrm(m * h1 + h2) ? (hi = m) : (lo = m + 1)
         end
-        h = lo * h1 + h2
+        h = nrm(h2) == nrm(lo * h1 + h2) ? h2 : lo * h1 + h2
         if nrm(h) >= nrm(h1)
             h2 = h
             break
