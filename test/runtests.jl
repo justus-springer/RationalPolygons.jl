@@ -323,4 +323,6 @@ end
     @test pretty_normal_form(U * Q) == pretty_normal_form(Q)
     R = prettify(convex_hull(LatticePoint{Int}[(-10,-10),(10,4),(11,9),(-5,8),(-9,3)], 4))
     @test prettify(R) == R
+    W = vertex_matrix(R)
+    @test all(abs.(minimum(W; dims=2) + maximum(W; dims=2)) .<= 4)
 end

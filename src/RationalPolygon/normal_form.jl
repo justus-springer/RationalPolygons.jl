@@ -138,12 +138,14 @@ end
 @doc raw"""
     prettify(P :: RationalPolygon{T}) where {T <: Integer}
 
-Return a unimodular image of `P` whose bounding box has minimal side lengths.
+Return an affine unimodular image of `P` whose bounding box has minimal side
+lengths and whose center is close to the origin.
 
 This uses the generalized Gauss reduction, see Algorithm 2.5 of
 [HaSo22](@cite): a reduced basis with respect to the width norm
 `h ↦ width(P, h)` attains both successive minima, see Theorem 2.3 of
-[HaSo22](@cite).
+[HaSo22](@cite). Afterwards, the polygon is translated by the lattice point
+closest to the center of its bounding box.
 
 """
 function prettify(P :: RationalPolygon{T}) where {T <: Integer}
@@ -171,7 +173,13 @@ function prettify(P :: RationalPolygon{T}) where {T <: Integer}
         h1, h2 = h, h1
     end
 
-    return vcat(h2', h1') * P
+    Q = vcat(h2', h1') * P
+    # Rounding halves to even keeps prettify idempotent: after the translation,
+    # the center has coordinates in [-1/2, 1/2], which round to zero.
+    W, k = vertex_matrix(Q), rationality(Q)
+    c = LatticePoint{T}(round(T, (minimum(W[1, :]) + maximum(W[1, :])) // 2k),
+                        round(T, (minimum(W[2, :]) + maximum(W[2, :])) // 2k))
+    return Q - k * c
 end
 
 
