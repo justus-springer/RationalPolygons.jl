@@ -206,6 +206,7 @@ polygons attaining these bounds.
 area_minimizers
 area_maximizers
 maximal_area_half_integral
+half_integral_area_maximizer_case
 ```
 
 ## IO

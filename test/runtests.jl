@@ -340,4 +340,14 @@ end
         @test allunique(affine_normal_form(P) for (_, P) in maxs)
     end
     @test maximal_area_half_integral(1, 9) == euclidean_area(only(area_maximizers(2, 1, 9))[2])
+
+    for i = 2 : 3, b = 1 : 3i + 6, (_, P) in area_maximizers(2, i, b)
+        @test half_integral_area_maximizer_case(P) == (case = :theorem_1_3, b0 = nothing)
+    end
+    case(points) = half_integral_area_maximizer_case(convex_hull(RationalPoint{Int}[points...]))
+    @test case([(-3//2,-1//2),(-5//2,1),(3//2,1),(1//2,-1)]) == (case = :lemma_3_1, b0 = 1)
+    @test case([(-3//2,1),(0,1//2),(2,-1//2),(3//2,-1),(-3//2,-1),(-2,-1//2),(-2,1//2)]) == (case = :lemma_3_1, b0 = 2)
+    @test case([(1,-1//2),(1//2,1),(-3//2,1),(-2,-1//2),(-3//2,-1),(1//2,-1)]) == (case = :lemma_3_1, b0 = 0)
+    @test case([(3//2,1//2),(1//2,3//2),(-1//2,1//2),(-3//2,-1),(5//2,-1)]) == (case = :two_interior_integral_lines, b0 = nothing)
+    @test case([(0,0),(1,0),(0,1)]) === nothing
 end

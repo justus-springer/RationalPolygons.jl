@@ -106,3 +106,50 @@ function maximal_area_half_integral(i :: T, b :: T) where {T <: Integer}
     i == 1 && return b // 4 + (b <= 6 ? 21 : 27 - b) // 8
     return 3i // 2 + b // 4 + (b <= 3i + 4 ? 8 : b == 3i + 5 ? 7 : 6) // 8
 end
+
+
+@doc raw"""
+    half_integral_area_maximizer_case(P :: RationalPolygon{T}) where {T <: Integer}
+
+For a rational polygon `P` of denominator two with `i ≥ 1` interior and `b`
+boundary lattice points that has the maximal area of Theorem 1.4 in
+[BS24_2](@cite), return which of the cases of Remark 3.2 in [BS24_2](@cite) it
+belongs to, as a named tuple `(case, b0)`:
+
+- `case = :theorem_1_3` if `P` can be realized in ``\mathbb{R} \times [-1, \frac{1}{2}]``,
+  where it is described by Theorem 1.3, see [`area_maximizers`](@ref),
+- `case = :lemma_3_1` if `P` can be realized in ``\mathbb{R} \times [-1, 1]``,
+  but not in ``\mathbb{R} \times [-1, \frac{1}{2}]``, where it is described by
+  Lemma 3.1. Then `b0` is its number of boundary lattice points on ``\mathbb{R} \times \{0\}``.
+- `case = :two_interior_integral_lines` if `P` has two interior integral lines.
+  These are drawn in Figure 4 of [BS24_2](@cite).
+
+For all other polygons, return `nothing`.
+
+# Example:
+
+```jldoctest
+julia> P = convex_hull(RationalPoint{Int}[(-3//2,-1//2),(-5//2,1),(3//2,1),(1//2,-1)]);
+
+julia> half_integral_area_maximizer_case(P)
+(case = :lemma_3_1, b0 = 1)
+```
+
+"""
+function half_integral_area_maximizer_case(P :: RationalPolygon{T}) where {T <: Integer}
+    i, b = number_of_interior_lattice_points(P), number_of_boundary_lattice_points(P)
+    denominator(P) == 2 && i >= 1 && euclidean_area(P) == maximal_area_half_integral(i, b) || return nothing
+    minimal_number_of_interior_integral_lines(P) == 2 && return (case = :two_interior_integral_lines, b0 = nothing)
+    b0s = T[]
+    # Realizations in the strips are given by direction vectors of width at most two and integral centers c.
+    for v in all_direction_vectors_with_width_less_than(P, 2 // one(T)), s in (1, -1)
+        values = [s * (v[1] * x[1] + v[2] * x[2]) for x in vertices(P)]
+        lo, hi = minimum(values), maximum(values)
+        any(c -> c - 1 <= lo && hi <= c + 1 // 2, ceil(T, hi - 1 // 2) : floor(T, lo + 1)) &&
+            return (case = :theorem_1_3, b0 = nothing)
+        for c in ceil(T, hi - 1) : floor(T, lo + 1)
+            push!(b0s, count(p -> s * (v[1] * p[1] + v[2] * p[2]) == c, boundary_lattice_points(P)))
+        end
+    end
+    return (case = :lemma_3_1, b0 = only(unique(b0s)))
+end

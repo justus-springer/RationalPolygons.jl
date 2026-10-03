@@ -80,6 +80,7 @@ export gorenstein_index
 export gorenstein_matrix
 export graham_scan
 export graham_scan!
+export half_integral_area_maximizer_case
 export HDFBaeuerleStorage
 export HDFBaeuerleStoragePreferences
 export HDFCastryckStorage
