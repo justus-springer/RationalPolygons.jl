@@ -151,7 +151,7 @@ function classify_next_genus(st :: InMemoryCastryckStorage{T}; logging :: Bool =
     logging && @info "[i = $i]. Subpolygons complete. Num of polygons: $(length(new_polygons))"
 
     moved_out_polygons = Dict{Int, Vector{RationalPolygon{T}}}[]
-    for i = 1 : Threads.nthreads()
+    for i = 1 : max_thread_id()
         push!(moved_out_polygons, Dict{Int, Vector{RationalPolygon{T}}}())
     end
 
@@ -319,7 +319,7 @@ function classify_next_genus(st :: HDFCastryckStorage{T}; logging :: Bool = fals
     @info "[i = $i]. Subpolygons complete. Num of polygons: $(subpolygons_storage.total_count)"
 
     moved_out_polygons = Dict{Tuple{Int,Int}, Vector{RationalPolygon{T}}}[]
-    for i = 1 : Threads.nthreads()
+    for i = 1 : max_thread_id()
         push!(moved_out_polygons, Dict{Tuple{Int,Int}, Vector{RationalPolygon{T}}}())
     end
 

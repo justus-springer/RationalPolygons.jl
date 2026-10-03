@@ -21,7 +21,7 @@ function classify_maximal_lattice_free_polygons_m1p2_squares(k :: T) where {T <:
     ws = filter(w -> w[2] < 0, k_rational_points(B, k))
 
     Pss = Set{RationalPolygon{T}}[]
-    for k = 1 : Threads.nthreads()
+    for k = 1 : max_thread_id()
         push!(Pss, Set{RationalPolygon{T}}())
     end
 
@@ -86,7 +86,7 @@ function classify_maximal_lattice_free_polygons_m1p2_trapezoids(k :: T) where {T
     ws = filter(w -> w[2] < 0, k_rational_points(B, k))
 
     Pss = Set{RationalPolygon{T}}[]
-    for k = 1 : Threads.nthreads()
+    for k = 1 : max_thread_id()
         push!(Pss, Set{RationalPolygon{T}}())
     end
 

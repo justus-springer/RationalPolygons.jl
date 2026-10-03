@@ -28,7 +28,7 @@ function classify_maximal_polygons_m1p1(k :: T, i :: Int) where {T <: Integer}
     ws = filter(w -> w[2] > 0, k_rational_points(B,k))
 
     Pss = Set{RationalPolygon{T}}[]
-    for k = 1 : Threads.nthreads()
+    for k = 1 : max_thread_id()
         push!(Pss, Set{RationalPolygon{T}}())
     end
 

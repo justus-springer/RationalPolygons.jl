@@ -50,7 +50,7 @@ index as in step (2) of Algorithm 6.3 of [KKN10](@cite).
 function choose_next_vertex(ldps :: Vector{<:PartialLDP{T,N}}, index :: T) where {N, T <: Integer}
 
     out_vects = Vector{PartialLDP{T,N+1,2*(N+1)}}[]
-    for tid = 1 : Threads.nthreads()
+    for tid = 1 : max_thread_id()
         push!(out_vects, PartialLDP{T,N+1,2*(N+1)}[])
     end
 

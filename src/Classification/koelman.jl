@@ -36,8 +36,8 @@ point to a polygon of `Ps`, up to affine equivalence.
 """
 function single_point_extensions(Ps :: Vector{<:RationalPolygon{T}}) where {T <: Integer}
 
-    out_dicts = Vector{Dict{Int, Set{<:RationalPolygon{T}}}}(undef, Threads.nthreads())
-    for i = 1 : Threads.nthreads()
+    out_dicts = Vector{Dict{Int, Set{<:RationalPolygon{T}}}}(undef, max_thread_id())
+    for i = 1 : max_thread_id()
         out_dicts[i] = Dict{Int, Set{<:RationalPolygon{T}}}()
     end
 

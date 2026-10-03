@@ -257,7 +257,7 @@ function subpolygons_single_step(st :: HDFSubpolygonStorage{T}; logging :: Bool 
             Ps = read_polygon_dataset(k, current_area_group, "n$n", I) 
 
             out_dicts = Dict{Tuple{T,Int}}{Set{<:RationalPolygon{T}}}[]
-            for i = 1 : Threads.nthreads()
+            for i = 1 : max_thread_id()
                 push!(out_dicts, Dict{Tuple{T,Int}}{Set{<:RationalPolygon{T}}}())
             end
 

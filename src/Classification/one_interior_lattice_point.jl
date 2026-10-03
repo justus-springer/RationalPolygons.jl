@@ -18,7 +18,7 @@ function classify_maximal_polygons_genus_one_m1p1(k :: T; primitive :: Bool = fa
     primitive && filter!(w -> is_primitive(k*w), ws)
 
     Pss = Set{RationalPolygon{T}}[]
-    for k = 1 : Threads.nthreads()
+    for k = 1 : max_thread_id()
         push!(Pss, Set{RationalPolygon{T}}())
     end
 
@@ -73,7 +73,7 @@ function classify_maximal_polygons_genus_one_m1p2(k :: T; primitive :: Bool = fa
     primitive && filter!(w -> is_primitive(k*w), ws)
 
     Pss = Set{RationalPolygon{T}}[]
-    for k = 1 : Threads.nthreads()
+    for k = 1 : max_thread_id()
         push!(Pss, Set{RationalPolygon{T}}())
     end
 
@@ -177,7 +177,7 @@ function classify_maximal_polygons_genus_one_m2p2(k :: T, q :: Int; primitive ::
     primitive && filter!(w -> is_primitive(k*w), ws2)
 
     Pss = Set{RationalPolygon{T}}[]
-    for k = 1 : Threads.nthreads()
+    for k = 1 : max_thread_id()
         push!(Pss, Set{RationalPolygon{T}}())
     end
 

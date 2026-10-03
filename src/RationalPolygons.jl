@@ -3,6 +3,10 @@ module RationalPolygons
 include("imports.jl")
 include("exports.jl")
 
+# An upper bound for Threads.threadid(), which can exceed Threads.nthreads() since Julia 1.9, for example because of
+# interactive threads, which Julia 1.12 starts by default.
+max_thread_id() = isdefined(Threads, :maxthreadid) ? Threads.maxthreadid() : Threads.nthreads()
+
 include("Point.jl")
 include("graham.jl")
 include("hilbert_basis.jl")

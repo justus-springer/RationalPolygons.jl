@@ -135,7 +135,7 @@ julia> sum(length.(st.polygons))
 """
 function classify_lattice_triangles_by_gorenstein_index(st :: InMemoryBaeuerleStorage{T}, max_gorenstein_index :: T) where {T <: Integer}
     dicts = Dict{T, Set{RationalPolygon{T,3,6}}}[]
-    for t = 1 : Threads.nthreads()
+    for t = 1 : max_thread_id()
         push!(dicts, Dict{T, Set{RationalPolygon{T,3,6}}}())
     end
 
@@ -244,7 +244,7 @@ function classify_lattice_triangles_by_gorenstein_index(st :: HDFBaeuerleStorage
         logging && @info "[ι = $ι_min : $ι_max]: Beginning classification"
 
         dicts = Dict{T, Set{RationalPolygon{T,3,6}}}[]
-        for t = 1 : Threads.nthreads()
+        for t = 1 : max_thread_id()
             push!(dicts, Dict{T, Set{RationalPolygon{T,3,6}}}())
         end
 
