@@ -89,7 +89,8 @@ struct RationalPolygon{T<:Integer,N,M}
                     rationality :: T; 
                     is_unimodular_normal_form :: Bool = false,
                     is_affine_normal_form :: Bool = false) where {T <: Integer} =
-    RationalPolygon(hcat(scaled_vertices...), rationality; is_unimodular_normal_form, is_affine_normal_form)
+    RationalPolygon(isempty(scaled_vertices) ? SMatrix{2,0,T,0}() : hcat(scaled_vertices...), rationality;
+                    is_unimodular_normal_form, is_affine_normal_form)
 
     function RationalPolygon(vertices :: Vector{RationalPoint{T}};
             is_unimodular_normal_form :: Bool = false,
