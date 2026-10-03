@@ -55,7 +55,7 @@ Otherwise, `p` and `q` are always excluded.
 
 """
 integral_points_on_line_segment(p :: Point{T}, q :: Point{T}; interior = true) where {T <: Integer} =
-k_rational_points_on_line_segment(1, p, q; interior)
+k_rational_points_on_line_segment(one(T), p, q; interior)
 
 
 @doc raw"""
