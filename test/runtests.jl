@@ -326,3 +326,18 @@ end
     W = vertex_matrix(R)
     @test all(abs.(minimum(W; dims=2) + maximum(W; dims=2)) .<= 4)
 end
+
+@testset "Area bounds" begin
+    for k = 2 : 5, i = 1 : 3, b = 0 : (k + 1) * (i + 1) + 3
+        mins, maxs = area_minimizers(k, i, b), area_maximizers(k, i, b)
+        for (_, P) in [mins; maxs]
+            @test (rationality(P), number_of_interior_lattice_points(P), number_of_boundary_lattice_points(P)) == (k, i, b)
+        end
+        # Polygons of types (0c), (1c) and (2c) have collinear lattice points, hence another lower bound.
+        b >= 3 && @test allequal(euclidean_area(P) for (_, P) in mins)
+        @test allequal(euclidean_area(P) for (_, P) in maxs)
+        @test allunique(affine_normal_form(P) for (_, P) in mins)
+        @test allunique(affine_normal_form(P) for (_, P) in maxs)
+    end
+    @test maximal_area_half_integral(1, 9) == euclidean_area(only(area_maximizers(2, 1, 9))[2])
+end

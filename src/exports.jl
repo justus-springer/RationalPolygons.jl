@@ -10,6 +10,8 @@ export affine_normal_form_with_special_indices
 export all_direction_vectors_with_width_less_than
 export are_affine_equivalent
 export area_maximizing_vertices
+export area_maximizers
+export area_minimizers
 export are_unimodular_equivalent
 export BaeuerleStorage
 export base_point
@@ -148,6 +150,7 @@ export line_through_points
 export log_canonicities
 export log_canonicity
 export mark_volume_completed
+export maximal_area_half_integral
 export Matrix2
 export minimal_number_of_interior_integral_lines
 export modified_unit_fraction_solutions

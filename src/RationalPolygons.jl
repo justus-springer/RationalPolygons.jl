@@ -31,6 +31,7 @@ include("RationalPolygon/interior_points.jl")
 include("RationalPolygon/ehrhart.jl")
 include("RationalPolygon/PolygonAutomorphismGroup.jl")
 include("RationalPolygon/normal_form.jl")
+include("RationalPolygon/area_bounds.jl")
 include("RationalPolygon/plot_recipe.jl")
 include("RationalPolygon/tikz.jl")
 

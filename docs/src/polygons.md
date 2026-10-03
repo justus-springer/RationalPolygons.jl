@@ -195,6 +195,19 @@ numbers_of_interior_integral_vertical_lines
 positions_of_longest_vertical_slice_length
 ```
 
+## Area bounds
+
+For fixed denominator ``k \geq 2`` and numbers ``i \geq 1`` and ``b`` of
+interior and boundary lattice points, the area of a rational polygon is bounded
+from below and above, see [BS24_2](@cite). The following functions return the
+polygons attaining these bounds.
+
+```@docs
+area_minimizers
+area_maximizers
+maximal_area_half_integral
+```
+
 ## IO
 
 `RationalPolygons.jl` provides two ways to save and retrieve polygons from a
