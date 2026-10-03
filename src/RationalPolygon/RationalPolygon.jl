@@ -341,11 +341,13 @@ P + (-Q)
 Base.:(-)(P :: RationalPolygon{T}, v :: LatticePoint{T}) where {T <: Integer} =
 P + (-v)
 
+# Scaling uses checked arithmetic: polygons such as duals can have rationalities close to typemax(T), and a silent
+# overflow would give a wrong polygon rather than an error.
 Base.:(*)(c :: T, P :: RationalPolygon{T}) where {T <: Integer} =
-RationalPolygon(c * vertex_matrix(P), rationality(P))
+RationalPolygon(Base.checked_mul.(c, vertex_matrix(P)), rationality(P))
 
 Base.:(*)(c :: Rational{T}, P :: RationalPolygon{T}) where {T <: Integer} =
-RationalPolygon(numerator(c) * vertex_matrix(P), denominator(c) * rationality(P))
+RationalPolygon(Base.checked_mul.(numerator(c), vertex_matrix(P)), Base.checked_mul(denominator(c), rationality(P)))
 
 function Base.:(*)(U :: Matrix2{T}, P :: RationalPolygon{T}) where {T <: Integer}
     det(U) ∈ [1,-1] || error("the given matrix is not unimodular")
@@ -353,8 +355,8 @@ function Base.:(*)(U :: Matrix2{T}, P :: RationalPolygon{T}) where {T <: Integer
 end
 
 Base.:(//)(P :: RationalPolygon{T}, c :: T) where {T <: Integer} =
-RationalPolygon(vertex_matrix(P), c * rationality(P))
+RationalPolygon(vertex_matrix(P), Base.checked_mul(c, rationality(P)))
 
 Base.:(//)(P :: RationalPolygon{T}, c :: Rational{T}) where {T <: Integer} =
-RationalPolygon(denominator(c) * vertex_matrix(P), numerator(c) * rationality(P))
+RationalPolygon(Base.checked_mul.(denominator(c), vertex_matrix(P)), Base.checked_mul(numerator(c), rationality(P)))
 
