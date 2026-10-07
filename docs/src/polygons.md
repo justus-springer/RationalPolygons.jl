@@ -193,6 +193,7 @@ position_of_longest_vertical_slice_length
 lattice_width_datas
 numbers_of_interior_integral_vertical_lines
 positions_of_longest_vertical_slice_length
+square_side_length
 ```
 
 ## Area bounds

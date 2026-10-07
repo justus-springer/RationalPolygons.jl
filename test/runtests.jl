@@ -50,6 +50,12 @@ end
     @test all(m -> maximum(number_of_vertices, Pss[m]) == max_number_of_vertices[m], 1 : max_side_length)
     @test all(m -> length(filter(P -> number_of_vertices(P) == max_number_of_vertices[m], Pss[m])) == number_of_vertex_maximizers[m], 2 : max_side_length)
 
+    # The subpolygons of [0,m]^2 not contained in [0,m-1]^2 are exactly those of square side length m.
+    Qss = [Set(affine_normal_form.(Ps)) for Ps in Pss]
+    @test all(m -> all(P -> square_side_length(P) == m, setdiff(Qss[m], m == 1 ? Set() : Qss[m-1])), 1 : max_side_length)
+    @test square_side_length(convex_hull(LatticePoint{Int}[(0,0),(5,1),(1,5)])) ==
+          square_side_length(convex_hull(LatticePoint{Int}[(3,4),(8,5),(4,9)] .|> v -> LatticePoint{Int}(v[1] + 2v[2], v[2])))
+
 end
 
 @testset "Maximal polygons in R x [-1,1]" begin

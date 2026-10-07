@@ -213,6 +213,7 @@ export snf!
 export snf_with_transform
 export snf_with_transform!
 export special_facets
+export square_side_length
 export subpolygons
 export subpolygons_single_step
 export SubpolygonStorage
